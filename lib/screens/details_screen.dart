@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flex_movies/screens/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +9,13 @@ import 'package:iconly/iconly.dart';
 import 'package:video_player/video_player.dart';
 
 class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({Key? key}) : super(key: key);
+  final Map movie;
+  // final List cast;
+  const DetailsScreen({
+    Key? key,
+    required this.movie,
+    // required this.cast,
+  }) : super(key: key);
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
@@ -35,8 +44,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.dispose();
   }
 
+// final split = widget
   @override
   Widget build(BuildContext context) {
+    // log('my movie ==${widget.movie}');
+    // log('my movie ==${widget.cast}');
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -80,11 +92,19 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset(
-                      'assets/img1.jpg',
-                      height: 400,
-                      width: double.infinity,
-                      fit: BoxFit.fill,
+                    // Image.asset(
+                    //   'assets/img1.jpg',
+                    //   height: 400,
+                    //   width: double.infinity,
+                    //   fit: BoxFit.fill,
+                    // ),
+                    Transform.scale(
+                      scale: 0.8,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.movie['large_cover_image'],
+                        // height: MediaQuery.of(context).size.height * .5,
+                        fit: BoxFit.fitWidth,
+                      ),
                     ),
                     Positioned(
                       child: Container(
@@ -106,16 +126,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
                     ),
-                    const Positioned(
+                    Positioned(
                       bottom: 20,
-                      child: Text(
-                        'Mimic',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontSize: 50,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * .8,
+                        child: Text(
+                          // 'Mimic',
+                          widget.movie['title'],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 28,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     )
@@ -196,9 +220,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: const [
+                        children: [
                           Text(
-                            '23-03-19',
+                            // '23-03-19',
+                            widget.movie['date_uploaded'],
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -250,13 +275,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             fontWeight: FontWeight.bold,
                             color: Colors.grey[200],
                           ),
-                          children: const [
-                            TextSpan(
-                              text: ' Drama, Crime, & Mystery',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
+                          children: [
+                            // Use i loop to display the genres
+
+                            for (var i = 0;
+                                i < widget.movie['genres'].length;
+                                i++,)
+                              TextSpan(
+                                text: widget.movie['genres'][i] + ' , ',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -311,7 +341,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        'Storyline hysysiyfIYzfUYIuzhIOHIHiHPIHpispihspidpiwhsidwpiahihqIHPIHWPIDIHPIHPI Storyline hysysiyfIYzfUYIuzhIOHIHiHPIHpispihspidpiwhsidwpiahihqIHPIHWPIDIHPIHPI Storyline hysysiyfIYzfUYIuzhIOHIHiHPIHpispihspidpiwhsidwpiahihqIHPIHWPIDIHPIHPI Storyline hysysiyfIYzfUYIuzhIOHIHiHPIHpispihspidpiwhsidwpiahihqIHPIHWPIDIHPIHPIStoryline hysysiyfIYzfUYIuzhIOHIHiHPIHpispihspidpiwhsidwpiahihqIHPIHWPIDIHPIHPI  HPIH',
+                        widget.movie['description_full'],
                         maxLines: 4,
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,

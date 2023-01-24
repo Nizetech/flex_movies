@@ -1,9 +1,24 @@
 // To parse this JSON data, do
 //
 //     final movieList = movieListFromJson(jsonString);
+import 'dart:convert';
+
+// MovieList movieListFromJson(String str) => MovieList.fromJson(json.decode(str));
+List<MovieList> movieListFromJson(String str) =>
+    List<MovieList>.from(json.decode(str));
+// List<MovieList> movieListFromJson(String str) =>
+//     List<MovieList>.from(json.decode(str).map((x) => MovieList.fromJson(x)));
+
+// String movieListToJson(MovieList data) => json.encode(data.toJson());
 
 class MovieList {
-  List<Movie>? movie;
+  // List<MovieList>? movie;
+  // static List<MovieList>? movieSnapShot(List movieSnapShot) {
+  //   return movieSnapShot.map((e) {
+  //     return MovieList.fromJson(e);
+  //   }).toList();
+  // }
+
   MovieList({
     this.status,
     required this.statusMessage,
@@ -284,7 +299,6 @@ class Meta {
 class EnumValues<T> {
   Map<String, T> map;
   late Map<T, String> reverseMap;
-
   EnumValues(this.map);
 
   Map<T, String> get reverse {

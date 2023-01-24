@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchScreen extends StatelessWidget {
-  SearchScreen({Key? key}) : super(key: key);
+  // final List movie;
+  // final List suggestion;
+  SearchScreen({
+    Key? key,
+    // required this.movie, required this.suggestion
+  }) : super(key: key);
   TextEditingController search = TextEditingController();
 
   @override
