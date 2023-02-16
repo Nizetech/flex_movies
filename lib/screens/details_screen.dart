@@ -48,6 +48,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   // List<Cast>? cast = [];
+  Map movieDetail = {};
   List cast = [];
 // final split = widget
   @override
@@ -90,21 +91,22 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
           SliverFillRemaining(
             hasScrollBody: false,
-            // child: FutureBuilder<List<Cast>>(
             child: FutureBuilder<dynamic>(
-                future: ApiService.getMovieCast(widget.movie['id'].toString()),
+                future:
+                    ApiService.getMovieDetails(widget.movie['id'].toString()),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    cast = snapshot.data;
-                    print('My Cast length==> ${cast.length}');
+                    movieDetail = snapshot.data;
+                    cast = movieDetail['cast'];
+                    print('My Cast length==> ${cast}');
+                    // print('My Cast length==> ${movieDetail.length}');
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // SizedBox(height: 50),
                         Stack(
                           alignment: Alignment.bottomCenter,
                           fit: StackFit.loose,
@@ -117,7 +119,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 borderRadius: BorderRadius.circular(5),
                                 child: SizedBox(
                                   child: CachedNetworkImage(
-                                    imageUrl: widget.movie['large_cover_image'],
+                                    imageUrl: movieDetail['large_cover_image'],
                                   ),
                                 ),
                               ),
@@ -151,7 +153,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 width: MediaQuery.of(context).size.width * .8,
                                 child: Text(
                                   // 'Mimic',
-                                  widget.movie['title'],
+                                  movieDetail['title'],
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontStyle: FontStyle.italic,
@@ -242,7 +244,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 children: [
                                   Text(
                                     // '23-03-19',
-                                    widget.movie['year'].toString(),
+                                    movieDetail['year'].toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -298,12 +300,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     // Use i loop to display the genres
 
                                     for (var i = 0;
-                                        i < widget.movie['genres'].length;
+                                        i < movieDetail['genres'].length;
                                         i++,)
                                       TextSpan(
-                                        text: widget.movie['genres'][i] + ' , ',
+                                        text: movieDetail['genres'][i] + ' , ',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.normal,
+                                          fontSize: 12,
                                         ),
                                       ),
                                   ],
@@ -360,7 +363,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                widget.movie['description_full'],
+                                movieDetail['description_full'],
                                 maxLines: 4,
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
@@ -384,63 +387,64 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: 105,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: cast.length,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        SizedBox(width: 20),
-                                itemBuilder: (BuildContext context, int index) {
-                                  print('my ====>${cast[index]}}');
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 35,
-                                        backgroundColor: Color(0xff212029),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          child: CachedNetworkImage(
-                                            imageUrl: cast[index]
-                                                ['url_small_image'],
-                                            fit: BoxFit.cover,
-                                            height: 68,
-                                            width: 68,
-                                          ),
-                                          // Image.asset(
-                                          //   'assets/profile.jpg',
-                                          //   height: 65,
-                                          //   width: 65,
-                                          //   fit: BoxFit.cover,
-                                          // ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      SizedBox(
-                                        width: 65,
-                                        child: Text(
-                                          cast[index]['name'],
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            overflow: TextOverflow.fade,
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
+                            cast == null
+                                ? SizedBox()
+                                : SizedBox(
+                                    height: 105,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount: cast.length,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      separatorBuilder:
+                                          (BuildContext context, int index) =>
+                                              SizedBox(width: 20),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 35,
+                                              backgroundColor:
+                                                  Color(0xff212029),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: cast[index]
+                                                          ['url_small_image'] ??
+                                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEPPiaQhO0spbCu9tuFuG3QsKNOjMuplRr2A&usqp=CAU',
+                                                  fit: BoxFit.cover,
+                                                  height: 68,
+                                                  width: 68,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            SizedBox(
+                                              width: 65,
+                                              child: Text(
+                                                cast[index]['name'],
+                                                maxLines: 2,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  overflow: TextOverflow.fade,
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                        //   ],
+                                        // ),
+                                      },
+                                    ),
+                                  ),
                             SizedBox(height: 20),
                             const Padding(
                               padding: EdgeInsets.only(left: 20),

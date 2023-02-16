@@ -39,25 +39,30 @@ class ApiService {
 
   Future<List<Movie?>> getAllMovieListModel() async {
     print(ApiConstant.baseUrl + ApiConstant.movieList);
-    var uri = Uri.parse(ApiConstant.baseUrl + ApiConstant.movieList);
-    final response = await http.get(
-      uri,
-      // headers: {
-      //   'Content-Type': 'application/json',
-      // },
-    );
-    List<Movie> movie = [];
-    if (response.statusCode == 200) {
-      // log('object ${response.body}');
-      // print('object ${response.body}');
-      final data = jsonDecode(response.body);
-      movie = MovieList.fromJson(data).data.movies;
-      print(movie.first.title);
+    try {
+      var uri = Uri.parse(ApiConstant.baseUrl + ApiConstant.movieList);
+      final response = await http.get(
+        uri,
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+      );
+      List<Movie> movie = [];
+      if (response.statusCode == 200) {
+        // log('object ${response.body}');
+        // print('object ${response.body}');
+        final data = jsonDecode(response.body);
+        movie = MovieList.fromJson(data).data.movies;
+        print(movie.first.title);
 
-      print('my movie===> Movies model -===> ${movie.first.title}');
-      return movie;
-    } else {
-      print('object');
+        print('my movie===> Movies model -===> ${movie.first.title}');
+        return movie;
+      } else {
+        print('object');
+        return [];
+      }
+    } catch (e) {
+      print(e.toString());
       return [];
     }
   }
@@ -87,20 +92,20 @@ class ApiService {
   }
 
   // Get movie movieCast
-  static Future<List> getMovieCast(String movieID) async {
+  static Future<Map> getMovieDetails(String movieID) async {
     // static Future<List<movieDetails.Cast>> getMovieCast(String movieID) async {
     try {
       final response = await http.get(
         Uri.parse(
-            'https://yts.mx/api/v2/movie_details.json?sort_by=year?movie_id=$movieID&with_images=true&with_cast=true'),
+            'https://yts.mx/api/v2/movie_details.json?movie_id=$movieID&with_images=true&with_cast=true'),
       );
-      List cast = [];
+      Map cast = {};
       // List<movieDetails.Cast>? cast = [];
       if (response.statusCode == 200) {
         log('movie Cast== ${response.body}');
         // print('object ${response.body}');
         Map data = jsonDecode(response.body);
-        cast = data['data']['movie']['cast'];
+        cast = data['data']['movie'];
 
         // final data = jsonDecode(response.body);
         // cast = movieDetails.Data.fromJson(data['data']).movie!.cast;
@@ -109,11 +114,11 @@ class ApiService {
 
         return cast;
       } else {
-        return [];
+        return {};
       }
     } catch (e) {
       print(e.toString());
-      return [];
+      return {};
     }
   }
 

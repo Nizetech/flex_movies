@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
-    ApiService.getMovieCast('10');
+    ApiService.getMovieDetails('10');
     // ApiService.getAllMovieListModel();
     print('here');
     super.didChangeDependencies();
@@ -31,19 +31,19 @@ class _HomePageState extends State<HomePage> {
 
   Future<List> movieList = ApiService.getAllMovieList();
   // Future<List<movieDetails.Cast?>> cast = ApiService.getMovieCast('10');
-  Future<List> cast = ApiService.getMovieCast('10');
-  // Future<Map<String, dynamic>> cast = ApiService.getMovieCast('10');
-  // Future<List> movieSuggestion = ApiService.getMovieSuggestion(s);
+  // Future<Map> cast = ApiService.getMovieDetails('10');
+
   List movie = [];
   List suggestion = [];
   Map<String, dynamic> movieData = {};
+  Map<String, dynamic> movieDetails = {};
 
   bool isSearching = false;
 
   @override
   Widget build(BuildContext context) {
     print('index $index');
-    print('cast ${cast}');
+    // print('cast ${cast}');
     return Scaffold(
       // extendBodyBehindAppBar: true,
       // extendBody: true,
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                     movieList,
                     ApiService.getMovieSuggestion(index),
                     ApiService().getAllMovieListModel(),
-                    cast,
+                    // cast,
                   ]),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -108,10 +108,10 @@ class _HomePageState extends State<HomePage> {
                     } else {
                       movie = snapshot.data[0];
                       suggestion = snapshot.data[1];
-                      List<Movie> movieModel = snapshot.data[2];
+                      List movieModel = snapshot.data[2];
                       // print(movieModel.length.toString());
                       // List<movieDetails.Cast?> castImg = snapshot.data[3];
-                      List castImg = snapshot.data[3];
+                      // Map cast = snapshot.data[3];
 
                       return Column(
                         children: [
@@ -282,32 +282,40 @@ class _HomePageState extends State<HomePage> {
                                           SizedBox(width: 20),
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    // Map data = movieModel;
-
                                     return GestureDetector(
-                                      onTap: () {
-                                        Get.to(DetailsScreen(
-                                          movie: snapshot.data[2][index],
-                                        ));
-                                        // print('tapped==${movie[index]}');
-                                      },
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            movieModel[index].mediumCoverImage,
+                                        onTap: () {
+                                          movieDetails.addAll({
+                                            'id': movieModel[index].id,
+                                          });
+                                          print('tapped==$movieDetails');
 
-                                        // height: 130,
-                                        // width: 130,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      //     Image.network(
-                                      //   movie.isNotEmpty
-                                      //       ? movie[index]['medium_cover_image']
-                                      //       : Icon(Icons.image),
-                                      //   fit: BoxFit.fill,
-                                      //   height: 130,
-                                      //   width: 130,
-                                      // ),
-                                    );
+                                          Get.to(DetailsScreen(
+                                            movie: movieDetails,
+                                          ));
+                                        },
+                                        child:
+                                            //   movieModel[index].mediumCoverImage !=
+                                            //   null
+                                            //    ?
+                                            CachedNetworkImage(
+                                          imageUrl: movieModel[index]
+                                                      .mediumCoverImage
+                                                      .isEmpty ||
+                                                  movieModel[index]
+                                                          .mediumCoverImage ==
+                                                      null
+                                              ? 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pinterest.com%2Fp'
+                                              : movieModel[index]
+                                                  .mediumCoverImage,
+
+                                          // height: 130,
+                                          // width: 130,
+                                          fit: BoxFit.cover,
+                                        )
+                                        // : Icon(Icons.image),
+                                        //     Image.network(
+
+                                        );
                                   },
                                 ),
                               ),
