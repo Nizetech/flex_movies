@@ -1,23 +1,13 @@
 // To parse this JSON data, do
 //
-//     final movieList = movieListFromJson(jsonString);
 import 'dart:convert';
 
-// MovieList movieListFromJson(String str) => MovieList.fromJson(json.decode(str));
-List<MovieList> movieListFromJson(String str) =>
-    List<MovieList>.from(json.decode(str));
-// List<MovieList> movieListFromJson(String str) =>
-//     List<MovieList>.from(json.decode(str).map((x) => MovieList.fromJson(x)));
+MovieList movieListFromJson(String str) => MovieList.fromJson(json.decode(str));
 
-// String movieListToJson(MovieList data) => json.encode(data.toJson());
+String movieListToJson(MovieList data) => json.encode(data.toJson());
 
 class MovieList {
-  // List<MovieList>? movie;
-  // static List<MovieList>? movieSnapShot(List movieSnapShot) {
-  //   return movieSnapShot.map((e) {
-  //     return MovieList.fromJson(e);
-  //   }).toList();
-  // }
+  List<Movie>? movie;
 
   MovieList({
     this.status,

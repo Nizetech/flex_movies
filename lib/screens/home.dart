@@ -2,11 +2,14 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flex_movies/screens/search_screen.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../model/movie_list.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -18,33 +21,29 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
-    ApiService.getMovieCast(10);
+    ApiService.getMovieCast('10');
+    // ApiService.getAllMovieListModel();
     print('here');
     super.didChangeDependencies();
   }
-  // @override
-  // void initState() {
-  //   var rng = new Random();
-  //   var index = new List.generate(1, (_) => rng.nextInt(20));
-  //   super.initState();
-  // }
-  // int index;
 
-  // Random random = Random();
-  int index = Random().nextInt(50);
-
-  // int index = 50;
+  int index = Random().nextInt(20);
 
   Future<List> movieList = ApiService.getAllMovieList();
+  // Future<List<movieDetails.Cast?>> cast = ApiService.getMovieCast('10');
+  Future<List> cast = ApiService.getMovieCast('10');
+  // Future<Map<String, dynamic>> cast = ApiService.getMovieCast('10');
   // Future<List> movieSuggestion = ApiService.getMovieSuggestion(s);
   List movie = [];
   List suggestion = [];
+  Map<String, dynamic> movieData = {};
 
   bool isSearching = false;
 
   @override
   Widget build(BuildContext context) {
     print('index $index');
+    print('cast ${cast}');
     return Scaffold(
       // extendBodyBehindAppBar: true,
       // extendBody: true,
@@ -99,9 +98,9 @@ class _HomePageState extends State<HomePage> {
               child: FutureBuilder<dynamic>(
                   future: Future.wait([
                     movieList,
-                    //  movieSuggestion
                     ApiService.getMovieSuggestion(index),
-                    ApiService.getMovieCast(index)
+                    ApiService().getAllMovieListModel(),
+                    cast,
                   ]),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -109,21 +108,41 @@ class _HomePageState extends State<HomePage> {
                     } else {
                       movie = snapshot.data[0];
                       suggestion = snapshot.data[1];
-                      List cast = snapshot.data[2];
-                      // log('my movies $movie');
+                      List<Movie> movieModel = snapshot.data[2];
+                      // print(movieModel.length.toString());
+                      // List<movieDetails.Cast?> castImg = snapshot.data[3];
+                      List castImg = snapshot.data[3];
+
                       return Column(
                         children: [
-                          // SizedBox(height: 50),
                           GestureDetector(
-                            onTap: () => Get.to(DetailsScreen(
-                              movie: movie[0],
-                              // cast: cast[0],
-                            )),
+                            onTap: () {
+                              movieData.addAll({
+                                'large_cover_image':
+                                    movieModel[index].largeCoverImage,
+                                'title': movieModel[index].title,
+                                'id': movieModel[index].id,
+                                'year': movieModel[index].year,
+                                'rating': movieModel[index].rating,
+                                'genres': movieModel[index].genres,
+                                'summary': movieModel[index].summary,
+                                'trailer': movieModel[index].ytTrailerCode,
+                                'date_uploaded': movieModel[index].dateUploaded,
+                                'description_full':
+                                    movieModel[index].descriptionFull,
+                              });
+                              print(movieData);
+                              Get.to(DetailsScreen(
+                                movie: movieData,
+                                // cast: cast[0],
+                              ));
+                            },
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 CachedNetworkImage(
-                                  imageUrl: suggestion[0]['medium_cover_image'],
+                                  imageUrl: movieModel[index].largeCoverImage,
+                                  // imageUrl: suggestion[0]['medium_cover_image'],
                                   height: 350,
                                   width: double.infinity,
                                   fit: BoxFit.fill,
@@ -150,14 +169,17 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Positioned(
                                   bottom: 20,
-                                  child: Text(
-                                    suggestion[0]['title'],
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                                  child: SizedBox(
+                                    width: Get.width * .8,
+                                    child: Text(
+                                      movieModel[index].title,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 24,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 )
@@ -253,26 +275,26 @@ class _HomePageState extends State<HomePage> {
                                 child: ListView.separated(
                                   scrollDirection: Axis.horizontal,
                                   shrinkWrap: true,
-                                  itemCount: movie.length,
+                                  itemCount: movieModel.length,
                                   padding: EdgeInsets.symmetric(horizontal: 20),
                                   separatorBuilder:
                                       (BuildContext context, int index) =>
                                           SizedBox(width: 20),
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    Map data = movie[index];
+                                    // Map data = movieModel;
 
                                     return GestureDetector(
                                       onTap: () {
                                         Get.to(DetailsScreen(
-                                          movie: data,
-                                          // cast: cast[index],
+                                          movie: snapshot.data[2][index],
                                         ));
                                         // print('tapped==${movie[index]}');
                                       },
                                       child: CachedNetworkImage(
-                                        imageUrl: movie[index]
-                                            ['medium_cover_image'],
+                                        imageUrl:
+                                            movieModel[index].mediumCoverImage,
+
                                         // height: 130,
                                         // width: 130,
                                         fit: BoxFit.cover,
