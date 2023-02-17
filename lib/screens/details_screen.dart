@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flex_movies/model/movie.dart';
 import 'package:flex_movies/screens/search_screen.dart';
+import 'package:flex_movies/screens/widgets/widgets.dart';
+import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -50,6 +52,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   // List<Cast>? cast = [];
   Map movieDetail = {};
   List cast = [];
+  List movieSuggestion = [];
+
 // final split = widget
   @override
   Widget build(BuildContext context) {
@@ -92,16 +96,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
           SliverFillRemaining(
             hasScrollBody: false,
             child: FutureBuilder<dynamic>(
-                future:
-                    ApiService.getMovieDetails(widget.movie['id'].toString()),
+                future: Future.wait([
+                  ApiService.getMovieSuggestion(widget.movie['id']),
+                  ApiService.getMovieDetails(widget.movie['id'].toString()),
+                ]),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    movieDetail = snapshot.data;
-                    cast = movieDetail['cast'];
+                    movieSuggestion = snapshot.data[0];
+                    movieDetail = snapshot.data[1];
+                    if (movieDetail['cast'] != null) {
+                      cast = movieDetail['cast'];
+                    } else {
+                      cast = [];
+                    }
                     print('My Cast length==> ${cast}');
                     // print('My Cast length==> ${movieDetail.length}');
                     return Column(
@@ -120,6 +131,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 child: SizedBox(
                                   child: CachedNetworkImage(
                                     imageUrl: movieDetail['large_cover_image'],
+                                    errorWidget: (context, url, error) =>
+                                        const Center(
+                                      child: Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 60),
+                                        child: Text(
+                                          'NO IMAGE AVAILABLE',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -243,21 +269,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    // '23-03-19',
-                                    movieDetail['year'].toString(),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height: 15,
-                                      child: VerticalDivider(
-                                        color: Colors.white,
-                                      )),
-                                  const Text(
-                                    'season 1',
+                                    movieDetail['date_uploaded']
+                                        .split(' ')[0]
+                                        .toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -363,33 +377,39 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                movieDetail['description_full'],
+                                movieDetail['description_full'] == ''
+                                    ? movieDetail['description_intro']
+                                    : movieDetail['description_full'],
                                 maxLines: 4,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                   color: Colors.white,
                                   fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Text(
-                                'Cast',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(height: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            cast == null
-                                ? SizedBox()
-                                : SizedBox(
+                        cast.isEmpty
+                            ? SizedBox()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 20),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Text(
+                                      'Cast',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  SizedBox(
                                     height: 105,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
@@ -402,144 +422,136 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                               SizedBox(width: 20),
                                       itemBuilder:
                                           (BuildContext context, int index) {
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 35,
-                                              backgroundColor:
-                                                  Color(0xff212029),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: cast[index]
-                                                          ['url_small_image'] ??
-                                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEPPiaQhO0spbCu9tuFuG3QsKNOjMuplRr2A&usqp=CAU',
-                                                  fit: BoxFit.cover,
-                                                  height: 68,
-                                                  width: 68,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            SizedBox(
-                                              width: 65,
-                                              child: Text(
-                                                cast[index]['name'],
-                                                maxLines: 2,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  overflow: TextOverflow.fade,
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
+                                        return castWidget(
+                                            cast: cast, index: index);
                                         //   ],
                                         // ),
                                       },
                                     ),
                                   ),
-                            SizedBox(height: 20),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Text(
-                                'Trailer',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                ],
+                              ),
+                        SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'Trailer',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          height: 150,
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: AspectRatio(
+                                aspectRatio: 16 / 10,
+                                child: Stack(
+                                  children: <Widget>[
+                                    CachedVideoPlayer(controller),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          if (isPlay) {
+                                            setState(() {
+                                              controller.pause();
+                                              isPlay = false;
+                                            });
+                                          } else {
+                                            // videoPlayerController.play();
+                                            setState(() {
+                                              isPlay = true;
+                                              controller.play();
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(
+                                          isPlay
+                                              ? Icons.pause_circle
+                                              : Icons
+                                                  .play_circle_filled_rounded,
+                                          size: 40,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10),
-                            SizedBox(
-                              height: 150,
-                              width: double.infinity,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: AspectRatio(
-                                    aspectRatio: 16 / 10,
-                                    child: Stack(
-                                      children: <Widget>[
-                                        CachedVideoPlayer(controller),
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: IconButton(
-                                            onPressed: () {
-                                              if (isPlay) {
-                                                setState(() {
-                                                  controller.pause();
-                                                  isPlay = false;
-                                                });
-                                              } else {
-                                                // videoPlayerController.play();
-                                                setState(() {
-                                                  isPlay = true;
-                                                  controller.play();
-                                                });
-                                              }
-                                            },
-                                            icon: Icon(
-                                              isPlay
-                                                  ? Icons.pause_circle
-                                                  : Icons
-                                                      .play_circle_filled_rounded,
-                                              size: 40,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                          ),
+                        ),
+                        SizedBox(height: 40),
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            'More Movies...',
+                            style: TextStyle(
+                              color: mainColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        SizedBox(
+                          height: 170,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount: movieSuggestion.length,
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    SizedBox(width: 20),
+                            itemBuilder: (BuildContext context, int index) {
+                              return Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(10)),
+                                    child: CachedNetworkImage(
+                                      imageUrl: movieSuggestion[index]
+                                          ['medium_cover_image'],
+                                      fit: BoxFit.cover,
+                                      height: 130,
+                                      filterQuality: FilterQuality.high,
+                                      width: 200,
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 40),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Text(
-                                'Flex Movies',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            SizedBox(
-                              height: 130,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: 6,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        SizedBox(width: 20),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Image.asset(
-                                    'assets/img2.jpg',
-                                    height: 130,
-                                    width: 250,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 30),
-                          ],
+                                  Expanded(
+                                    child: Container(
+                                      // width: double.infinity,
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.6),
+                                        borderRadius: BorderRadius.vertical(
+                                            bottom: Radius.circular(10)),
+                                      ),
+                                      child: Text(
+                                        movieSuggestion[index]['title'],
+                                        style: TextStyle(
+                                          color: white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
                         ),
+                        SizedBox(height: 30),
                       ],
                     );
                   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flex_movies/botton_nav.dart';
+import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

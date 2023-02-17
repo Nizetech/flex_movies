@@ -7,9 +7,10 @@ import 'package:http/http.dart' as http;
 import 'package:flex_movies/model/movie_list.dart';
 
 class ApiService {
-  static Future<List> getAllMovieList() async {
+  static Future<List> getAllMovieList(int page) async {
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl + ApiConstant.movieList);
+      var uri = Uri.parse(ApiConstant.baseUrl +
+          '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
 
       final response = await http.get(
         uri,
@@ -37,10 +38,11 @@ class ApiService {
     }
   }
 
-  Future<List<Movie?>> getAllMovieListModel() async {
-    print(ApiConstant.baseUrl + ApiConstant.movieList);
+  Future<List<Movie?>> getAllMovieListModel(int page) async {
+    // print(ApiConstant.baseUrl + ApiConstant.movieList);
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl + ApiConstant.movieList);
+      var uri = Uri.parse(ApiConstant.baseUrl +
+          '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
       final response = await http.get(
         uri,
         // headers: {
