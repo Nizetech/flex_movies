@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:flex_movies/screens/details_screen.dart';
-import 'package:flex_movies/screens/search_screen.dart';
+import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/utils/colors.dart';
@@ -24,22 +24,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
-    ApiService.getMovieDetails('10');
+    // ApiService.getMovieDetails('10');
+    ApiService().searchMovie('thor');
     // ApiService.getAllMovieListModel();
     print('here');
     super.didChangeDependencies();
   }
 
-  static const _pageSize = 20;
-
   int index = Random().nextInt(20);
 
-  // Future<List> movieList = ApiService.getAllMovieList(page);
   int page = 1;
 
-  List movie = [];
+  // List movie = [];
   Map<String, dynamic> movieData = {};
   Map<String, dynamic> movieDetails = {};
+  Map movieId = {};
+  List movieModel = [];
+  List topMovies = [];
 
   bool isSearching = false;
 
@@ -100,21 +101,20 @@ class _HomePageState extends State<HomePage> {
               hasScrollBody: true,
               child: FutureBuilder<dynamic>(
                   future: Future.wait([
-                    // movieList,
                     ApiService().getAllMovieListModel(page),
+                    ApiService.getTopMovies(page),
                     // cast,
                   ]),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(child: CircularProgressIndicator());
                     } else {
-                      // movie = snapshot.data[0];
-                      // suggestion = snapshot.data[1];
-                      List movieModel = snapshot.data[0];
-                      // genre= movieModel[];
-                      // print(movieModel.length.toString());
-                      // List<movieDetails.Cast?> castImg = snapshot.data[3];
-                      // Map cast = snapshot.data[3];
+                      movieModel = snapshot.data[0];
+                      movieModel.removeWhere(
+                          (element) => element.title == 'Mephistopheles');
+                      movieModel.shuffle();
+                      topMovies = snapshot.data[1];
+                      topMovies.shuffle();
 
                       return SingleChildScrollView(
                         child: Column(
@@ -122,19 +122,19 @@ class _HomePageState extends State<HomePage> {
                             GestureDetector(
                               onTap: () {
                                 movieData.addAll({
-                                  'large_cover_image':
-                                      movieModel[index].largeCoverImage,
-                                  'title': movieModel[index].title,
-                                  'id': movieModel[index].id,
-                                  'year': movieModel[index].year,
-                                  'rating': movieModel[index].rating,
-                                  'genres': movieModel[index].genres,
-                                  'summary': movieModel[index].summary,
-                                  'trailer': movieModel[index].ytTrailerCode,
-                                  'date_uploaded':
-                                      movieModel[index].dateUploaded,
-                                  'description_full':
-                                      movieModel[index].descriptionFull,
+                                  'large_cover_image': topMovies[index]
+                                      ['large_cover_image'],
+                                  'title': topMovies[index]['title'],
+                                  'id': topMovies[index]['id'],
+                                  'year': topMovies[index]['year'],
+                                  'rating': topMovies[index]['rating'],
+                                  'genres': topMovies[index]['genres'],
+                                  'summary': topMovies[index]['summary'],
+                                  'trailer': topMovies[index]['trailer'],
+                                  'date_uploaded': topMovies[index]
+                                      ['date_uploaded'],
+                                  'description_full': topMovies[index]
+                                      ['description_full'],
                                 });
                                 print(movieData);
                                 Get.to(DetailsScreen(
@@ -146,7 +146,8 @@ class _HomePageState extends State<HomePage> {
                                 alignment: Alignment.center,
                                 children: [
                                   CachedNetworkImage(
-                                    imageUrl: movieModel[index].largeCoverImage,
+                                    imageUrl: topMovies[index]
+                                        ['large_cover_image'],
                                     errorWidget: (context, url, error) =>
                                         const Center(
                                       child: Text(
@@ -187,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                                     child: SizedBox(
                                       width: Get.width * .8,
                                       child: Text(
-                                        movieModel[index].title,
+                                        topMovies[index]['title'],
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontStyle: FontStyle.italic,
@@ -288,11 +289,11 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 SizedBox(height: 20),
                                 SizedBox(
-                                  height: 130,
+                                  height: 180,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
-                                    itemCount: movieModel.length,
+                                    itemCount: topMovies.length,
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 20),
                                     separatorBuilder:
@@ -300,28 +301,21 @@ class _HomePageState extends State<HomePage> {
                                             SizedBox(width: 20),
                                     itemBuilder:
                                         (BuildContext context, int index) {
-                                      return GestureDetector(
-                                          onTap: () {
-                                            movieDetails.addAll({
-                                              'id': movieModel[index].id,
-                                            });
+                                      return TopMovie(
+                                        onTap: () {
+                                          movieDetails.addAll({
+                                            'id': topMovies[index]['id'],
+                                          });
 
-                                            Get.to(DetailsScreen(
-                                              movie: movieDetails,
-                                            ));
-                                          },
-                                          child: CachedNetworkImage(
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    SizedBox(),
-
-                                            imageUrl: movieModel[index]
-                                                .mediumCoverImage,
-
-                                            // height: 130,
-                                            // width: 130,
-                                            fit: BoxFit.cover,
+                                          Get.to(DetailsScreen(
+                                            movie: movieDetails,
                                           ));
+                                        },
+                                        color: white,
+                                        txtColor: Colors.black,
+                                        movieSuggestion: topMovies,
+                                        index: index,
+                                      );
                                     },
                                   ),
                                 ),
@@ -352,35 +346,96 @@ class _HomePageState extends State<HomePage> {
                                     List<String> genres =
                                         movieModel[index].genres;
                                     return HotMovie(
+                                      onTap: () {
+                                        movieDetails.addAll({
+                                          'id': movieModel[index].id,
+                                        });
+                                        return Get.to(
+                                            DetailsScreen(movie: movieDetails));
+                                      },
                                       index: index,
                                       genres: genres,
                                       movieModel: movieModel,
                                     );
                                   },
                                 ),
+                                SizedBox(height: 20),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Center(
-                                      child: TextButton(
+                                    if (page > 1)
+                                      TextButton(
                                           style: ButtonStyle(
                                               backgroundColor:
                                                   MaterialStateProperty.all(
-                                                      mainColor)),
+                                                      Colors.red
+                                                          .withOpacity(.8))),
                                           onPressed: () {
-                                            setState(() {
-                                              movieModel.clear();
-                                              page++;
-                                            });
+                                            page--;
+                                            movieModel.clear();
+                                            setState(() {});
                                           },
                                           child: Text(
-                                            'Next',
+                                            'Previous',
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: white,
                                                 fontWeight: FontWeight.bold),
                                           )),
-                                    ),
+                                    SizedBox(width: 20),
+                                    TextButton(
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    mainColor.withOpacity(.8))),
+                                        onPressed: () {
+                                          page++;
+                                          movieModel.clear();
+                                          setState(() {});
+                                        },
+                                        child: Text(
+                                          'Next',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: white,
+                                              fontWeight: FontWeight.bold),
+                                        )),
                                   ],
+                                ),
+                                SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Wrap(
+                                    runSpacing: 10,
+                                    spacing: 20,
+                                    children: [
+                                      for (var i = 1; i < 50; i++)
+                                        GestureDetector(
+                                          onTap: () {
+                                            //   page + i;
+                                            //   setState(() {});
+                                            print('page No ===> $page');
+                                          },
+                                          child: Text(
+                                            i.toString() + '  ',
+                                            style: TextStyle(
+                                              decoration: page == i
+                                                  ? TextDecoration.underline
+                                                  : TextDecoration.none,
+                                              decorationThickness: 3,
+                                              decorationColor:
+                                                  page == i ? mainColor : white,
+                                              decorationStyle:
+                                                  TextDecorationStyle.solid,
+                                              fontSize: 14,
+                                              color: white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                                 SizedBox(height: 20),
                               ],

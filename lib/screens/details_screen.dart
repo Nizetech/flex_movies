@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flex_movies/model/movie.dart';
-import 'package:flex_movies/screens/search_screen.dart';
+import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +53,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Map movieDetail = {};
   List cast = [];
   List movieSuggestion = [];
+  Map movieId = {};
 
 // final split = widget
   @override
@@ -490,6 +491,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                         SizedBox(height: 40),
+                        Center(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * .5,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: mainColor.withOpacity(.8),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Download',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: white),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Icon(
+                                    Icons.file_download_outlined,
+                                    color: white,
+                                    size: 25,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
                         Padding(
                           padding: EdgeInsets.only(left: 20),
                           child: Text(
@@ -503,7 +536,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                         SizedBox(height: 20),
                         SizedBox(
-                          height: 170,
+                          height: 180,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
@@ -513,40 +546,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 (BuildContext context, int index) =>
                                     SizedBox(width: 20),
                             itemBuilder: (BuildContext context, int index) {
-                              return Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(10)),
-                                    child: CachedNetworkImage(
-                                      imageUrl: movieSuggestion[index]
-                                          ['medium_cover_image'],
-                                      fit: BoxFit.cover,
-                                      height: 130,
-                                      filterQuality: FilterQuality.high,
-                                      width: 200,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      // width: double.infinity,
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: mainColor.withOpacity(0.6),
-                                        borderRadius: BorderRadius.vertical(
-                                            bottom: Radius.circular(10)),
-                                      ),
-                                      child: Text(
-                                        movieSuggestion[index]['title'],
-                                        style: TextStyle(
-                                          color: white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
+                              return MovieSuggestions(
+                                onTap: () {
+                                  Get.back();
+                                  movieId.addAll(
+                                      {'id': movieSuggestion[index]['id']});
+                                  Get.to(
+                                    () => DetailsScreen(movie: movieId),
+                                  );
+                                  setState(() {});
+                                },
+                                index: index,
+                                movieSuggestion: movieSuggestion,
                               );
                             },
                           ),

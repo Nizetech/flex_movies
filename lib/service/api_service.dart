@@ -38,8 +38,34 @@ class ApiService {
     }
   }
 
+  static Future<List> getTopMovies(int page) async {
+    try {
+      var uri = Uri.parse(ApiConstant.baseUrl +
+          '/api/v2/list_movies.json?sort_by=download_count&page=$page');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      List movie = [];
+      if (response.statusCode == 200) {
+        Map data = jsonDecode(response.body);
+        movie = data['data']['movies'];
+
+        print('my Top MOvie==> $movie');
+        return movie;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
   Future<List<Movie?>> getAllMovieListModel(int page) async {
-    // print(ApiConstant.baseUrl + ApiConstant.movieList);
     try {
       var uri = Uri.parse(ApiConstant.baseUrl +
           '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
@@ -51,8 +77,6 @@ class ApiService {
       );
       List<Movie> movie = [];
       if (response.statusCode == 200) {
-        // log('object ${response.body}');
-        // print('object ${response.body}');
         final data = jsonDecode(response.body);
         movie = MovieList.fromJson(data).data.movies;
         print(movie.first.title);
@@ -61,6 +85,35 @@ class ApiService {
         return movie;
       } else {
         print('object');
+        return [];
+      }
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
+  // Get searchMovie
+  Future<List<Movie?>> searchMovie(String searchQuery) async {
+    try {
+      var uri = Uri.parse(
+          ApiConstant.baseUrl + '/api/v2/list_movies.json?query_term=thor');
+      final response = await http.get(
+        uri,
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+      );
+      List<Movie> movie = [];
+      if (response == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        log(response.body);
+        print(movie.first.title);
+        movie = MovieList.fromJson(data).data.movies;
+
+        print('my movie===> Movies Search -===> ${movie.first.title}}');
+        return movie;
+      } else {
         return [];
       }
     } catch (e) {
