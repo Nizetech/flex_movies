@@ -359,3 +359,40 @@ class _TopMovieState extends State<TopMovie> {
     );
   }
 }
+
+Widget footer() {
+  return Container(
+    width: double.infinity,
+    padding: EdgeInsets.all(15),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(15),
+      ),
+      color: Colors.white.withOpacity(.3),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'Nizetech',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Icon(Icons.copyright_outlined, color: Colors.grey, size: 15),
+        Text(
+          '  2023',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    ),
+  );
+}

@@ -54,6 +54,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   List cast = [];
   List movieSuggestion = [];
   Map movieId = {};
+  int select = 0;
 
 // final split = widget
   @override
@@ -239,14 +240,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     radius: 25,
                                     backgroundColor: Color(0xff212029),
                                     child: Icon(
-                                      Icons.add,
+                                      Icons.share,
                                       size: 30,
                                       color: Colors.white,
                                     ),
                                   ),
                                   SizedBox(height: 10),
                                   Text(
-                                    'Watchlist',
+                                    'Share',
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),
@@ -489,30 +490,54 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         Center(
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .5,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: mainColor.withOpacity(.8),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Download',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: white),
+                            child: GestureDetector(
+                              onTap: () => Get.dialog(
+                                Dialog(
+                                  insetPadding:
+                                      EdgeInsets.symmetric(horizontal: 40),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.file_download_outlined,
-                                    color: white,
-                                    size: 25,
-                                  )
-                                ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text('data'),
+                                          Text('data'),
+                                        ],
+                                      );
+                                    }),
+                                  ),
+                                ),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: mainColor.withOpacity(.8),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Download',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: white),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      Icons.file_download_outlined,
+                                      color: white,
+                                      size: 25,
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -558,6 +583,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                         SizedBox(height: 30),
+                        footer(),
                       ],
                     );
                   }
