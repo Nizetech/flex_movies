@@ -121,82 +121,77 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       children: [
                         Stack(
                           alignment: Alignment.bottomCenter,
-                          fit: StackFit.loose,
+                          // fit: StackFit.loose,
                           children: [
-                            Transform.scale(
-                              alignment: Alignment.topCenter,
-                              scaleX: 1.1,
-                              scaleY: 0.7,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: SizedBox(
-                                  child: CachedNetworkImage(
-                                    imageUrl: movieDetail['large_cover_image'],
-                                    errorWidget: (context, url, error) =>
-                                        const Center(
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 60),
-                                        child: Text(
-                                          'NO IMAGE AVAILABLE',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold),
-                                        ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(20),
+                              ),
+                              child: SizedBox(
+                                child: CachedNetworkImage(
+                                  imageUrl: movieDetail['large_cover_image'],
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 400,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      const Center(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 60),
+                                      child: Text(
+                                        'NO IMAGE AVAILABLE',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              // ),
-                              // Positioned(
-                              //   // top: 30,
-                              //   // bottom: 0,
-                              //   child: Container(
-                              //     alignment: Alignment.topCenter,
-                              //     height: 100,
-                              //     decoration: BoxDecoration(
-                              //       color: Colors.red,
-                              // gradient: LinearGradient(
-                              //   begin: Alignment.topCenter,
-                              //   end: Alignment.bottomCenter,
-                              //   colors: [
-                              //     Colors.black.withOpacity(.3),
-                              //     Colors.black.withOpacity(.2),
-                              //     Colors.transparent,
-                              //     Colors.transparent,
-                              //     Colors.black.withOpacity(.94),
-                              //     Colors.black,
-                              //   ],
-                              // ),
-                              //     ),
-                              //   ),
                             ),
                             Positioned(
-                              bottom: 20,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * .8,
-                                child: Text(
-                                  // 'Mimic',
-                                  movieDetail['title'],
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 28,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                              // top: 30,
+                              // bottom: 0,
+                              child: Container(
+                                alignment: Alignment.topCenter,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(.8),
+                                      Colors.black,
+                                    ],
                                   ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
+                        Center(
+                          child: Text(
+                            movieDetail['title'],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontSize: 28,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Column(
                                 children: [
