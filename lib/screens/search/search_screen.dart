@@ -45,11 +45,10 @@ class _SearchScreenState extends State<SearchScreen> {
               color: Colors.white,
               fontWeight: FontWeight.w400,
             ),
-            onSubmitted: (val) {
-              searchQuery = search.text.trim().toLowerCase();
-              // Get.to(() => Get.to(SearchResultPage(
-              //       searchQuery: searchQuery,
-              //     )));
+            onChanged: (val) {
+              setState(() {
+                searchQuery = search.text.toLowerCase().trim();
+              });
             },
             decoration: InputDecoration(
               hintText: 'Search movies....',
@@ -77,45 +76,44 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           SizedBox(height: 20),
           FutureBuilder(
-              future: ApiService().searchMovie('thor'),
+              future: ApiService().searchMovie(searchQuery),
               builder: (context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData) {
+                if (!snapshot.hasData ||
+                    snapshot.hasError ||
+                    snapshot.data.length == 0) {
                   return Center(
                       child: Text(
-                    'No Data Found',
+                    'Ooops!! \nNo Movie Found',
+                    textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, color: white),
                   ));
                 }
                 movieModel = snapshot.data;
-                print('Search Result: $movieModel');
-                return SafeArea(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 10),
-                      ListView.separated(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: movieModel.length,
-                        physics: NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        separatorBuilder: (BuildContext context, int index) =>
-                            SizedBox(height: 20),
-                        itemBuilder: (BuildContext context, int index) {
-                          List<String> genres = movieModel[index].genres;
-                          return HotMovie(
-                            onTap: () {
-                              movieDetails.addAll({
-                                'id': movieModel[index].id,
-                              });
-                              return Get.to(DetailsScreen(movie: movieDetails));
-                            },
-                            index: index,
-                            genres: genres,
-                            movieModel: movieModel,
-                          );
+                print('Search Result: ${movieModel[0]['title']}');
+                return Expanded(
+                  child: ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: movieModel.length,
+                    padding: EdgeInsets.all(20),
+                    separatorBuilder: (BuildContext context, int index) =>
+                        SizedBox(height: 20),
+                    itemBuilder: (BuildContext context, int index) {
+                      List genres = movieModel[index]['genres'] == null
+                          ? []
+                          : movieModel[index]['genres'];
+                      return HotMovie(
+                        onTap: () {
+                          movieDetails.addAll({
+                            'id': movieModel[index]['id'],
+                          });
+                          return Get.to(DetailsScreen(movie: movieDetails));
                         },
-                      ),
-                    ],
+                        index: index,
+                        genres: genres,
+                        movieModel: movieModel,
+                      );
+                    },
                   ),
                 );
               }),

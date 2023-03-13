@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../utils/colors.dart';
 
@@ -46,7 +49,7 @@ Widget castWidget({required List cast, required int index}) {
 class HotMovie extends StatelessWidget {
   final List movieModel;
   final int index;
-  final List<String> genres;
+  final List genres;
   final Function() onTap;
   const HotMovie(
       {Key? key,
@@ -84,7 +87,12 @@ class HotMovie extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                imageUrl: movieModel[index].largeCoverImage,
+                // imageUrl: movieModel[index].largeCoverImage,
+                imageUrl:
+                    // movieModel[index]['large_cover_image'] == null
+                    //     ? 'assets/img1.jpg'
+                    //     :
+                    movieModel[index]['large_cover_image'],
                 height: 130,
                 width: 130,
                 fit: BoxFit.fill,
@@ -104,7 +112,10 @@ class HotMovie extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          movieModel[index].title,
+                          // movieModel[index].title,
+
+                          movieModel[index]['title'],
+
                           maxLines: 2,
                           textAlign: TextAlign.start,
                           style: TextStyle(
@@ -124,7 +135,7 @@ class HotMovie extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   RatingBarIndicator(
-                    rating: movieModel[index].rating.toDouble(),
+                    rating: movieModel[index]['rating'].toDouble(),
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rate_rounded,
                       color: Colors.amber,
@@ -139,7 +150,8 @@ class HotMovie extends StatelessWidget {
                     children: [
                       for (var genre in genres)
                         Text(
-                          genre + ' , ',
+                          genres.last == genre ? genre : genre + ' , ',
+                          // 'l',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: Colors.white,
@@ -395,4 +407,122 @@ Widget footer() {
       ],
     ),
   );
+}
+
+dynamic showToast(String label) {
+  return Get.snackbar(
+    'Success',
+    label,
+    duration: Duration(seconds: 3),
+    backgroundColor: Colors.green,
+    colorText: white,
+    snackPosition: SnackPosition.BOTTOM,
+    margin: const EdgeInsets.only(
+      bottom: 20,
+      right: 20,
+      left: 20,
+    ),
+  );
+}
+
+// Widget successToast(String message) {
+//   return  Fluttertoast.showToast(
+//     msg: message,
+//     toastLength: Toast.LENGTH_SHORT,
+//     gravity: ToastGravity.BOTTOM,
+//     timeInSecForIosWeb: 1,
+//     backgroundColor: Colors.green,
+//     textColor: Colors.white,
+//     fontSize: 16.0,
+//   );
+// }
+
+class ActionTabs extends StatelessWidget {
+  final Map movie;
+  ActionTabs({Key? key, required this.movie}) : super(key: key);
+
+  static Box box = Hive.box(kAppName);
+
+  // List<Map> watchlist = box.get('watchlist', defaultValue: []);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // watchlist.add(movie);
+                  // box.put('watchlist', watchlist);
+                  // print('Added $movie');
+                  // showToast('Added to watchlist');
+                },
+                child: const CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Color(0xff212029),
+                  child: Icon(
+                    Icons.add,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Watchlist',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: const [
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: Color(0xff212029),
+                child: Icon(
+                  Icons.local_movies_outlined,
+                  size: 30,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Trailer',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: const [
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: Color(0xff212029),
+                child: Icon(
+                  Icons.share,
+                  size: 30,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Share',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

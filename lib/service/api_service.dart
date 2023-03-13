@@ -54,7 +54,7 @@ class ApiService {
         Map data = jsonDecode(response.body);
         movie = data['data']['movies'];
 
-        print('my Top MOvie==> $movie');
+        // print('my Top MOvie==> $movie');
         return movie;
       } else {
         return [];
@@ -68,7 +68,8 @@ class ApiService {
   Future<List<Movie?>> getAllMovieListModel(int page) async {
     try {
       var uri = Uri.parse(ApiConstant.baseUrl +
-          '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
+          // '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
+          '/api/v2/list_movies.json?sort_by=year&limit=20&page=1');
       final response = await http.get(
         uri,
         // headers: {
@@ -78,10 +79,12 @@ class ApiService {
       List<Movie> movie = [];
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        // print(response.body);
         movie = MovieList.fromJson(data).data.movies;
         print(movie.first.title);
 
         print('my movie===> Movies model -===> ${movie.first.title}');
+        print('hot movies $movie');
         return movie;
       } else {
         print('object');
@@ -94,25 +97,22 @@ class ApiService {
   }
 
   // Get searchMovie
-  Future<List<Movie?>> searchMovie(String searchQuery) async {
+  Future<List> searchMovie(String searchQuery) async {
     try {
-      var uri = Uri.parse(
-          ApiConstant.baseUrl + '/api/v2/list_movies.json?query_term=thor');
       final response = await http.get(
-        uri,
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
+        Uri.parse(
+            'https://yts.mx//api/v2/list_movies.json?query_term=$searchQuery'),
       );
-      List<Movie> movie = [];
-      if (response == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        log(response.body);
-        print(movie.first.title);
-        movie = MovieList.fromJson(data).data.movies;
+      List searchMovie = [];
+      if (response.statusCode == 200) {
+        Map data = jsonDecode(response.body);
+        // log(response.body);
+        // print(response.body);
+        // searchMovie = MovieList.fromJson(data).data.movies;
+        searchMovie = data['data']['movies'];
 
-        print('my movie===> Movies Search -===> ${movie.first.title}}');
-        return movie;
+        print('my movie===> Movies Search -===> ${searchMovie}}');
+        return searchMovie;
       } else {
         return [];
       }
@@ -186,7 +186,7 @@ class ApiService {
 
   // static Future<void> getAllMovie() async {
   //   var response = await http.get(
-  //       Uri.parse('https://yts.mx/api/v2/movie_suggestions.json?movie_id=10'));
+  //       Uri.parse('https://yts.mx//api/v2/list_movies.json?query_term=thor'));
   //   print('response ${jsonDecode(response.body)}');
   // }
 }

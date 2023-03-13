@@ -67,7 +67,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
           SliverAppBar(
             backgroundColor: Colors.black,
             scrolledUnderElevation: 0,
-
             stretchTriggerOffset: 10,
             actions: [
               Padding(
@@ -188,74 +187,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Color(0xff212029),
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 30,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Watchlist',
-                                    style: TextStyle(
-                                      color: Colors.grey[400],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Column(
-                                children: const [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Color(0xff212029),
-                                    child: Icon(
-                                      Icons.local_movies_outlined,
-                                      size: 30,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Trailer',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Column(
-                                children: const [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Color(0xff212029),
-                                    child: Icon(
-                                      Icons.share,
-                                      size: 30,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Share',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
+                        ActionTabs(
+                          movie: movieDetail,
+                          // movie: {},
                         ),
                         SizedBox(height: 30),
                         Padding(
@@ -493,6 +427,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             child: GestureDetector(
                               onTap: () => Get.dialog(
                                 Dialog(
+                                  backgroundColor: Color(0xFF3237C7),
                                   insetPadding:
                                       EdgeInsets.symmetric(horizontal: 40),
                                   shape: RoundedRectangleBorder(
@@ -505,8 +440,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       return Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('data'),
-                                          Text('data'),
+                                          Row(
+                                            children: [
+                                              Radio(
+                                                  value: 0,
+                                                  groupValue: select,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      value = select;
+                                                    });
+                                                  }),
+                                              Text('data'),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Radio(
+                                                  value: 1,
+                                                  groupValue: select,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      value = select;
+                                                    });
+                                                  }),
+                                              Text('data'),
+                                            ],
+                                          ),
                                         ],
                                       );
                                     }),

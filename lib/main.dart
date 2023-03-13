@@ -1,11 +1,17 @@
 import 'dart:io';
 
 import 'package:flex_movies/botton_nav.dart';
+import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
+  await Hive.initFlutter();
+  await Hive.openBox(kAppName);
   runApp(const MyApp());
 }
 

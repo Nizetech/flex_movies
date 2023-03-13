@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flex_movies/screens/home.dart';
+import 'package:flex_movies/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,7 +22,7 @@ class _BottomNavState extends ConsumerState<BottomNav> {
   List<Widget> body = [
     HomePage(),
     Container(),
-    Container(),
+    WatchList(),
     Container(),
   ];
   // final fcm = FirebaseMessaging();
@@ -52,7 +53,7 @@ class _BottomNavState extends ConsumerState<BottomNav> {
               label: 'Category'),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.heart),
-            label: 'Favorite',
+            label: 'Watchlist',
           ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.user),

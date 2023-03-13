@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
@@ -11,6 +12,7 @@ import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../model/movie_list.dart';
 
@@ -24,12 +26,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
-    // ApiService.getMovieDetails('10');
+    // ApiService.getAllMovie();
     ApiService().searchMovie('thor');
+    // ApiService.getMovieDetails('10');
     // ApiService.getAllMovieListModel();
-    print('here');
+    // ApiService().getAllMovieListModel(1);
+    // print('here');
     super.didChangeDependencies();
   }
+
+  static Box box = Hive.box(kAppName);
 
   int index = Random().nextInt(20);
 
@@ -41,12 +47,16 @@ class _HomePageState extends State<HomePage> {
   Map movieId = {};
   List movieModel = [];
   List topMovies = [];
+  List searchMovies = [];
 
   bool isSearching = false;
+  // List<Map> watchlist = box.get('watchlist', defaultValue: {});
 
   @override
   Widget build(BuildContext context) {
     print('index $index');
+
+    // print('watchlist ==> $watchlist');
     // print('cast ${cast}');
     return Scaffold(
       // extendBodyBehindAppBar: true,
@@ -101,21 +111,29 @@ class _HomePageState extends State<HomePage> {
               hasScrollBody: true,
               child: FutureBuilder<dynamic>(
                   future: Future.wait([
-                    ApiService().getAllMovieListModel(page),
+                    // ApiService().getAllMovieListModel(page),
+                    ApiService.getAllMovieList(page),
                     ApiService.getTopMovies(page),
+
                     // cast,
                   ]),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
+                    if (!snapshot.hasData ||
+                        snapshot.hasError ||
+                        snapshot.data[1].length == 0) {
                       return Center(child: CircularProgressIndicator());
                     } else {
                       movieModel = snapshot.data[0];
-                      movieModel.removeWhere(
-                          (element) => element.title == 'Mephistopheles');
-                      movieModel.shuffle();
                       topMovies = snapshot.data[1];
-                      topMovies.shuffle();
 
+                      // print('topMovies===> ${searchMovies}');
+
+                      movieModel.removeWhere(
+                          // (element) => element.title == 'Mephistopheles');
+                          (element) => element['title'] == 'Mephistopheles');
+                      movieModel.shuffle();
+                      topMovies.shuffle();
+                      // print('topMovies $movieModel');
                       return SingleChildScrollView(
                         child: Column(
                           children: [
@@ -202,76 +220,10 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Column(
-                                    children: [
-                                      const CircleAvatar(
-                                        radius: 25,
-                                        backgroundColor: Color(0xff212029),
-                                        child: Icon(
-                                          Icons.add,
-                                          size: 30,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Watchlist',
-                                        style: TextStyle(
-                                          color: Colors.grey[400],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      const CircleAvatar(
-                                        radius: 25,
-                                        backgroundColor: Color(0xff212029),
-                                        child: Icon(
-                                          Icons.add,
-                                          size: 30,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Watchlist',
-                                        style: TextStyle(
-                                          color: Colors.grey[400],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      const CircleAvatar(
-                                        radius: 25,
-                                        backgroundColor: Color(0xff212029),
-                                        child: Icon(
-                                          Icons.add,
-                                          size: 30,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Watchlist',
-                                        style: TextStyle(
-                                          color: Colors.grey[400],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+
+                            // ActionTabs(
+                            //   movie: topMovies[index],
+                            // ),
                             SizedBox(height: 30),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,17 +295,23 @@ class _HomePageState extends State<HomePage> {
                                           SizedBox(height: 20),
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    List<String> genres =
-                                        movieModel[index].genres;
+                                    List genres =
+                                        movieModel[index]['genres'] == null
+                                            ? []
+                                            : movieModel[index]['genres'];
+                                    // movieModel[index].genres;
+
                                     return HotMovie(
                                       onTap: () {
                                         movieDetails.addAll({
-                                          'id': movieModel[index].id,
+                                          'id': movieModel[index]['id'],
+                                          // 'id': movieModel[index].id,
                                         });
-                                        return Get.to(
-                                            DetailsScreen(movie: movieDetails));
+                                        // return Get.to(
+                                        //     DetailsScreen(movie: movieDetails));
                                       },
                                       index: index,
+                                      // genres: [],
                                       genres: genres,
                                       movieModel: movieModel,
                                     );
@@ -373,6 +331,7 @@ class _HomePageState extends State<HomePage> {
                                           onPressed: () {
                                             page--;
                                             movieModel.clear();
+                                            topMovies.clear();
                                             setState(() {});
                                           },
                                           child: Text(
@@ -385,12 +344,15 @@ class _HomePageState extends State<HomePage> {
                                     SizedBox(width: 20),
                                     TextButton(
                                         style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    mainColor.withOpacity(.8))),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                            mainColor.withOpacity(.8),
+                                          ),
+                                        ),
                                         onPressed: () {
                                           page++;
                                           movieModel.clear();
+                                          topMovies.clear();
                                           setState(() {});
                                         },
                                         child: Text(
@@ -402,41 +364,43 @@ class _HomePageState extends State<HomePage> {
                                         )),
                                   ],
                                 ),
+
                                 SizedBox(height: 20),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Wrap(
-                                    runSpacing: 10,
-                                    spacing: 20,
-                                    children: [
-                                      for (var i = 1; i < 50; i++)
-                                        GestureDetector(
-                                          onTap: () {
-                                            //   page + i;
-                                            //   setState(() {});
-                                            print('page No ===> $page');
-                                          },
-                                          child: Text(
-                                            i.toString() + '  ',
-                                            style: TextStyle(
-                                              decoration: page == i
-                                                  ? TextDecoration.underline
-                                                  : TextDecoration.none,
-                                              decorationThickness: 3,
-                                              decorationColor:
-                                                  page == i ? mainColor : white,
-                                              decorationStyle:
-                                                  TextDecorationStyle.solid,
-                                              fontSize: 14,
-                                              color: white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
+                                // Padding(
+                                //   padding: const EdgeInsets.symmetric(
+                                //       horizontal: 20),
+                                //   child: Wrap(
+                                //     runSpacing: 10,
+                                //     spacing: 20,
+                                //     children: [
+                                //       for (var i = 1; i < 50; i++)
+                                //         GestureDetector(
+                                //           onTap: () {
+                                //             page + i;
+                                //             setState(() {});
+                                //             print('page No ===> $page');
+                                //           },
+                                //           child: Text(
+                                //             i.toString() + '  ',
+                                //             style: TextStyle(
+                                //               decoration: page == i
+                                //                   ? TextDecoration.underline
+                                //                   : TextDecoration.none,
+                                //               decorationThickness: 3,
+                                //               decorationColor:
+                                //                   page == i ? mainColor : white,
+                                //               decorationStyle:
+                                //                   TextDecorationStyle.solid,
+                                //               fontSize: 14,
+                                //               color: white,
+                                //               fontWeight: FontWeight.bold,
+                                //             ),
+                                //           ),
+                                //         ),
+                                //     ],
+                                //   ),
+                                // ),
+
                                 SizedBox(height: 30),
                               ],
                             ),
