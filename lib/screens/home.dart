@@ -17,27 +17,26 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../model/movie_list.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  final int index;
+  HomePage({Key? key, required this.index}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void didChangeDependencies() {
-    // ApiService.getAllMovie();
-    ApiService().searchMovie('thor');
-    // ApiService.getMovieDetails('10');
-    // ApiService.getAllMovieListModel();
-    // ApiService().getAllMovieListModel(1);
-    // print('here');
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   // ApiService.getAllMovie();
+  //   // ApiService().searchMovie('thor');
+  //   // ApiService.getMovieDetails('10');
+  //   // ApiService.getAllMovieListModel();
+  //   // ApiService().getAllMovieListModel(1);
+  //   // print('here');
+  //   super.didChangeDependencies();
+  // }
 
   static Box box = Hive.box(kAppName);
-
-  int index = Random().nextInt(20);
 
   int page = 1;
 
@@ -49,12 +48,17 @@ class _HomePageState extends State<HomePage> {
   List topMovies = [];
   List searchMovies = [];
 
+  final ScrollController _controller = ScrollController();
+
   bool isSearching = false;
   // List<Map> watchlist = box.get('watchlist', defaultValue: {});
 
   @override
   Widget build(BuildContext context) {
-    print('index $index');
+    Future<List> getAllMovies = ApiService.getAllMovieList(widget.index);
+    Future<List> getTopMovies = ApiService.getTopMovies(widget.index);
+
+    print('index ${widget.index}');
 
     // print('watchlist ==> $watchlist');
     // print('cast ${cast}');
@@ -112,8 +116,10 @@ class _HomePageState extends State<HomePage> {
               child: FutureBuilder<dynamic>(
                   future: Future.wait([
                     // ApiService().getAllMovieListModel(page),
-                    ApiService.getAllMovieList(page),
-                    ApiService.getTopMovies(page),
+                    // ApiService.getAllMovieList(index),
+                    // ApiService.getTopMovies(index),
+                    getAllMovies,
+                    getTopMovies,
 
                     // cast,
                   ]),
@@ -131,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                       movieModel.removeWhere(
                           // (element) => element.title == 'Mephistopheles');
                           (element) => element['title'] == 'Mephistopheles');
-                      movieModel.shuffle();
+                      // movieModel.shuffle();
                       topMovies.shuffle();
                       // print('topMovies $movieModel');
                       return SingleChildScrollView(
@@ -140,18 +146,18 @@ class _HomePageState extends State<HomePage> {
                             GestureDetector(
                               onTap: () {
                                 movieData.addAll({
-                                  'large_cover_image': topMovies[index]
+                                  'large_cover_image': topMovies[widget.index]
                                       ['large_cover_image'],
-                                  'title': topMovies[index]['title'],
-                                  'id': topMovies[index]['id'],
-                                  'year': topMovies[index]['year'],
-                                  'rating': topMovies[index]['rating'],
-                                  'genres': topMovies[index]['genres'],
-                                  'summary': topMovies[index]['summary'],
-                                  'trailer': topMovies[index]['trailer'],
-                                  'date_uploaded': topMovies[index]
+                                  'title': topMovies[widget.index]['title'],
+                                  'id': topMovies[widget.index]['id'],
+                                  'year': topMovies[widget.index]['year'],
+                                  'rating': topMovies[widget.index]['rating'],
+                                  'genres': topMovies[widget.index]['genres'],
+                                  'summary': topMovies[widget.index]['summary'],
+                                  'trailer': topMovies[widget.index]['trailer'],
+                                  'date_uploaded': topMovies[widget.index]
                                       ['date_uploaded'],
-                                  'description_full': topMovies[index]
+                                  'description_full': topMovies[widget.index]
                                       ['description_full'],
                                 });
                                 print(movieData);
@@ -164,18 +170,11 @@ class _HomePageState extends State<HomePage> {
                                 alignment: Alignment.center,
                                 children: [
                                   CachedNetworkImage(
-                                    imageUrl: topMovies[index]
+                                    imageUrl: topMovies[widget.index]
                                         ['large_cover_image'],
                                     errorWidget: (context, url, error) =>
-                                        const Center(
-                                      child: Text(
-                                        'NO IMAGE AVAILABLE',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                        Container(
+                                      color: Colors.black,
                                     ),
                                     height: 350,
                                     width: double.infinity,
@@ -206,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                     child: SizedBox(
                                       width: Get.width * .8,
                                       child: Text(
-                                        topMovies[index]['title'],
+                                        topMovies[widget.index]['title'],
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontStyle: FontStyle.italic,
@@ -220,10 +219,19 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
-
-                            // ActionTabs(
-                            //   movie: topMovies[index],
-                            // ),
+                            ActionTabs(
+                              movie: {
+                                'id': topMovies[widget.index]['id'].toString(),
+                                'title': topMovies[widget.index]['title'],
+                                'large_cover_image': topMovies[widget.index]
+                                    ['large_cover_image'],
+                                'rating': topMovies[widget.index]['rating'],
+                                'genre': topMovies[widget.index]['genres'],
+                              },
+                              controller: _controller,
+                              isHome: true,
+                              // movie: {},
+                            ),
                             SizedBox(height: 30),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 SizedBox(height: 20),
                                 SizedBox(
-                                  height: 180,
+                                  height: 250,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
@@ -271,7 +279,7 @@ class _HomePageState extends State<HomePage> {
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 40),
+                                SizedBox(height: 20),
                                 Padding(
                                   padding: EdgeInsets.only(left: 20),
                                   child: Text(
@@ -307,8 +315,8 @@ class _HomePageState extends State<HomePage> {
                                           'id': movieModel[index]['id'],
                                           // 'id': movieModel[index].id,
                                         });
-                                        // return Get.to(
-                                        //     DetailsScreen(movie: movieDetails));
+                                        return Get.to(
+                                            DetailsScreen(movie: movieDetails));
                                       },
                                       index: index,
                                       // genres: [],

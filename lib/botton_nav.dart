@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flex_movies/screens/home.dart';
 import 'package:flex_movies/screens/watchlist_screen.dart';
@@ -14,13 +15,16 @@ class BottomNav extends ConsumerStatefulWidget {
   ConsumerState<BottomNav> createState() => _BottomNavState();
 }
 
+int indexRand = Random().nextInt(20);
+
 class _BottomNavState extends ConsumerState<BottomNav> {
   // static Box box = Hive.box('name');
   // bool isLoggedIn = box.get('isLoggedIn', defaultValue: false);
   int index = 0;
   int currentIndex = 0;
+
   List<Widget> body = [
-    HomePage(),
+    HomePage(index: indexRand),
     Container(),
     WatchList(),
     Container(),
@@ -52,7 +56,10 @@ class _BottomNavState extends ConsumerState<BottomNav> {
               ),
               label: 'Category'),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.heart),
+            icon: Icon(
+              Iconsax.add,
+              size: 30,
+            ),
             label: 'Watchlist',
           ),
           BottomNavigationBarItem(

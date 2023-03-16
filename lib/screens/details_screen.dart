@@ -2,16 +2,20 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
+import 'package:dio/dio.dart';
 import 'package:flex_movies/model/movie.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
+import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../service/api_service.dart';
+import '../utils/utils.dart';
 
 class DetailsScreen extends StatefulWidget {
   final Map movie;
@@ -27,42 +31,86 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  bool isPlay = false;
+  // bool isPlay = false;
 
-  late CachedVideoPlayerController controller;
-  @override
-  void initState() {
-    super.initState();
-    // controller.play();
-    controller = CachedVideoPlayerController.asset(
-      'assets/video.mp4',
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    )..initialize().then((_) {
-        controller.setVolume(1);
-        setState(() {});
-      });
-  }
+  // late CachedVideoPlayerController controller;
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // controller.play();
+  //   controller = CachedVideoPlayerController.asset(
+  //     'assets/video.mp4',
+  //     videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+  //   )..initialize().then((_) {
+  //       controller.setVolume(1);
+  //       setState(() {});
+  //     });
+  // }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   controller.dispose();
+  //   super.dispose();
+  // }
 
-  // List<Cast>? cast = [];
   Map movieDetail = {};
   List cast = [];
   List movieSuggestion = [];
   Map movieId = {};
   int select = 0;
 
-// final split = widget
+  bool isShowMore = false;
+
+  final imgUrl =
+      "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
+  bool downloading = false;
+  var progressString = "";
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   downloadFile();
+  // }
+
+  // FocusNode isMe = FocusNode();
+  final ScrollController _controller = ScrollController();
+
   @override
   Widget build(BuildContext context) {
-    log('my movie ==${widget.movie}');
+    Future<void> downloadFile() async {
+      Dio dio = Dio();
+
+      try {
+        var dir = await getApplicationDocumentsDirectory();
+        print("path ${dir.path}");
+        await dio.download(imgUrl, "${dir.path}/demo.mp4",
+            onReceiveProgress: (rec, total) {
+          print("Rec: $rec , Total: $total");
+
+          setState(() {
+            downloading = true;
+            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+          });
+        });
+      } catch (e) {
+        print(e);
+      }
+
+      setState(() {
+        downloading = false;
+        progressString = "Completed";
+      });
+      print("Download completed");
+    }
+
+    // String duration = getDuration(movieDetail['runtime']);
+
+    // log('my movie ==${widget.movie}');
     // log('my movie ==${widget.cast}');
     return Scaffold(
       body: CustomScrollView(
+        controller: _controller,
         slivers: [
           SliverAppBar(
             backgroundColor: Colors.black,
@@ -98,7 +146,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             hasScrollBody: false,
             child: FutureBuilder<dynamic>(
                 future: Future.wait([
-                  ApiService.getMovieSuggestion(widget.movie['id']),
+                  ApiService.getMovieSuggestion(widget.movie['id'].toString()),
                   ApiService.getMovieDetails(widget.movie['id'].toString()),
                 ]),
                 builder: (context, snapshot) {
@@ -114,8 +162,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     } else {
                       cast = [];
                     }
-                    print('My Cast length==> ${cast}');
-                    // print('My Cast length==> ${movieDetail.length}');
+                    // print('My Cast length==> ${cast}');
+                    print('My Cast length==> ${(movieDetail['runtime'])}');
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -134,26 +182,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   height: 400,
                                   fit: BoxFit.cover,
                                   errorWidget: (context, url, error) =>
-                                      const Center(
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 60),
-                                      child: Text(
-                                        'NO IMAGE AVAILABLE',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
+                                      Container(
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
                             ),
                             Positioned(
-                              // top: 30,
-                              // bottom: 0,
                               child: Container(
                                 alignment: Alignment.topCenter,
                                 height: 50,
@@ -188,7 +223,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                         SizedBox(height: 10),
                         ActionTabs(
-                          movie: movieDetail,
+                          movie: {
+                            'id': movieDetail['id'].toString(),
+                            'title': movieDetail['title'],
+                            'large_cover_image':
+                                movieDetail['large_cover_image'],
+                            'rating': movieDetail['rating'],
+                            'genre': movieDetail['genres'],
+                          },
+                          controller: _controller,
                           // movie: {},
                         ),
                         SizedBox(height: 30),
@@ -199,10 +242,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             children: [
                               Row(
                                 children: [
+                                  const Icon(
+                                    Icons.calendar_today_outlined,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                  SizedBox(width: 5),
                                   Text(
-                                    movieDetail['date_uploaded']
-                                        .split(' ')[0]
-                                        .toString(),
+                                    movieDetail['year'].toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -221,17 +268,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     size: 15,
                                   ),
                                   SizedBox(width: 5),
-                                  const Text(
-                                    '2hrs, 34mins',
+                                  Text(
+                                    MyLogic.getDuration(movieDetail['runtime']),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
-                                      // fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.star_outlined,
+                                    color: mainColor,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    (movieDetail['rating'] / 2).toString(),
+                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              SizedBox(height: 30),
                               RichText(
                                 text: TextSpan(
                                   text: 'Genre: ',
@@ -241,14 +303,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey[200],
                                   ),
+                                  // ignore: prefer_const_literals_to_create_immutables
                                   children: [
                                     // Use i loop to display the genres
-
                                     for (var i = 0;
                                         i < movieDetail['genres'].length;
                                         i++,)
                                       TextSpan(
                                         text: movieDetail['genres'][i] + ' , ',
+                                        // text: 'kk',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: 12,
@@ -298,12 +361,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ),
                               ),
                               SizedBox(height: 12),
-                              const Text(
-                                'Storyline:',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).requestFocus();
+                                  // FocusScope.of(context)
+                                },
+                                child: Text(
+                                  'Storyline',
+                                  style: TextStyle(
+                                    color: mainColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -311,11 +380,30 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 movieDetail['description_full'] == ''
                                     ? movieDetail['description_intro']
                                     : movieDetail['description_full'],
-                                maxLines: 4,
+                                maxLines: isShowMore ? 20 : 4,
                                 style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                   color: Colors.white,
                                   fontSize: 14,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isShowMore = !isShowMore;
+                                  });
+                                },
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Text(
+                                    isShowMore ? 'show  less' : 'show more',
+                                    style: TextStyle(
+                                      color: mainColor,
+                                      height: 1.5,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -328,12 +416,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(height: 20),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.only(left: 20),
                                     child: Text(
                                       'Cast',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: mainColor,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -363,115 +451,106 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ],
                               ),
                         SizedBox(height: 20),
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.only(left: 20),
                           child: Text(
                             'Trailer',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
+                              color: mainColor,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         SizedBox(height: 10),
                         SizedBox(
-                          height: 150,
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: AspectRatio(
-                                aspectRatio: 16 / 10,
-                                child: Stack(
-                                  children: <Widget>[
-                                    CachedVideoPlayer(controller),
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          if (isPlay) {
-                                            setState(() {
-                                              controller.pause();
-                                              isPlay = false;
-                                            });
-                                          } else {
-                                            // videoPlayerController.play();
-                                            setState(() {
-                                              isPlay = true;
-                                              controller.play();
-                                            });
-                                          }
-                                        },
-                                        icon: Icon(
-                                          isPlay
-                                              ? Icons.pause_circle
-                                              : Icons
-                                                  .play_circle_filled_rounded,
-                                          size: 40,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                            height: 200,
+                            child: TrailerWidget(
+                              trailerCode: movieDetail['yt_trailer_code'],
+                            )),
                         SizedBox(height: 40),
                         Center(
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .5,
                             child: GestureDetector(
-                              onTap: () => Get.dialog(
-                                Dialog(
-                                  backgroundColor: Color(0xFF3237C7),
-                                  insetPadding:
-                                      EdgeInsets.symmetric(horizontal: 40),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20),
+                              onTap: () {
+                                downloadFile();
+                                Get.dialog(
+                                  Dialog(
+                                    backgroundColor: Colors.white,
+                                    insetPadding:
+                                        EdgeInsets.symmetric(horizontal: 40),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                     child: StatefulBuilder(
                                         builder: (context, setState) {
-                                      return Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Radio(
-                                                  value: 0,
-                                                  groupValue: select,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      value = select;
-                                                    });
-                                                  }),
-                                              Text('data'),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Radio(
-                                                  value: 1,
-                                                  groupValue: select,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      value = select;
-                                                    });
-                                                  }),
-                                              Text('data'),
-                                            ],
-                                          ),
-                                        ],
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const SizedBox(
+                                              height: 30,
+                                              width: 30,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                            Text(
+                                                'Downloading ... $progressString'),
+                                          ],
+                                        ),
                                       );
+                                      // Container(
+                                      //   padding: const EdgeInsets.all(20),
+                                      //   decoration: BoxDecoration(
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(20),
+                                      //       color: Colors.white,
+                                      //       border: Border.all(
+                                      //         color: mainColor,
+                                      //         width: 3,
+                                      //       )),
+                                      //   child: Column(
+                                      //     mainAxisSize: MainAxisSize.min,
+                                      //     children: [
+                                      //       Row(
+                                      //         children: [
+                                      //           Radio(
+                                      //               value: select,
+                                      //               groupValue: 0,
+                                      //               onChanged: (value) {
+                                      //                 setState(() {
+                                      //                   value = select;
+                                      //                 });
+                                      //               }),
+                                      //           Text('data'),
+                                      //         ],
+                                      //       ),
+                                      //       Row(
+                                      //         children: [
+                                      //           Radio(
+                                      //               value: select,
+                                      //               groupValue: 1,
+                                      //               onChanged: (value) {
+                                      //                 setState(() {
+                                      //                   value = select;
+                                      //                 });
+                                      //               }),
+                                      //           Text('data'),
+                                      //         ],
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // );
                                     }),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),

@@ -123,7 +123,7 @@ class ApiService {
   }
 
   // Get movie suggestion
-  static Future<List> getMovieSuggestion(int index) async {
+  static Future<List> getMovieSuggestion(String index) async {
     try {
       final response = await http.get(
         Uri.parse(

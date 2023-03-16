@@ -2,14 +2,22 @@ import 'dart:io';
 
 import 'package:flex_movies/botton_nav.dart';
 import 'package:flex_movies/key/api_key.dart';
+import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.blueAccent,
+    ),
+  );
   await Hive.initFlutter();
   await Hive.openBox(kAppName);
   runApp(const MyApp());
@@ -60,11 +68,12 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData) {
             if (snapshot.data == true) {
               return BottomNav();
+              // return MyHomePage();
             } else {
               return Scaffold(
                 body: RefreshIndicator(
                   onRefresh: refresh,
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       'No internet connection',
                       style: TextStyle(

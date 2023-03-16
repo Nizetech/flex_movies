@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/details_screen.dart';
@@ -46,23 +48,38 @@ Widget castWidget({required List cast, required int index}) {
   );
 }
 
-class HotMovie extends StatelessWidget {
+class HotMovie extends StatefulWidget {
   final List movieModel;
   final int index;
   final List genres;
+  final bool? isWatchlist;
   final Function() onTap;
   const HotMovie(
       {Key? key,
       required this.movieModel,
       required this.index,
       required this.onTap,
+      this.isWatchlist = false,
       required this.genres})
       : super(key: key);
 
   @override
+  State<HotMovie> createState() => _HotMovieState();
+}
+
+class _HotMovieState extends State<HotMovie> {
+  static Box box = Hive.box(kAppName);
+  List watchlist = box.get('watchlist', defaultValue: []);
+  // List<Map> movieModel = [];
+
+  bool isFavorite = false;
+  //  watchlist.contains(element) ?;
+
+  @override
   Widget build(BuildContext context) {
+    // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         height: 150,
         width: double.infinity,
@@ -77,22 +94,11 @@ class HotMovie extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-                errorWidget: (context, url, error) => const Center(
-                  child: Text(
-                    'NO IMAGE AVAILABLE',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.black,
                 ),
                 // imageUrl: movieModel[index].largeCoverImage,
-                imageUrl:
-                    // movieModel[index]['large_cover_image'] == null
-                    //     ? 'assets/img1.jpg'
-                    //     :
-                    movieModel[index]['large_cover_image'],
+                imageUrl: widget.movieModel[widget.index]['large_cover_image'],
                 height: 130,
                 width: 130,
                 fit: BoxFit.fill,
@@ -101,7 +107,6 @@ class HotMovie extends StatelessWidget {
             SizedBox(width: 10),
             Expanded(
               child: Column(
-                // mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -114,7 +119,7 @@ class HotMovie extends StatelessWidget {
                         child: Text(
                           // movieModel[index].title,
 
-                          movieModel[index]['title'],
+                          widget.movieModel[widget.index]['title'],
 
                           maxLines: 2,
                           textAlign: TextAlign.start,
@@ -127,15 +132,60 @@ class HotMovie extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 20),
-                      Icon(
-                        Icons.favorite_rounded,
-                        color: Colors.red,
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.isWatchlist != true) {
+                            Map movie = {
+                              'id': widget.movieModel[widget.index]['id']
+                                  .toString(),
+                              'title': widget.movieModel[widget.index]['title'],
+                              'large_cover_image':
+                                  widget.movieModel[widget.index]
+                                      ['large_cover_image'],
+                              'rating': widget.movieModel[widget.index]
+                                  ['rating'],
+                            };
+                            setState(() {
+                              isFavorite = !isFavorite;
+                              if (isFavorite) {
+                                isFavorite = true;
+                                watchlist.add(movie);
+                                box.put('watchlist', watchlist);
+                                showToast('Added to Watchlist');
+                              } else {
+                                isFavorite = false;
+                                watchlist.removeAt(widget.index);
+                                box.put('watchlist', watchlist);
+                                showErrorToast('Removed from Watchlist');
+                              }
+                            });
+                          } else {
+                            setState(() {
+                              watchlist.removeAt(widget.index);
+                              box.put('watchlist', watchlist);
+                            });
+                            showErrorToast('Removed from Watchlist');
+                          }
+                        },
+                        child: Icon(
+                          widget.isWatchlist == true
+                              ? Icons.delete_rounded
+                              : isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                          color: widget.isWatchlist != true && isFavorite
+                              ? Colors.red
+                              : mainColor,
+                        ),
                       ),
                     ],
                   ),
                   SizedBox(height: 10),
                   RatingBarIndicator(
-                    rating: movieModel[index]['rating'].toDouble(),
+                    rating: widget.movieModel[widget.index]['rating'] == null
+                        ? 0
+                        : widget.movieModel[widget.index]['rating'].toDouble() /
+                            2,
                     itemBuilder: (context, index) => Icon(
                       Icons.star_rate_rounded,
                       color: Colors.amber,
@@ -148,10 +198,9 @@ class HotMovie extends StatelessWidget {
                   Spacer(),
                   Wrap(
                     children: [
-                      for (var genre in genres)
+                      for (var genre in widget.genres)
                         Text(
-                          genres.last == genre ? genre : genre + ' , ',
-                          // 'l',
+                          widget.genres.last == genre ? genre : genre + ' , ',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: Colors.white,
@@ -250,7 +299,7 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
                       ),
                       SizedBox(width: 5),
                       Text(
-                        widget.movieSuggestion[widget.index]['rating']
+                        (widget.movieSuggestion[widget.index]['rating'] / 2)
                             .toString(),
                         style: TextStyle(
                           color: white,
@@ -267,7 +316,6 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
         ],
       ),
     );
-    ;
   }
 }
 
@@ -306,9 +354,9 @@ class _TopMovieState extends State<TopMovie> {
               imageUrl: widget.movieSuggestion[widget.index]
                   ['large_cover_image'],
               fit: BoxFit.fill,
-              height: 130,
-              filterQuality: FilterQuality.high,
+              height: 180,
               width: 200,
+              filterQuality: FilterQuality.high,
             ),
           ),
           Container(
@@ -352,7 +400,8 @@ class _TopMovieState extends State<TopMovie> {
                       ),
                       SizedBox(width: 5),
                       Text(
-                        widget.movieSuggestion[widget.index]['rating']
+                        (widget.movieSuggestion[widget.index]['rating'] /
+                                2.toDouble())
                             .toString(),
                         style: TextStyle(
                           color: white,
@@ -425,6 +474,43 @@ dynamic showToast(String label) {
   );
 }
 
+dynamic showErrorToast(String label) {
+  return Get.snackbar(
+    'Success',
+    label,
+    duration: Duration(seconds: 3),
+    backgroundColor: Colors.red,
+    colorText: white,
+    snackPosition: SnackPosition.BOTTOM,
+    margin: const EdgeInsets.only(
+      bottom: 20,
+      right: 20,
+      left: 20,
+    ),
+  );
+}
+
+//  void _showSnackBar(String message) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(
+//           message,
+//           textAlign: TextAlign.center,
+//           style: const TextStyle(
+//             fontWeight: FontWeight.w300,
+//             fontSize: 16.0,
+//           ),
+//         ),
+//         backgroundColor: Colors.green,
+//         behavior: SnackBarBehavior.floating,
+//         elevation: 1.0,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(50.0),
+//         ),
+//       ),
+//     );
+//   }
+
 // Widget successToast(String message) {
 //   return  Fluttertoast.showToast(
 //     msg: message,
@@ -437,13 +523,48 @@ dynamic showToast(String label) {
 //   );
 // }
 
-class ActionTabs extends StatelessWidget {
+class ActionTabs extends StatefulWidget {
   final Map movie;
-  ActionTabs({Key? key, required this.movie}) : super(key: key);
+  final ScrollController? controller;
+  bool isHome;
+  ActionTabs(
+      {Key? key, required this.movie, this.controller, this.isHome = false})
+      : super(key: key);
 
+  @override
+  State<ActionTabs> createState() => _ActionTabsState();
+}
+
+class _ActionTabsState extends State<ActionTabs> {
+  Map<String, dynamic> movieDetails = {};
   static Box box = Hive.box(kAppName);
+  List watchlist = box.get('watchlist', defaultValue: []);
+  // List totalWatchlist = box.get('watchlist') ?? [];
 
-  // List<Map> watchlist = box.get('watchlist', defaultValue: []);
+  final double _height = 100.0;
+  void _animateToIndex(int index) {
+    if (widget.isHome == true) {
+      movieDetails.addAll({
+        'id': widget.movie[index]['id'],
+      });
+      Get.to(DetailsScreen(
+        movie: movieDetails,
+      ));
+      // ?.then((value) {
+      widget.controller!.animateTo(
+        index * _height,
+        duration: Duration(seconds: 2),
+        curve: Curves.fastOutSlowIn,
+      );
+      // });
+    } else {
+      widget.controller!.animateTo(
+        index * _height,
+        duration: Duration(seconds: 2),
+        curve: Curves.fastOutSlowIn,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -457,10 +578,19 @@ class ActionTabs extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // watchlist.add(movie);
-                  // box.put('watchlist', watchlist);
-                  // print('Added $movie');
-                  // showToast('Added to watchlist');
+                  // List favorite = [];
+                  // favorite.add(widget.movie);
+                  Map movie = {
+                    'id': widget.movie['id'].toString(),
+                    'title': widget.movie['title'].toString(),
+                    'image': widget.movie['large_cover_image'].toString(),
+                    'rating': widget.movie['rating'].toString(),
+                    'isFavorite': true,
+                  };
+                  watchlist.add(widget.movie);
+                  box.put('watchlist', watchlist);
+                  log('Added ==> $watchlist to watchlist,=====> $watchlist');
+                  showToast('Added to watchlist');
                 },
                 child: const CircleAvatar(
                   radius: 25,
@@ -481,25 +611,30 @@ class ActionTabs extends StatelessWidget {
               )
             ],
           ),
-          Column(
-            children: const [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Color(0xff212029),
-                child: Icon(
-                  Icons.local_movies_outlined,
-                  size: 30,
-                  color: Colors.white,
+          GestureDetector(
+            onTap: () {
+              _animateToIndex(8);
+            },
+            child: Column(
+              children: const [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Color(0xff212029),
+                  child: Icon(
+                    Icons.local_movies_outlined,
+                    size: 30,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Trailer',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              )
-            ],
+                SizedBox(height: 10),
+                Text(
+                  'Trailer',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
           ),
           Column(
             children: const [

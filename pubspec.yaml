@@ -25,11 +25,13 @@ dependencies:
   google_sign_in: ^5.1.0
   get: ^4.6.1
   iconsax: ^0.0.8
-  youtube_player_flutter:
+  youtube_player_flutter: ^8.1.2
   cached_video_player: ^2.0.3
   video_player: ^2.4.7
   shimmer: ^2.0.0
   flutter_rating_bar: ^4.0.1
+  dio: ^5.0.2
+  path_provider: ^2.0.13
   # infinite_scroll_pagination: ^3.2.0
 
 
