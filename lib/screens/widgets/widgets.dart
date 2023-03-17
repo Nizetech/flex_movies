@@ -5,10 +5,12 @@ import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../service/provider/watch_list_provider.dart';
 import '../../utils/colors.dart';
 
 Widget castWidget({required List cast, required int index}) {
@@ -48,7 +50,7 @@ Widget castWidget({required List cast, required int index}) {
   );
 }
 
-class HotMovie extends StatefulWidget {
+class HotMovie extends ConsumerStatefulWidget {
   final List movieModel;
   final int index;
   final List genres;
@@ -64,19 +66,18 @@ class HotMovie extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<HotMovie> createState() => _HotMovieState();
+  ConsumerState<HotMovie> createState() => _HotMovieState();
 }
 
-class _HotMovieState extends State<HotMovie> {
-  static Box box = Hive.box(kAppName);
-  List watchlist = box.get('watchlist', defaultValue: []);
-  // List<Map> movieModel = [];
-
-  bool isFavorite = false;
-  //  watchlist.contains(element) ?;
-
+class _HotMovieState extends ConsumerState<HotMovie> {
   @override
   Widget build(BuildContext context) {
+    List watchlist = ref.watch(favoriteProvider.notifier).favorite;
+
+    bool isFavorite = watchlist
+        .where((element) =>
+            element['id'] == widget.movieModel[widget.index]['id'].toString())
+        .isNotEmpty;
     // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
       onTap: widget.onTap,
@@ -134,36 +135,37 @@ class _HotMovieState extends State<HotMovie> {
                       SizedBox(width: 20),
                       GestureDetector(
                         onTap: () {
+                          Map movie = {
+                            'id': widget.movieModel[widget.index]['id']
+                                .toString(),
+                            'title': widget.movieModel[widget.index]['title'],
+                            'genres': widget.movieModel[widget.index]['genres'],
+                            'large_cover_image': widget.movieModel[widget.index]
+                                ['large_cover_image'],
+                            'rating': widget.movieModel[widget.index]['rating'],
+                            'isFavorite': false,
+                          };
                           if (widget.isWatchlist != true) {
-                            Map movie = {
-                              'id': widget.movieModel[widget.index]['id']
-                                  .toString(),
-                              'title': widget.movieModel[widget.index]['title'],
-                              'large_cover_image':
-                                  widget.movieModel[widget.index]
-                                      ['large_cover_image'],
-                              'rating': widget.movieModel[widget.index]
-                                  ['rating'],
-                            };
-                            setState(() {
-                              isFavorite = !isFavorite;
-                              if (isFavorite) {
-                                isFavorite = true;
-                                watchlist.add(movie);
-                                box.put('watchlist', watchlist);
-                                showToast('Added to Watchlist');
-                              } else {
-                                isFavorite = false;
-                                watchlist.removeAt(widget.index);
-                                box.put('watchlist', watchlist);
-                                showErrorToast('Removed from Watchlist');
-                              }
-                            });
+                            isFavorite = !isFavorite;
+                            if (isFavorite) {
+                              ref
+                                  .read(favoriteProvider.notifier)
+                                  .addFavorite(movie);
+                              log('Added ==> $movie to watchlist,=====> $movie');
+                              showToast('Added to watchlist');
+                            } else {
+                              ref
+                                  .read(favoriteProvider.notifier)
+                                  .removeFavorite(movie);
+                              showErrorToast('Removed from Watchlist');
+                            }
+
+                            // log('Added ==> $movie to watchlist,=====> $movie');
+                            // showToast('Added to watchlist');
                           } else {
-                            setState(() {
-                              watchlist.removeAt(widget.index);
-                              box.put('watchlist', watchlist);
-                            });
+                            ref
+                                .read(favoriteProvider.notifier)
+                                .removeFavorite(movie);
                             showErrorToast('Removed from Watchlist');
                           }
                         },
@@ -537,8 +539,8 @@ class ActionTabs extends StatefulWidget {
 
 class _ActionTabsState extends State<ActionTabs> {
   Map<String, dynamic> movieDetails = {};
-  static Box box = Hive.box(kAppName);
-  List watchlist = box.get('watchlist', defaultValue: []);
+  // static Box box = Hive.box(kAppName);
+  // List watchlist = box.get('watchlist', defaultValue: []);
   // List totalWatchlist = box.get('watchlist') ?? [];
 
   final double _height = 100.0;
@@ -576,32 +578,33 @@ class _ActionTabsState extends State<ActionTabs> {
         children: [
           Column(
             children: [
-              GestureDetector(
-                onTap: () {
-                  // List favorite = [];
-                  // favorite.add(widget.movie);
-                  Map movie = {
-                    'id': widget.movie['id'].toString(),
-                    'title': widget.movie['title'].toString(),
-                    'image': widget.movie['large_cover_image'].toString(),
-                    'rating': widget.movie['rating'].toString(),
-                    'isFavorite': true,
-                  };
-                  watchlist.add(widget.movie);
-                  box.put('watchlist', watchlist);
-                  log('Added ==> $watchlist to watchlist,=====> $watchlist');
-                  showToast('Added to watchlist');
-                },
-                child: const CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Color(0xff212029),
-                  child: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Colors.white,
+              Consumer(builder: (context, ref, child) {
+                return GestureDetector(
+                  onTap: () {
+                    Map movie = {
+                      'id': widget.movie['id'].toString(),
+                      'title': widget.movie['title'],
+                      'large_cover_image': widget.movie['large_cover_image'],
+                      'rating': widget.movie['rating'],
+                      'isFavorite': true,
+                    };
+                    ref.read(favoriteProvider.notifier).addFavorite(movie);
+                    // watchlist.add(widget.movie);
+                    // box.put('watchlist', watchlist);
+                    log('Added ==> $movie to watchlist,=====> $movie');
+                    showToast('Added to watchlist');
+                  },
+                  child: const CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Color(0xff212029),
+                    child: Icon(
+                      Icons.add,
+                      size: 30,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
               SizedBox(height: 10),
               Text(
                 'Watchlist',

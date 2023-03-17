@@ -229,7 +229,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             'large_cover_image':
                                 movieDetail['large_cover_image'],
                             'rating': movieDetail['rating'],
-                            'genre': movieDetail['genres'],
+                            'genres': movieDetail['genres'],
                           },
                           controller: _controller,
                           // movie: {},
@@ -252,7 +252,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     movieDetail['year'].toString(),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       // fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -272,8 +272,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     MyLogic.getDuration(movieDetail['runtime']),
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
                                     ),
                                   ),
                                   Spacer(),

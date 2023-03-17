@@ -226,7 +226,8 @@ class _HomePageState extends State<HomePage> {
                                 'large_cover_image': topMovies[widget.index]
                                     ['large_cover_image'],
                                 'rating': topMovies[widget.index]['rating'],
-                                'genre': topMovies[widget.index]['genres'],
+                                'genres': topMovies[widget.index]['genres'],
+                                'isFavorite': true,
                               },
                               controller: _controller,
                               isHome: true,
