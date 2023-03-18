@@ -106,9 +106,6 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: const FlexibleSpaceBar(
               expandedTitleScale: 1.1,
               titlePadding: EdgeInsets.zero,
-              // title: Text(
-              //   'HOme',
-              // ),
             ),
           ),
           SliverFillRemaining(

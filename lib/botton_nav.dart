@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:math';
 
+import 'package:flex_movies/screens/category_screen.dart';
 import 'package:flex_movies/screens/home.dart';
 import 'package:flex_movies/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _BottomNavState extends ConsumerState<BottomNav> {
 
   List<Widget> body = [
     HomePage(index: indexRand),
-    Container(),
+    CategoryScreen(),
     WatchList(),
     Container(),
   ];
