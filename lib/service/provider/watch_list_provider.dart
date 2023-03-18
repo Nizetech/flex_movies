@@ -151,3 +151,34 @@ final genreProvider = StateNotifierProvider<genreNotifier, String>((ref) {
 final genreSelected = Provider<String>((ref) {
   return ref.watch(genreProvider);
 });
+
+/// <====== Page Increment ======> ///
+class PageCounter extends StateNotifier<int> {
+  PageCounter() : super(1);
+
+  void incrementPage() => state++;
+}
+
+final pageProvider = StateNotifierProvider<PageCounter, int>((ref) {
+  return PageCounter();
+});
+
+/// <====== Slider Provider ======> ///
+
+class SliderNotifier extends StateNotifier<int> {
+  SliderNotifier() : super(3);
+
+  void updateSlider(int value) {
+    state = value;
+  }
+}
+
+final sliderProvider = StateNotifierProvider<SliderNotifier, int>((ref) {
+  return SliderNotifier();
+});
+
+final sliderValue = Provider<int>((ref) {
+  return ref.watch(sliderProvider);
+});
+
+final basicSlider = StateProvider<double>((ref) => 3);

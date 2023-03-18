@@ -38,6 +38,37 @@ class ApiService {
     }
   }
 
+  static Future<List> getCategoryList(String genre, int page, int rating) async {
+    try {
+      var uri = Uri.parse(ApiConstant.baseUrl +
+          '/api/v2/list_movies.json?sort_by=year&limit=20&genre=$genre&page=$page&minimum_rating=$rating');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      List movie = [];
+      if (response.statusCode == 200) {
+        // log('object ${response.body}');
+        // print('object ${response.body}');
+        Map data = jsonDecode(response.body);
+        movie = data['data']['movies'];
+
+        //    final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+        // print('my movie $movie');
+        return movie;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
   static Future<List> getTopMovies(int page) async {
     try {
       var uri = Uri.parse(ApiConstant.baseUrl +
