@@ -20,16 +20,29 @@ class CategoryScreen extends ConsumerWidget {
 // class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   // int selected = 1;
   List category = [];
+
+  DateTime date = DateTime.now();
+
+  // current year
+  int year = DateTime.now().year;
+// 1992 to current year
+  List years = List.generate(30, (index) => 1992 + index).reversed.toList();
+
   // double value = 5.0;
   @override
   Widget build(BuildContext context, ref) {
     String genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
     // int value = ref.watch(sliderProvider);
-    final value = ref.watch(basicSlider.state).state;
+    // final value = ref.watch(basicSlider.state).state;
+    // double value = ref.watch(sliderValue);
+    final value = ref.watch(sliderProvider);
+    // final value = ref.watch(sliderValue);
 
     // int vlaue = ref.watch(sliderProvider) as int;
     // String selected;
+    log('Years ==> $years');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -80,7 +93,7 @@ class CategoryScreen extends ConsumerWidget {
                         builder: (context) => Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 30),
-                          height: 300,
+                          height: 200,
                           child: Column(children: [
                             Text(
                               "Rating",
@@ -101,9 +114,14 @@ class CategoryScreen extends ConsumerWidget {
                                   onChanged: (val) {
                                     // int value = val.round();
                                     // ref
-                                    //     .read(sliderProvider.notifier)
-                                    //     .updateSlider(value);
-                                    ref.read(basicSlider.notifier).state = val;
+                                    //     .watch(sliderProvider.notifier)
+                                    //     .updateSlider(val);
+
+                                    ref.read(sliderProvider.notifier).state =
+                                        val;
+
+                                    // value = val;
+                                    // ref.read(basicSlider.notifier).state = val;
                                     log('my Value===> $val');
                                   }),
                             ),

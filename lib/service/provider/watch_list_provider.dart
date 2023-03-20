@@ -12,13 +12,23 @@ List totalWatchlist = box.get('watchlist');
 class FavoriteNotifier extends StateNotifier<List> {
   FavoriteNotifier() : super(totalWatchlist);
 
+  bool _isFavorite = false;
+  bool get isFavorite => _isFavorite;
+
   void addFavorite(Map movie) {
+    _isFavorite = true;
     state = [...state, movie];
+    box.put('isFavorite', true);
     box.put('watchlist', state);
   }
 
+  void toggleWatchlist() => _isFavorite = !_isFavorite;
+
   void removeFavorite(Map movie) {
+    _isFavorite = false;
     state = state.where((element) => element['id'] != movie['id']).toList();
+    box.put('isFavorite', true);
+
     box.put('watchlist', state);
   }
 
@@ -27,9 +37,9 @@ class FavoriteNotifier extends StateNotifier<List> {
     box.put('watchlist', state);
   }
 
-  bool isFavorite(Map movie) {
-    return state.any((element) => element['id'] == movie['id']);
-  }
+  // bool isFavorite(Map movie) {
+  //   return state.any((element) => element['id'] == movie['id']);
+  // }
 
   int get totalFavorite => state.length;
 
@@ -61,7 +71,7 @@ class FavoriteNotifier extends StateNotifier<List> {
   void toggleFavorite(Map movie) {
     state = state.map((e) {
       if (e['id'] == movie['id']) {
-        e['isFavorite'] = !e['isFavorite'];
+        // e['isFavorite'] = !e['isFavorite'];
         addFavorite(movie);
         log('Added ==> $movie to watchlist,=====> $movie');
         showToast('Added to watchlist');
@@ -111,12 +121,36 @@ final favoriteProvider = StateNotifierProvider<FavoriteNotifier, List>((ref) {
   return FavoriteNotifier();
 });
 
-// final favoriteSelected = Provider<List>((ref) {
-//   return ref
-//       .watch(favoriteProvider)
-//       .where((element) => element['isFavorite'] == true)
-//       .toList();
-// });
+bool favorite = box.get('isFavorite', defaultValue: false);
+
+class WatchlistNotifier extends StateNotifier<bool> {
+  WatchlistNotifier() : super(favorite);
+
+  void toggleWatchlist(
+    String id,
+    bool value,
+  ) {
+    // bool value =
+    //     totalWatchlist.where((element) => element['id'] == id).isNotEmpty;
+    // if (value) {
+    //   state = false;
+    // } else {
+    //   state = true;
+    // }
+    state = !state;
+    box.put('isFavorite', state);
+  }
+
+  bool get isWatchlist => state;
+}
+
+final watchlistProvider = StateNotifierProvider<WatchlistNotifier, bool>((ref) {
+  return WatchlistNotifier();
+});
+
+final watchlist = Provider<bool>((ref) {
+  return ref.watch(watchlistProvider);
+});
 
 class ThemeNotifier extends StateNotifier<bool> {
   // bool _isFavorite = false;
@@ -165,20 +199,26 @@ final pageProvider = StateNotifierProvider<PageCounter, int>((ref) {
 
 /// <====== Slider Provider ======> ///
 
-class SliderNotifier extends StateNotifier<int> {
-  SliderNotifier() : super(3);
+// class SliderNotifier extends StateNotifier<double> {
+//   SliderNotifier() : super(3.0);
 
-  void updateSlider(int value) {
-    state = value;
-  }
-}
+//   void updateSlider(double value) {
+//     state = value;
+//   }
+// }
 
-final sliderProvider = StateNotifierProvider<SliderNotifier, int>((ref) {
-  return SliderNotifier();
-});
+// final sliderProvider = StateNotifierProvider<SliderNotifier, double>((ref) {
+//   return SliderNotifier();
+// });
 
-final sliderValue = Provider<int>((ref) {
-  return ref.watch(sliderProvider);
-});
+// final sliderValue = Provider<double>((ref) {
+//   return ref.watch(sliderProvider);
+// });
+
+final sliderProvider = StateProvider<double>((ref) => 3);
+
+// final sliderValue = Provider<double>((ref) {
+//   return ref.watch(sliderProvider);
+// });
 
 final basicSlider = StateProvider<double>((ref) => 3);

@@ -72,12 +72,17 @@ class HotMovie extends ConsumerStatefulWidget {
 class _HotMovieState extends ConsumerState<HotMovie> {
   @override
   Widget build(BuildContext context) {
-    List watchlist = ref.watch(favoriteProvider.notifier).favorite;
+    // List watchlist = ref.watch(favoriteProvider.notifier).favorite;
 
-    bool isFavorite = watchlist
-        .where((element) =>
-            element['id'] == widget.movieModel[widget.index]['id'].toString())
-        .isNotEmpty;
+    // bool isFavorite = watchlist
+    //     .where((element) =>
+    //         element['id'] == widget.movieModel[widget.index]['id'].toString())
+    //     .isNotEmpty;
+
+    // bool isWatchlist = ref.watch(favoriteProvider.notifier).isFavorite;
+    bool isWatchlist = ref.watch(watchlist);
+    print('>>>>> $isWatchlist');
+
     // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
       onTap: widget.onTap,
@@ -146,19 +151,56 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                             'isFavorite': false,
                           };
                           if (widget.isWatchlist != true) {
-                            isFavorite = !isFavorite;
-                            if (isFavorite) {
-                              ref
-                                  .read(favoriteProvider.notifier)
-                                  .addFavorite(movie);
-                              log('Added ==> $movie to watchlist,=====> $movie');
-                              showToast('Added to watchlist');
-                            } else {
+                            // isFavorite = !isFavorite;
+                            // isWatchlist = !isWatchlist;
+                            // ref
+                            //     .read(favoriteProvider.notifier)
+                            //     .toggleWatchlist();
+
+                            // ref
+                            //     .read(favoriteProvider.notifier)
+                            //     .toggleFavorite(movie);
+
+                            ref
+                                .read(watchlistProvider.notifier)
+                                .toggleWatchlist(
+                                  movie['id'].toString(),
+                                  movie['isFavorite'],
+                                );
+
+                            if (isWatchlist) {
                               ref
                                   .read(favoriteProvider.notifier)
                                   .removeFavorite(movie);
-                              showErrorToast('Removed from Watchlist');
+                              log('Added ==> ${movie['title']} to watchlist,=====> $movie');
+                              showErrorToast(
+                                  'Removed ${movie['title']} from watchlist');
+                            } else {
+                              ref
+                                  .read(favoriteProvider.notifier)
+                                  .addFavorite(movie);
+                              log('Added ==> ${movie['title']} to watchlist,=====> $movie');
+                              showToast('Added ${movie['title']} to watchlist');
                             }
+
+                            // ref.read(favoriteProvider.notifier).isFavorite ==
+                            //     true;
+                            print('===> $isWatchlist');
+                            // ref
+                            //     .read(favoriteProvider.notifier)
+                            //     .toggleWatchlist();
+                            // if (isFavorite) {
+                            //   ref
+                            //       .read(favoriteProvider.notifier)
+                            //       .addFavorite(movie);
+                            //   log('Added ==> $movie to watchlist,=====> $movie');
+                            //   showToast('Added to watchlist');
+                            // } else {
+                            //   ref
+                            //       .read(favoriteProvider.notifier)
+                            //       .removeFavorite(movie);
+                            //   showErrorToast('Removed from Watchlist');
+                            // }
 
                             // log('Added ==> $movie to watchlist,=====> $movie');
                             // showToast('Added to watchlist');
@@ -172,10 +214,11 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                         child: Icon(
                           widget.isWatchlist == true
                               ? Icons.delete_rounded
-                              : isFavorite
+                              // : isFavorite
+                              : isWatchlist
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                          color: widget.isWatchlist != true && isFavorite
+                          color: widget.isWatchlist != true && isWatchlist
                               ? Colors.red
                               : mainColor,
                         ),
