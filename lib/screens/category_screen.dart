@@ -1,14 +1,13 @@
-import 'dart:developer';
-
-import 'package:flex_movies/screens/details_screen.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/api_service.dart';
-import 'package:flex_movies/service/provider/watch_list_provider.dart';
-import 'package:flex_movies/utils/colors.dart';
-import 'package:flex_movies/utils/data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+
+import '../service/api_service.dart';
+import '../service/provider/watch_list_provider.dart';
+import '../utils/colors.dart';
+import '../utils/data.dart';
+import 'details_screen.dart';
+import 'widgets/widgets.dart';
 
 class CategoryScreen extends ConsumerWidget {
   CategoryScreen({Key? key}) : super(key: key);
@@ -46,15 +45,15 @@ class CategoryScreen extends ConsumerWidget {
           genres(
             genres: firstGen,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           genres(
             genres: secondGen,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           genres(
             genres: thirdGen,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -62,7 +61,7 @@ class CategoryScreen extends ConsumerWidget {
               children: [
                 Text(
                   genre,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontStyle: FontStyle.italic,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -77,63 +76,15 @@ class CategoryScreen extends ConsumerWidget {
                           topRight: Radius.circular(20),
                         )),
                         context: context,
-                        builder: (context) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 30),
-                          height: 300,
-                          child: Column(children: [
-                            Text(
-                              "Rating",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: Slider(
-                                  value: value,
-                                  min: 0,
-                                  max: 10.0,
-                                  label: value.toString(),
-                                  activeColor: mainColor,
-                                  onChanged: (val) {
-                                    // int value = val.round();
-                                    // ref
-                                    //     .read(sliderProvider.notifier)
-                                    //     .updateSlider(value);
-                                    ref.read(basicSlider.notifier).state = val;
-                                    log('my Value===> $val');
-                                  }),
-                            ),
-                            SizedBox(height: 20),
-                            TextButton(
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.red.withOpacity(.8))),
-                                onPressed: () {
-                                  Get.back();
-
-                                  // category.clear();
-                                },
-                                child: Text(
-                                  'Apply',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: white,
-                                      fontWeight: FontWeight.bold),
-                                )),
-                          ]),
-                        ),
+                        builder: (context) => const _RatingSlider(),
                       );
                     },
                     radius: 10,
-                    child: Icon(Icons.filter_list, color: Colors.white)),
+                    child: const Icon(Icons.filter_list, color: Colors.white)),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
                 future: ApiService.getCategoryList(genre, page, 3),
@@ -148,20 +99,18 @@ class CategoryScreen extends ConsumerWidget {
                         children: [
                           ListView.separated(
                             scrollDirection: Axis.vertical,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: category.length,
-                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                             separatorBuilder:
                                 (BuildContext context, int index) =>
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                             itemBuilder: (BuildContext context, int index) {
                               // print(
                               //     'Wachlist genres ==> ${category[index]['genres']}');
 
-                              List genres = category[index]['genres'] == null
-                                  ? []
-                                  : category[index]['genres'];
+                              List genres = category[index]['genres'] ?? [];
                               return HotMovie(
                                 onTap: () {
                                   // print(
@@ -183,7 +132,7 @@ class CategoryScreen extends ConsumerWidget {
                               // ),
                             },
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -205,7 +154,7 @@ class CategoryScreen extends ConsumerWidget {
                                           color: white,
                                           fontWeight: FontWeight.bold),
                                     )),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
                               TextButton(
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
@@ -227,7 +176,7 @@ class CategoryScreen extends ConsumerWidget {
                                   )),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                         ],
                       ),
                     );
@@ -259,7 +208,8 @@ Widget genres({
                 onTap: () =>
                     ref.read(genreProvider.notifier).updateGenre(genre),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   margin: EdgeInsets.only(
                     right: genres.last == genre ? 20 : 10,
                     left: genres.first == genre ? 20 : 0,
@@ -286,4 +236,57 @@ Widget genres({
     }),
   );
   // });
+}
+
+class _RatingSlider extends ConsumerWidget {
+  const _RatingSlider();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(sliderProvider);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      height: 300,
+      child: Column(children: [
+        const Text(
+          "Rating",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: Slider(
+              value: value,
+              min: 0,
+              max: 10.0,
+              label: value.toString(),
+              activeColor: mainColor,
+              onChanged: (val) {
+                // int value = val.round();
+                ref.read(sliderProvider.notifier).state = val;
+                // log('my Value===> $val');
+              }),
+        ),
+        const SizedBox(height: 20),
+        TextButton(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(Colors.red.withOpacity(.8))),
+            onPressed: () {
+              Get.back();
+
+              // category.clear();
+            },
+            child: Text(
+              'Apply',
+              style: TextStyle(
+                  fontSize: 16, color: white, fontWeight: FontWeight.bold),
+            )),
+      ]),
+    );
+  }
 }

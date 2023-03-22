@@ -6,11 +6,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../key/api_key.dart';
 import '../../screens/widgets/widgets.dart';
 
-Box box = Hive.box(kAppName);
-List totalWatchlist = box.get('watchlist');
+final box = Hive.box(kAppName);
+final totalWatchlist = box.get('watchlist');
 
 class FavoriteNotifier extends StateNotifier<List> {
-  FavoriteNotifier() : super(totalWatchlist);
+  FavoriteNotifier() : super(totalWatchlist ?? []);
 
   void addFavorite(Map movie) {
     state = [...state, movie];
@@ -104,7 +104,6 @@ class FavoriteNotifier extends StateNotifier<List> {
   //   }).toList();
   //   box.put('watchlist', state);
   // }
-
 }
 
 final favoriteProvider = StateNotifierProvider<FavoriteNotifier, List>((ref) {
@@ -173,12 +172,6 @@ class SliderNotifier extends StateNotifier<int> {
   }
 }
 
-final sliderProvider = StateNotifierProvider<SliderNotifier, int>((ref) {
-  return SliderNotifier();
-});
-
-final sliderValue = Provider<int>((ref) {
-  return ref.watch(sliderProvider);
-});
+final sliderProvider = StateProvider.autoDispose<double>((_) => 3.0);
 
 final basicSlider = StateProvider<double>((ref) => 3);
