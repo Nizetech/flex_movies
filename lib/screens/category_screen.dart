@@ -1,13 +1,13 @@
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/provider/category_movies_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
+import '../service/provider/category_movies_provider.dart';
 import '../service/provider/top_level_providers.dart';
 import '../service/provider/watch_list_provider.dart';
 import '../utils/colors.dart';
 import '../utils/data.dart';
+import 'widgets/widgets.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({Key? key}) : super(key: key);
@@ -21,8 +21,8 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    genre = ref.watch(genreSelected);
-    int page = ref.watch(pageProvider);
+    genre = ref.read(genreSelected);
+    int page = ref.read(pageProvider);
     // int value = ref.watch(sliderProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(categoryFetchProvider.notifier).getCategoryList(genre, page, 5);
@@ -96,43 +96,38 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // category.when(
-          //   loading: () => const Center(child: CircularProgressIndicator()),
-          //   error: (e, st) => Text('$e'),
-          //   data: (movie) {
-          //     if (movie.isEmpty) {
-          //       Text('Category is Empty');
-          //     }
-          //     return ListView.separated(
-          //       scrollDirection: Axis.vertical,
-          //       shrinkWrap: true,
-          //       itemCount: movie.length,
-          //       physics: const NeverScrollableScrollPhysics(),
-          //       padding: const EdgeInsets.symmetric(horizontal: 20),
-          //       separatorBuilder: (_, i) => const SizedBox(height: 20),
-          //       itemBuilder: (_, i) {
-          //         // final genres = movie[i].genres;
+          category.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, st) => Text('$e'),
+            data: (movies) {
+              print(movies);
+              if (movies.isEmpty) {
+                const Text('Category is Empty');
+              }
+              return ListView.separated(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: movies.length,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                separatorBuilder: (_, i) => const SizedBox(height: 20),
+                itemBuilder: (_, i) {
+                  // final genres = movie[i].genres;
 
-          //         //! Note I'm using ProviderScope here for efficiency,
-          //         //! so I won't need to pass a movie to HotMovie
-          //         //! widget. Check riverpod documentation for this
-          //         return
-          //             // ProviderScope(
-          //             //   overrides: [
-          //             //     currentMovieProvider.overrideWithValue(movie[i])
-          //             //   ],
-          //             // child:
-          //             // const HotMovie();
-          //             Container(
-          //           height: 52,
-          //           width: 58,
-          //           color: Colors.red,
-          //         );
-          //         // );
-          //       },
-          //     );
-          //   },
-          // )
+                  //! Note I'm using ProviderScope here for efficiency,
+                  //! so I won't need to pass a movie to HotMovie
+                  //! widget. Check riverpod documentation for this
+                  return ProviderScope(
+                    overrides: [
+                      currentMovieProvider.overrideWithValue(movies[i])
+                    ],
+                    child: const HotMovie(),
+                  );
+                  // );
+                },
+              );
+            },
+          )
 
           //? These one below are the old codes
           // Expanded(

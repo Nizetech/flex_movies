@@ -31,6 +31,6 @@ class AllMoviesFetcherController
 
 final allMoviesFetcherControllerProvider =
     StateNotifierProvider<AllMoviesFetcherController, AsyncValue<List<Movie>>>(
-        (_) {
+        (ref) {
   return AllMoviesFetcherController();
 });

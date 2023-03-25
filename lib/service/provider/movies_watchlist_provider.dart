@@ -28,6 +28,15 @@ class WatchListController extends StateNotifier<List<Movie>> {
   bool isPresent(Movie movie) {
     return state.contains(movie);
   }
+
+  Future<void> deleteAll() async {
+    final keys = <int>[];
+    for (var movie in state) {
+      keys.add(movie.id);
+    }
+    await ref.read(watchListBoxProvider).deleteAll(keys);
+    seed();
+  }
 }
 
 final watchListControllerProvider =

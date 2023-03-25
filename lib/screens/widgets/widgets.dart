@@ -51,9 +51,8 @@ Widget castWidget({required List cast, required int index}) {
 }
 
 class HotMovie extends ConsumerStatefulWidget {
-  const HotMovie({
-    Key? key,
-  }) : super(key: key);
+  const HotMovie({Key? key, this.isWatchList = false}) : super(key: key);
+  final bool isWatchList;
 
   @override
   ConsumerState<HotMovie> createState() => _HotMovieState();
@@ -64,8 +63,6 @@ class _HotMovieState extends ConsumerState<HotMovie> {
   Widget build(BuildContext context) {
     final movie = ref.watch(currentMovieProvider);
     final watchListController = ref.watch(watchListControllerProvider);
-
-    print(watchListController);
 
     return GestureDetector(
       onTap: () {
@@ -137,15 +134,11 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                           }
                         },
                         child: Icon(
-                          watchListController.contains(movie)
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          // child: Icon(
-                          //   watchListController.contains(movie)
-                          //       ? Icons.delete_rounded
-                          //       : isFavorite
-                          //           ? Icons.favorite_rounded
-                          //           : Icons.favorite_border_rounded,
+                          widget.isWatchList
+                              ? Icons.delete_rounded
+                              : watchListController.contains(movie)
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
                           color: watchListController.contains(movie)
                               ? Colors.red
                               : mainColor,

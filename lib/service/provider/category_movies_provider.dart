@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import '../../key/api_key.dart';
-import '../../model/movie_list.dart';
+import '../../model/movie.dart';
 
 class CategoryFetchController extends StateNotifier<AsyncValue<List<Movie>>> {
   CategoryFetchController() : super(const AsyncData([]));
@@ -20,6 +20,9 @@ class CategoryFetchController extends StateNotifier<AsyncValue<List<Movie>>> {
           await http.get(uri, headers: {'Content-Type': 'application/json'});
       Map data = jsonDecode(response.body);
       final res = data['data']['movies'] as List;
+      // for (var r in res) {
+      //   print(r['large_cover_image']);
+      // }
       final movies = res.map((e) => Movie.fromJson(e)).toList();
 
       state = AsyncData(movies);

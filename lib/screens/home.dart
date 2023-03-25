@@ -28,6 +28,18 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
 
+    final topMoviesFetcherController =
+        ref.read(topMoviesFetcherControllerProvider);
+    final allMoviesFetcherController =
+        ref.read(allMoviesFetcherControllerProvider);
+    if (topMoviesFetcherController.hasValue &&
+        allMoviesFetcherController.hasValue) {
+      if (topMoviesFetcherController.value!.isNotEmpty &&
+          allMoviesFetcherController.value!.isNotEmpty) {
+        return;
+      }
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
           .read(topMoviesFetcherControllerProvider.notifier)
@@ -95,7 +107,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 children: [
                   topMovies.when(
-                    loading: () => CircularProgressIndicator(),
+                    loading: () => const CircularProgressIndicator(),
                     error: (e, st) => Text('$e'),
                     data: (movies) {
                       if (movies.isEmpty) {
@@ -237,15 +249,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                       const SizedBox(height: 20),
                       allMovies.when(
                         loading: () => Column(
-                          children: [
-                            const Expanded(child: CircularProgressIndicator()),
+                          children: const [
+                            Expanded(child: CircularProgressIndicator()),
                           ],
                         ),
                         error: (e, st) => Text('$e'),
                         data: (movies) {
                           if (movies.isEmpty) {
                             return Column(
-                              children: [
+                              children: const [
                                 Text('No movies'),
                               ],
                             );

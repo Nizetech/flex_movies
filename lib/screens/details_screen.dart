@@ -116,7 +116,7 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
-                  onPressed: () => Get.to(SearchScreen()),
+                  onPressed: () => Get.to(const SearchScreen()),
                   icon: const Icon(
                     Icons.search,
                     color: Colors.white,
