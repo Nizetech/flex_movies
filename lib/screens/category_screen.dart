@@ -1,29 +1,44 @@
+import 'package:flex_movies/screens/widgets/widgets.dart';
+import 'package:flex_movies/service/provider/category_movies_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
+import '../service/provider/top_level_providers.dart';
 import '../service/provider/watch_list_provider.dart';
 import '../utils/colors.dart';
+import '../utils/data.dart';
 
-class CategoryScreen extends ConsumerWidget {
-  CategoryScreen({Key? key}) : super(key: key);
+class CategoryScreen extends ConsumerStatefulWidget {
+  const CategoryScreen({Key? key}) : super(key: key);
 
-//   @override
-//   ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
-// }
-
-// class _CategoryScreenState extends ConsumerState<CategoryScreen> {
-  // int selected = 1;
-  List category = [];
-  // double value = 5.0;
   @override
-  Widget build(BuildContext context, ref) {
-    String genre = ref.watch(genreSelected);
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+  late String genre;
+  @override
+  void initState() {
+    super.initState();
+    genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
     // int value = ref.watch(sliderProvider);
-    final value = ref.watch(basicSlider.state).state;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryFetchProvider.notifier).getCategoryList(genre, page, 5);
+    });
+  }
 
-    // int vlaue = ref.watch(sliderProvider) as int;
+//   @override
+  List category = [];
+
+  // double value = 5.0;
+  @override
+  Widget build(BuildContext context) {
+    // final value = ref.watch(basicSlider.notifier).state;
+    final category = ref.watch(categoryFetchProvider);
+
+    // int value = ref.watch(sliderProvider) as int;
     // String selected;
     return Scaffold(
       appBar: AppBar(
@@ -37,152 +52,191 @@ class CategoryScreen extends ConsumerWidget {
         ),
       ),
       body: Column(
-          // children: [
-          //   genres(
-          //     genres: firstGen,
-          //   ),
-          //   const SizedBox(height: 10),
-          //   genres(
-          //     genres: secondGen,
-          //   ),
-          //   const SizedBox(height: 10),
-          //   genres(
-          //     genres: thirdGen,
-          //   ),
-          //   const SizedBox(height: 10),
-          //   Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 20),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Text(
-          //           genre,
-          //           style: const TextStyle(
-          //               fontStyle: FontStyle.italic,
-          //               fontSize: 20,
-          //               fontWeight: FontWeight.bold,
-          //               color: Colors.white),
-          //         ),
-          //         InkWell(
-          //             onTap: () {
-          //               showModalBottomSheet(
-          //                 shape: const RoundedRectangleBorder(
-          //                     borderRadius: BorderRadius.only(
-          //                   topLeft: Radius.circular(20),
-          //                   topRight: Radius.circular(20),
-          //                 )),
-          //                 context: context,
-          //                 builder: (context) => const _RatingSlider(),
-          //               );
-          //             },
-          //             radius: 10,
-          //             child: const Icon(Icons.filter_list, color: Colors.white)),
-          //       ],
-          //     ),
-          //   ),
-          //   const SizedBox(height: 20),
-          //   Expanded(
-          //     child: FutureBuilder<List<dynamic>>(
-          //         future: ApiService.getCategoryList(genre, page, 3),
-          //         builder: (context, snapshot) {
-          //           if (snapshot.hasData &&
-          //               snapshot.data != null &&
-          //               snapshot.data!.isNotEmpty) {
-          //             category = snapshot.data!;
-          //             print(snapshot.data);
-          //             return SingleChildScrollView(
-          //               child: Column(
-          //                 children: [
-          //                   ListView.separated(
-          //                     scrollDirection: Axis.vertical,
-          //                     physics: const NeverScrollableScrollPhysics(),
-          //                     shrinkWrap: true,
-          //                     itemCount: category.length,
-          //                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-          //                     separatorBuilder:
-          //                         (BuildContext context, int index) =>
-          //                             const SizedBox(height: 20),
-          //                     itemBuilder: (BuildContext context, int index) {
-          //                       // print(
-          //                       //     'Wachlist genres ==> ${category[index]['genres']}');
+        children: [
+          genres(
+            genres: firstGen,
+          ),
+          const SizedBox(height: 10),
+          genres(
+            genres: secondGen,
+          ),
+          const SizedBox(height: 10),
+          genres(
+            genres: thirdGen,
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  genre,
+                  style: const TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        )),
+                        context: context,
+                        builder: (context) => const _RatingSlider(),
+                      );
+                    },
+                    radius: 10,
+                    child: const Icon(Icons.filter_list, color: Colors.white)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          // category.when(
+          //   loading: () => const Center(child: CircularProgressIndicator()),
+          //   error: (e, st) => Text('$e'),
+          //   data: (movie) {
+          //     if (movie.isEmpty) {
+          //       Text('Category is Empty');
+          //     }
+          //     return ListView.separated(
+          //       scrollDirection: Axis.vertical,
+          //       shrinkWrap: true,
+          //       itemCount: movie.length,
+          //       physics: const NeverScrollableScrollPhysics(),
+          //       padding: const EdgeInsets.symmetric(horizontal: 20),
+          //       separatorBuilder: (_, i) => const SizedBox(height: 20),
+          //       itemBuilder: (_, i) {
+          //         // final genres = movie[i].genres;
 
-          //                       List genres = category[index]['genres'] ?? [];
-          //                       return HotMovie(
-          //                         onTap: () {
-          //                           // print(
-          //                           //     'Movie ID ==> ${category[index]['id'].runtimeType}');
+          //         //! Note I'm using ProviderScope here for efficiency,
+          //         //! so I won't need to pass a movie to HotMovie
+          //         //! widget. Check riverpod documentation for this
+          //         return
+          //             // ProviderScope(
+          //             //   overrides: [
+          //             //     currentMovieProvider.overrideWithValue(movie[i])
+          //             //   ],
+          //             // child:
+          //             // const HotMovie();
+          //             Container(
+          //           height: 52,
+          //           width: 58,
+          //           color: Colors.red,
+          //         );
+          //         // );
+          //       },
+          //     );
+          //   },
+          // )
 
-          //                           Map movieDetails = {};
+          //? These one below are the old codes
+          // Expanded(
+          //   child: FutureBuilder<List<dynamic>>(
+          //       future: ApiService.getCategoryList(genre, page, 3),
+          //       builder: (context, snapshot) {
+          //         if (snapshot.hasData &&
+          //             snapshot.data != null &&
+          //             snapshot.data!.isNotEmpty) {
+          //           category = snapshot.data!;
+          //           print(snapshot.data);
+          //           return SingleChildScrollView(
+          //             child: Column(
+          //               children: [
+          //                 ListView.separated(
+          //                   scrollDirection: Axis.vertical,
+          //                   physics: const NeverScrollableScrollPhysics(),
+          //                   shrinkWrap: true,
+          //                   itemCount: category.length,
+          //                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+          //                   separatorBuilder:
+          //                       (BuildContext context, int index) =>
+          //                           const SizedBox(height: 20),
+          //                   itemBuilder: (BuildContext context, int index) {
+          //                     // print(
+          //                     //     'Wachlist genres ==> ${category[index]['genres']}');
 
-          //                           movieDetails.addAll({
-          //                             'id': category[index]['id'],
-          //                           });
-          //                           return Get.to(
-          //                               DetailsScreen(movie: movieDetails));
-          //                         },
-          //                         index: index,
-          //                         genres: genres,
-          //                         movieModel: category,
-          //                       );
-          //                       //   },
-          //                       // ),
-          //                     },
-          //                   ),
-          //                   const SizedBox(height: 20),
-          //                   Row(
-          //                     mainAxisAlignment: MainAxisAlignment.center,
-          //                     children: [
-          //                       if (page > 1)
-          //                         TextButton(
-          //                             style: ButtonStyle(
-          //                                 backgroundColor:
-          //                                     MaterialStateProperty.all(
-          //                                         Colors.red.withOpacity(.8))),
-          //                             onPressed: () {
-          //                               ref.read(pageProvider.notifier).state--;
+          //                     List genres = category[index]['genres'] ?? [];
+          //                     return HotMovie(
+          //                       onTap: () {
+          //                         // print(
+          //                         //     'Movie ID ==> ${category[index]['id'].runtimeType}');
 
-          //                               category.clear();
-          //                             },
-          //                             child: Text(
-          //                               'Previous',
-          //                               style: TextStyle(
-          //                                   fontSize: 16,
-          //                                   color: white,
-          //                                   fontWeight: FontWeight.bold),
-          //                             )),
-          //                       const SizedBox(width: 20),
+          //                         Map movieDetails = {};
+
+          //                         movieDetails.addAll({
+          //                           'id': category[index]['id'],
+          //                         });
+          //                         return Get.to(
+          //                             DetailsScreen(movie: movieDetails));
+          //                       },
+          //                       index: index,
+          //                       genres: genres,
+          //                       movieModel: category,
+          //                     );
+          //                     //   },
+          //                     // ),
+          //                   },
+          //                 ),
+          //                 const SizedBox(height: 20),
+          //                 Row(
+          //                   mainAxisAlignment: MainAxisAlignment.center,
+          //                   children: [
+          //                     if (page > 1)
           //                       TextButton(
           //                           style: ButtonStyle(
-          //                             backgroundColor: MaterialStateProperty.all(
-          //                               mainColor.withOpacity(.8),
-          //                             ),
-          //                           ),
+          //                               backgroundColor:
+          //                                   MaterialStateProperty.all(
+          //                                       Colors.red.withOpacity(.8))),
           //                           onPressed: () {
+          //                             ref.read(pageProvider.notifier).state--;
+
           //                             category.clear();
-          //                             ref
-          //                                 .read(pageProvider.notifier)
-          //                                 .incrementPage();
           //                           },
           //                           child: Text(
-          //                             'Next',
+          //                             'Previous',
           //                             style: TextStyle(
           //                                 fontSize: 16,
           //                                 color: white,
           //                                 fontWeight: FontWeight.bold),
           //                           )),
-          //                     ],
-          //                   ),
-          //                   const SizedBox(height: 20),
-          //                 ],
-          //               ),
-          //             );
-          //           } else {
-          //             return const Center(child: CircularProgressIndicator());
-          //           }
-          //         }),
-          //   )
-          // ],
-          ),
+          //                     const SizedBox(width: 20),
+          //                     TextButton(
+          //                         style: ButtonStyle(
+          //                           backgroundColor: MaterialStateProperty.all(
+          //                             mainColor.withOpacity(.8),
+          //                           ),
+          //                         ),
+          //                         onPressed: () {
+          //                           category.clear();
+          //                           ref
+          //                               .read(pageProvider.notifier)
+          //                               .incrementPage();
+          //                         },
+          //                         child: Text(
+          //                           'Next',
+          //                           style: TextStyle(
+          //                               fontSize: 16,
+          //                               color: white,
+          //                               fontWeight: FontWeight.bold),
+          //                         )),
+          //                   ],
+          //                 ),
+          //                 const SizedBox(height: 20),
+          //               ],
+          //             ),
+          //           );
+          //         } else {
+          //           return const Center(child: CircularProgressIndicator());
+          //         }
+          //       }),
+          // )
+        ],
+      ),
     );
   }
 }

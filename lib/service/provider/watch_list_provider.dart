@@ -7,10 +7,10 @@ import '../../key/api_key.dart';
 import '../../screens/widgets/widgets.dart';
 
 final box = Hive.box(kAppName);
-final totalWatchlist = box.get('watchlist');
+final totalWatchist = box.get('watchlist');
 
 class FavoriteNotifier extends StateNotifier<List> {
-  FavoriteNotifier() : super(totalWatchlist ?? []);
+  FavoriteNotifier() : super(totalWatchist ?? []);
 
   void addFavorite(Map movie) {
     state = [...state, movie];
@@ -19,7 +19,7 @@ class FavoriteNotifier extends StateNotifier<List> {
 
   void removeFavorite(Map movie) {
     state = state.where((element) => element['id'] != movie['id']).toList();
-    box.put('watchlist', state);
+    box.delete('watchlist');
   }
 
   void clearFavorite() {
@@ -28,7 +28,7 @@ class FavoriteNotifier extends StateNotifier<List> {
   }
 
   bool isFavorite(Map movie) {
-    return state.any((element) => element['id'] == movie['id']);
+    return state.contains(movie);
   }
 
   int get totalFavorite => state.length;

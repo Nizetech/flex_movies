@@ -95,8 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 children: [
                   topMovies.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => CircularProgressIndicator(),
                     error: (e, st) => Text('$e'),
                     data: (movies) {
                       if (movies.isEmpty) {
@@ -237,12 +236,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       const SizedBox(height: 20),
                       allMovies.when(
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
+                        loading: () => Column(
+                          children: [
+                            const Expanded(child: CircularProgressIndicator()),
+                          ],
+                        ),
                         error: (e, st) => Text('$e'),
                         data: (movies) {
                           if (movies.isEmpty) {
-                            return const Center(child: Text('No movies'));
+                            return Column(
+                              children: [
+                                Text('No movies'),
+                              ],
+                            );
                           }
 
                           return Column(
@@ -286,9 +292,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           setState(() => page--);
                                           // movieModel.clear();
                                           // topMovies.clear();
+
                                           //? this clears the previously fetched top movies
-                                          ref.invalidate(
-                                              topMoviesFetcherControllerProvider);
+                                          //   ref.invalidate(
+                                          //       topMoviesFetcherControllerProvider);
                                         },
                                         child: Text(
                                           'Previous',
