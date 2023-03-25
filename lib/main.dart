@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:flex_movies/botton_nav.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/youtube_test.dart';
-import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'botton_nav.dart';
+import 'key/api_key.dart';
+import 'model/movie.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +20,10 @@ void main() async {
     ),
   );
   await Hive.initFlutter();
+  Hive.registerAdapter(MovieAdapter());
   await Hive.openBox(kAppName);
-  runApp(ProviderScope(child: MyApp()));
+  await Hive.openBox<Movie>(kWatchList);
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
 
   // pull to refresh page
   Future<void> refresh() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     checkInternet();
   }
 
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Raleway',
           dividerColor: Colors.grey,
           scaffoldBackgroundColor: Colors.black,
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
             backgroundColor: Colors.transparent,
             elevation: 0,
             foregroundColor: Colors.white,
@@ -68,7 +70,7 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data == true) {
-              return BottomNav();
+              return const BottomNav();
               // return MyHomePage();
             } else {
               return Scaffold(

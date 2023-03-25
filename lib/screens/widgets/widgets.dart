@@ -1,17 +1,17 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../model/movie.dart';
+import '../../service/provider/movies_watchlist_provider.dart';
+import '../../service/provider/top_level_providers.dart';
 import '../../service/provider/watch_list_provider.dart';
 import '../../utils/colors.dart';
+import '../details_screen.dart';
 
 Widget castWidget({required List cast, required int index}) {
   return Column(
@@ -19,7 +19,7 @@ Widget castWidget({required List cast, required int index}) {
     children: [
       CircleAvatar(
         radius: 35,
-        backgroundColor: Color(0xff212029),
+        backgroundColor: const Color(0xff212029),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: CachedNetworkImage(
@@ -31,7 +31,7 @@ Widget castWidget({required List cast, required int index}) {
           ),
         ),
       ),
-      SizedBox(height: 5),
+      const SizedBox(height: 5),
       SizedBox(
         width: 65,
         child: Text(
@@ -51,19 +51,9 @@ Widget castWidget({required List cast, required int index}) {
 }
 
 class HotMovie extends ConsumerStatefulWidget {
-  final List movieModel;
-  final int index;
-  final List genres;
-  final bool? isWatchlist;
-  final Function() onTap;
-  const HotMovie(
-      {Key? key,
-      required this.movieModel,
-      required this.index,
-      required this.onTap,
-      this.isWatchlist = false,
-      required this.genres})
-      : super(key: key);
+  const HotMovie({
+    Key? key,
+  }) : super(key: key);
 
   @override
   ConsumerState<HotMovie> createState() => _HotMovieState();
@@ -72,19 +62,20 @@ class HotMovie extends ConsumerStatefulWidget {
 class _HotMovieState extends ConsumerState<HotMovie> {
   @override
   Widget build(BuildContext context) {
-    List watchlist = ref.watch(favoriteProvider.notifier).favorite;
+    final movie = ref.watch(currentMovieProvider);
+    final watchListController = ref.watch(watchListControllerProvider);
 
-    bool isFavorite = watchlist
-        .where((element) =>
-            element['id'] == widget.movieModel[widget.index]['id'].toString())
-        .isNotEmpty;
-    // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
+    print(watchListController);
+
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: () {
+        // final movie = movies[i];
+        Get.to(DetailsScreen(movie: movie.toMap()));
+      },
       child: Container(
         height: 150,
         width: double.infinity,
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: bgColor.withOpacity(.8),
           borderRadius: BorderRadius.circular(10),
@@ -99,19 +90,19 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                   color: Colors.black,
                 ),
                 // imageUrl: movieModel[index].largeCoverImage,
-                imageUrl: widget.movieModel[widget.index]['large_cover_image'],
+                imageUrl: movie.largeCoverImage,
                 height: 130,
                 width: 130,
                 fit: BoxFit.fill,
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,11 +111,11 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                         child: Text(
                           // movieModel[index].title,
 
-                          widget.movieModel[widget.index]['title'],
+                          movie.title,
 
                           maxLines: 2,
                           textAlign: TextAlign.start,
-                          style: TextStyle(
+                          style: const TextStyle(
                             overflow: TextOverflow.ellipsis,
                             color: Colors.white,
                             fontSize: 20,
@@ -132,63 +123,40 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       GestureDetector(
-                        onTap: () {
-                          Map movie = {
-                            'id': widget.movieModel[widget.index]['id']
-                                .toString(),
-                            'title': widget.movieModel[widget.index]['title'],
-                            'genres': widget.movieModel[widget.index]['genres'],
-                            'large_cover_image': widget.movieModel[widget.index]
-                                ['large_cover_image'],
-                            'rating': widget.movieModel[widget.index]['rating'],
-                            'isFavorite': false,
-                          };
-                          if (widget.isWatchlist != true) {
-                            isFavorite = !isFavorite;
-                            if (isFavorite) {
-                              ref
-                                  .read(favoriteProvider.notifier)
-                                  .addFavorite(movie);
-                              log('Added ==> $movie to watchlist,=====> $movie');
-                              showToast('Added to watchlist');
-                            } else {
-                              ref
-                                  .read(favoriteProvider.notifier)
-                                  .removeFavorite(movie);
-                              showErrorToast('Removed from Watchlist');
-                            }
+                        onTap: () async {
+                          final toggleType = await ref
+                              .read(watchListControllerProvider.notifier)
+                              .toggleWatchList(movie);
 
-                            // log('Added ==> $movie to watchlist,=====> $movie');
-                            // showToast('Added to watchlist');
+                          if (toggleType == WatchListToggleType.added) {
+                            showToast('Added to watchlist');
                           } else {
-                            ref
-                                .read(favoriteProvider.notifier)
-                                .removeFavorite(movie);
-                            showErrorToast('Removed from Watchlist');
+                            showErrorToast('Removed from watchlist');
                           }
                         },
                         child: Icon(
-                          widget.isWatchlist == true
-                              ? Icons.delete_rounded
-                              : isFavorite
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                          color: widget.isWatchlist != true && isFavorite
+                          watchListController.contains(movie)
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          // child: Icon(
+                          //   watchListController.contains(movie)
+                          //       ? Icons.delete_rounded
+                          //       : isFavorite
+                          //           ? Icons.favorite_rounded
+                          //           : Icons.favorite_border_rounded,
+                          color: watchListController.contains(movie)
                               ? Colors.red
                               : mainColor,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   RatingBarIndicator(
-                    rating: widget.movieModel[widget.index]['rating'] == null
-                        ? 0
-                        : widget.movieModel[widget.index]['rating'].toDouble() /
-                            2,
-                    itemBuilder: (context, index) => Icon(
+                    rating: (double.tryParse(movie.rating) ?? 0.0) / 2,
+                    itemBuilder: (context, index) => const Icon(
                       Icons.star_rate_rounded,
                       color: Colors.amber,
                     ),
@@ -197,14 +165,14 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                     unratedColor: Colors.white.withOpacity(.5),
                     direction: Axis.horizontal,
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Wrap(
                     children: [
-                      for (var genre in widget.genres)
+                      for (var genre in movie.genres)
                         Text(
-                          widget.genres.last == genre ? genre : genre + ' , ',
+                          movie.genres.last == genre ? genre : '$genre , ',
                           textAlign: TextAlign.start,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -250,7 +218,7 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
       child: Column(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
             child: CachedNetworkImage(
               imageUrl: widget.movieSuggestion[widget.index]
                   ['medium_cover_image'],
@@ -262,15 +230,16 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
           ),
           Container(
             width: 200,
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: widget.color ?? Color(0xff24243B),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+              color: widget.color ?? const Color(0xff24243B),
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     widget.movieSuggestion[widget.index]['title'],
@@ -284,10 +253,10 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
                     color: Colors.black,
                     borderRadius:
                         BorderRadius.horizontal(left: Radius.circular(10)),
@@ -299,7 +268,7 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
                         color: mainColor,
                         size: 15,
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text(
                         (widget.movieSuggestion[widget.index]['rating'] / 2)
                             .toString(),
@@ -322,7 +291,7 @@ class _MovieSuggestionsState extends State<MovieSuggestions> {
 }
 
 class TopMovie extends StatefulWidget {
-  final List movieSuggestion;
+  final List<Movie> movieSuggestion;
 
   final int index;
   final Color? color;
@@ -330,7 +299,7 @@ class TopMovie extends StatefulWidget {
 
   final Function() onTap;
 
-  TopMovie(
+  const TopMovie(
       {Key? key,
       required this.movieSuggestion,
       required this.onTap,
@@ -351,10 +320,9 @@ class _TopMovieState extends State<TopMovie> {
       child: Column(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
             child: CachedNetworkImage(
-              imageUrl: widget.movieSuggestion[widget.index]
-                  ['large_cover_image'],
+              imageUrl: widget.movieSuggestion[widget.index].largeCoverImage,
               fit: BoxFit.fill,
               height: 180,
               width: 200,
@@ -363,18 +331,19 @@ class _TopMovieState extends State<TopMovie> {
           ),
           Container(
             width: 200,
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              color: widget.color ?? Color(0xff24243B),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+              color: widget.color ?? const Color(0xff24243B),
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    widget.movieSuggestion[widget.index]['title'],
+                    widget.movieSuggestion[widget.index].title,
                     maxLines: 2,
                     textAlign: TextAlign.start,
                     style: TextStyle(
@@ -385,10 +354,10 @@ class _TopMovieState extends State<TopMovie> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
                     color: Colors.black,
                     borderRadius:
                         BorderRadius.horizontal(left: Radius.circular(10)),
@@ -400,10 +369,12 @@ class _TopMovieState extends State<TopMovie> {
                         color: mainColor,
                         size: 15,
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text(
-                        (widget.movieSuggestion[widget.index]['rating'] /
-                                2.toDouble())
+                        ((double.tryParse(widget.movieSuggestion[widget.index]
+                                        .rating) ??
+                                    0.0) /
+                                2.0)
                             .toString(),
                         style: TextStyle(
                           color: white,
@@ -426,9 +397,9 @@ class _TopMovieState extends State<TopMovie> {
 Widget footer() {
   return Container(
     width: double.infinity,
-    padding: EdgeInsets.all(15),
+    padding: const EdgeInsets.all(15),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.vertical(
+      borderRadius: const BorderRadius.vertical(
         top: Radius.circular(15),
       ),
       color: Colors.white.withOpacity(.3),
@@ -436,7 +407,7 @@ Widget footer() {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
+      children: const [
         Text(
           'Nizetech',
           style: TextStyle(
@@ -464,7 +435,7 @@ dynamic showToast(String label) {
   return Get.snackbar(
     'Success',
     label,
-    duration: Duration(seconds: 3),
+    duration: const Duration(seconds: 3),
     backgroundColor: Colors.green,
     colorText: white,
     snackPosition: SnackPosition.BOTTOM,
@@ -480,7 +451,7 @@ dynamic showErrorToast(String label) {
   return Get.snackbar(
     'Success',
     label,
-    duration: Duration(seconds: 3),
+    duration: const Duration(seconds: 3),
     backgroundColor: Colors.red,
     colorText: white,
     snackPosition: SnackPosition.BOTTOM,
@@ -555,14 +526,14 @@ class _ActionTabsState extends State<ActionTabs> {
       // ?.then((value) {
       widget.controller!.animateTo(
         index * _height,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         curve: Curves.fastOutSlowIn,
       );
       // });
     } else {
       widget.controller!.animateTo(
         index * _height,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         curve: Curves.fastOutSlowIn,
       );
     }
@@ -605,7 +576,7 @@ class _ActionTabsState extends State<ActionTabs> {
                   ),
                 );
               }),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Watchlist',
                 style: TextStyle(

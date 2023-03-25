@@ -1,23 +1,18 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cached_video_player/cached_video_player.dart';
 import 'package:dio/dio.dart';
-import 'package:flex_movies/model/movie.dart';
-import 'package:flex_movies/screens/search/search_screen.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/screens/youtube_test.dart';
-import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
 
 import '../service/api_service.dart';
+import '../utils/colors.dart';
 import '../utils/utils.dart';
+import 'search/search_screen.dart';
+import 'widgets/widgets.dart';
+import 'youtube_test.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends ConsumerStatefulWidget {
   final Map movie;
   // final List cast;
   const DetailsScreen({
@@ -27,10 +22,10 @@ class DetailsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _DetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends ConsumerState<DetailsScreen> {
   // bool isPlay = false;
 
   // late CachedVideoPlayerController controller;
@@ -76,38 +71,39 @@ class _DetailsScreenState extends State<DetailsScreen> {
   // FocusNode isMe = FocusNode();
   final ScrollController _controller = ScrollController();
 
-  @override
-  Widget build(BuildContext context) {
-    Future<void> downloadFile() async {
-      Dio dio = Dio();
+  Future<void> downloadFile() async {
+    Dio dio = Dio();
 
-      try {
-        var dir = await getApplicationDocumentsDirectory();
-        print("path ${dir.path}");
-        await dio.download(imgUrl, "${dir.path}/demo.mp4",
-            onReceiveProgress: (rec, total) {
-          print("Rec: $rec , Total: $total");
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      print("path ${dir.path}");
+      await dio.download(imgUrl, "${dir.path}/demo.mp4",
+          onReceiveProgress: (rec, total) {
+        print("Rec: $rec , Total: $total");
 
-          setState(() {
-            downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-          });
+        setState(() {
+          downloading = true;
+          progressString = "${((rec / total) * 100).toStringAsFixed(0)}%";
         });
-      } catch (e) {
-        print(e);
-      }
-
-      setState(() {
-        downloading = false;
-        progressString = "Completed";
       });
-      print("Download completed");
+    } catch (e) {
+      print(e);
     }
 
+    setState(() {
+      downloading = false;
+      progressString = "Completed";
+    });
+    print("Download completed");
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // String duration = getDuration(movieDetail['runtime']);
 
     // log('my movie ==${widget.movie}');
     // log('my movie ==${widget.cast}');
+
     return Scaffold(
       body: CustomScrollView(
         controller: _controller,
@@ -172,7 +168,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           // fit: StackFit.loose,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.vertical(
+                              borderRadius: const BorderRadius.vertical(
                                 bottom: Radius.circular(20),
                               ),
                               child: SizedBox(
@@ -213,7 +209,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           child: Text(
                             movieDetail['title'],
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontStyle: FontStyle.italic,
                               fontSize: 28,
                               color: Colors.white,
@@ -221,7 +217,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         ActionTabs(
                           movie: {
                             'id': movieDetail['id'].toString(),
@@ -234,9 +230,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           controller: _controller,
                           // movie: {},
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -247,10 +243,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     color: Colors.white,
                                     size: 15,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
                                     movieDetail['year'].toString(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                       // fontWeight: FontWeight.bold,
@@ -267,21 +263,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     color: Colors.white,
                                     size: 15,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
                                     MyLogic.getDuration(movieDetail['runtime']),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                     ),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Icon(
                                     Icons.star_outlined,
                                     color: mainColor,
                                     size: 20,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
                                     (movieDetail['rating'] / 2).toString(),
                                     style: TextStyle(
@@ -292,7 +288,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 30),
                               RichText(
                                 text: TextSpan(
                                   text: 'Genre: ',
@@ -319,7 +315,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               RichText(
                                 text: TextSpan(
                                   text: 'Audio: ',
@@ -339,7 +335,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               RichText(
                                 text: TextSpan(
                                   text: 'Subtitle: ',
@@ -359,7 +355,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                               GestureDetector(
                                 onTap: () {
                                   FocusScope.of(context).requestFocus();
@@ -374,7 +370,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
                                 movieDetail['description_full'] == ''
                                     ? movieDetail['description_intro']
@@ -408,15 +404,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         cast.isEmpty
-                            ? SizedBox()
+                            ? const SizedBox()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 20),
+                                  const SizedBox(height: 20),
                                   Padding(
-                                    padding: EdgeInsets.only(left: 20),
+                                    padding: const EdgeInsets.only(left: 20),
                                     child: Text(
                                       'Cast',
                                       style: TextStyle(
@@ -426,18 +422,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   SizedBox(
                                     height: 105,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       itemCount: cast.length,
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
                                       separatorBuilder:
                                           (BuildContext context, int index) =>
-                                              SizedBox(width: 20),
+                                              const SizedBox(width: 20),
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return castWidget(
@@ -449,9 +445,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ),
                                 ],
                               ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: const EdgeInsets.only(left: 20),
                           child: Text(
                             'Trailer',
                             style: TextStyle(
@@ -461,13 +457,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         SizedBox(
                             height: 200,
                             child: TrailerWidget(
                               trailerCode: movieDetail['yt_trailer_code'],
                             )),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         Center(
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .5,
@@ -477,8 +473,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 Get.dialog(
                                   Dialog(
                                     backgroundColor: Colors.white,
-                                    insetPadding:
-                                        EdgeInsets.symmetric(horizontal: 40),
+                                    insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 40),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
@@ -551,7 +547,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),
                                 decoration: BoxDecoration(
                                   color: mainColor.withOpacity(.8),
@@ -567,7 +563,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                           fontSize: 18,
                                           color: white),
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Icon(
                                       Icons.file_download_outlined,
                                       color: white,
@@ -579,9 +575,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Padding(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: const EdgeInsets.only(left: 20),
                           child: Text(
                             'More Movies...',
                             style: TextStyle(
@@ -591,17 +587,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         SizedBox(
                           height: 180,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemCount: movieSuggestion.length,
-                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             separatorBuilder:
                                 (BuildContext context, int index) =>
-                                    SizedBox(width: 20),
+                                    const SizedBox(width: 20),
                             itemBuilder: (BuildContext context, int index) {
                               return MovieSuggestions(
                                 onTap: () {
@@ -619,7 +615,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         footer(),
                       ],
                     );

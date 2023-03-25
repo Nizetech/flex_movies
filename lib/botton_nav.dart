@@ -1,16 +1,15 @@
-import 'dart:developer';
 import 'dart:math';
 
-import 'package:flex_movies/screens/category_screen.dart';
-import 'package:flex_movies/screens/home.dart';
-import 'package:flex_movies/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 
+import 'screens/category_screen.dart';
+import 'screens/home.dart';
+import 'screens/watchlist_screen.dart';
+
 class BottomNav extends ConsumerStatefulWidget {
-  BottomNav({Key? key}) : super(key: key);
+  const BottomNav({Key? key}) : super(key: key);
 
   @override
   ConsumerState<BottomNav> createState() => _BottomNavState();

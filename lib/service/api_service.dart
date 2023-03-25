@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:http/http.dart' as http;
-import 'package:flex_movies/model/movie_list.dart';
+
+import '../key/api_key.dart';
 
 class ApiService {
   static Future<List> getAllMovieList(int page) async {
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl +
-          '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
+      var uri = Uri.parse(
+          '${ApiConstant.baseUrl}/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
 
       final response = await http.get(
         uri,
@@ -38,10 +37,11 @@ class ApiService {
     }
   }
 
-  static Future<List> getCategoryList(String genre, int page, int rating) async {
+  static Future<List> getCategoryList(
+      String genre, int page, int rating) async {
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl +
-          '/api/v2/list_movies.json?sort_by=year&limit=20&genre=$genre&page=$page&minimum_rating=$rating');
+      var uri = Uri.parse(
+          '${ApiConstant.baseUrl}/api/v2/list_movies.json?sort_by=year&limit=20&genre=$genre&page=$page&minimum_rating=$rating');
 
       final response = await http.get(
         uri,
@@ -71,8 +71,8 @@ class ApiService {
 
   static Future<List> getTopMovies(int page) async {
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl +
-          '/api/v2/list_movies.json?sort_by=download_count&page=$page');
+      var uri = Uri.parse(
+          '${ApiConstant.baseUrl}/api/v2/list_movies.json?sort_by=download_count&page=$page');
 
       final response = await http.get(
         uri,
@@ -96,36 +96,36 @@ class ApiService {
     }
   }
 
-  Future<List<Movie?>> getAllMovieListModel(int page) async {
-    try {
-      var uri = Uri.parse(ApiConstant.baseUrl +
-          // '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
-          '/api/v2/list_movies.json?sort_by=year&limit=20&page=1');
-      final response = await http.get(
-        uri,
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-      );
-      List<Movie> movie = [];
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        // print(response.body);
-        movie = MovieList.fromJson(data).data.movies;
-        print(movie.first.title);
+  // Future<List<Movie?>> getAllMovieListModel(int page) async {
+  //   try {
+  //     var uri = Uri.parse(ApiConstant.baseUrl +
+  //         // '/api/v2/list_movies.json?sort_by=year&limit=20&page=$page');
+  //         '/api/v2/list_movies.json?sort_by=year&limit=20&page=1');
+  //     final response = await http.get(
+  //       uri,
+  //       // headers: {
+  //       //   'Content-Type': 'application/json',
+  //       // },
+  //     );
+  //     List<Movie> movie = [];
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       // print(response.body);
+  //       movie = MovieList.fromJson(data).data.movies;
+  //       print(movie.first.title);
 
-        print('my movie===> Movies model -===> ${movie.first.title}');
-        print('hot movies $movie');
-        return movie;
-      } else {
-        print('object');
-        return [];
-      }
-    } catch (e) {
-      print(e.toString());
-      return [];
-    }
-  }
+  //       print('my movie===> Movies model -===> ${movie.first.title}');
+  //       print('hot movies $movie');
+  //       return movie;
+  //     } else {
+  //       print('object');
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //     return [];
+  //   }
+  // }
 
   // Get searchMovie
   Future<List> searchMovie(String searchQuery) async {
@@ -142,7 +142,7 @@ class ApiService {
         // searchMovie = MovieList.fromJson(data).data.movies;
         searchMovie = data['data']['movies'];
 
-        print('my movie===> Movies Search -===> ${searchMovie}}');
+        print('my movie===> Movies Search -===> $searchMovie}');
         return searchMovie;
       } else {
         return [];

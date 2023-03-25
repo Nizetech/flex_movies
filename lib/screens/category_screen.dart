@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-import '../service/api_service.dart';
 import '../service/provider/watch_list_provider.dart';
 import '../utils/colors.dart';
-import '../utils/data.dart';
-import 'details_screen.dart';
-import 'widgets/widgets.dart';
 
 class CategoryScreen extends ConsumerWidget {
   CategoryScreen({Key? key}) : super(key: key);
@@ -41,152 +37,152 @@ class CategoryScreen extends ConsumerWidget {
         ),
       ),
       body: Column(
-        children: [
-          genres(
-            genres: firstGen,
-          ),
-          const SizedBox(height: 10),
-          genres(
-            genres: secondGen,
-          ),
-          const SizedBox(height: 10),
-          genres(
-            genres: thirdGen,
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  genre,
-                  style: const TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        )),
-                        context: context,
-                        builder: (context) => const _RatingSlider(),
-                      );
-                    },
-                    radius: 10,
-                    child: const Icon(Icons.filter_list, color: Colors.white)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-                future: ApiService.getCategoryList(genre, page, 3),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      snapshot.data != null &&
-                      snapshot.data!.isNotEmpty) {
-                    category = snapshot.data!;
-                    print(snapshot.data);
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: category.length,
-                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                            separatorBuilder:
-                                (BuildContext context, int index) =>
-                                    const SizedBox(height: 20),
-                            itemBuilder: (BuildContext context, int index) {
-                              // print(
-                              //     'Wachlist genres ==> ${category[index]['genres']}');
+          // children: [
+          //   genres(
+          //     genres: firstGen,
+          //   ),
+          //   const SizedBox(height: 10),
+          //   genres(
+          //     genres: secondGen,
+          //   ),
+          //   const SizedBox(height: 10),
+          //   genres(
+          //     genres: thirdGen,
+          //   ),
+          //   const SizedBox(height: 10),
+          //   Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 20),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         Text(
+          //           genre,
+          //           style: const TextStyle(
+          //               fontStyle: FontStyle.italic,
+          //               fontSize: 20,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.white),
+          //         ),
+          //         InkWell(
+          //             onTap: () {
+          //               showModalBottomSheet(
+          //                 shape: const RoundedRectangleBorder(
+          //                     borderRadius: BorderRadius.only(
+          //                   topLeft: Radius.circular(20),
+          //                   topRight: Radius.circular(20),
+          //                 )),
+          //                 context: context,
+          //                 builder: (context) => const _RatingSlider(),
+          //               );
+          //             },
+          //             radius: 10,
+          //             child: const Icon(Icons.filter_list, color: Colors.white)),
+          //       ],
+          //     ),
+          //   ),
+          //   const SizedBox(height: 20),
+          //   Expanded(
+          //     child: FutureBuilder<List<dynamic>>(
+          //         future: ApiService.getCategoryList(genre, page, 3),
+          //         builder: (context, snapshot) {
+          //           if (snapshot.hasData &&
+          //               snapshot.data != null &&
+          //               snapshot.data!.isNotEmpty) {
+          //             category = snapshot.data!;
+          //             print(snapshot.data);
+          //             return SingleChildScrollView(
+          //               child: Column(
+          //                 children: [
+          //                   ListView.separated(
+          //                     scrollDirection: Axis.vertical,
+          //                     physics: const NeverScrollableScrollPhysics(),
+          //                     shrinkWrap: true,
+          //                     itemCount: category.length,
+          //                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+          //                     separatorBuilder:
+          //                         (BuildContext context, int index) =>
+          //                             const SizedBox(height: 20),
+          //                     itemBuilder: (BuildContext context, int index) {
+          //                       // print(
+          //                       //     'Wachlist genres ==> ${category[index]['genres']}');
 
-                              List genres = category[index]['genres'] ?? [];
-                              return HotMovie(
-                                onTap: () {
-                                  // print(
-                                  //     'Movie ID ==> ${category[index]['id'].runtimeType}');
+          //                       List genres = category[index]['genres'] ?? [];
+          //                       return HotMovie(
+          //                         onTap: () {
+          //                           // print(
+          //                           //     'Movie ID ==> ${category[index]['id'].runtimeType}');
 
-                                  Map movieDetails = {};
+          //                           Map movieDetails = {};
 
-                                  movieDetails.addAll({
-                                    'id': category[index]['id'],
-                                  });
-                                  return Get.to(
-                                      DetailsScreen(movie: movieDetails));
-                                },
-                                index: index,
-                                genres: genres,
-                                movieModel: category,
-                              );
-                              //   },
-                              // ),
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (page > 1)
-                                TextButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.red.withOpacity(.8))),
-                                    onPressed: () {
-                                      ref.read(pageProvider.notifier).state--;
+          //                           movieDetails.addAll({
+          //                             'id': category[index]['id'],
+          //                           });
+          //                           return Get.to(
+          //                               DetailsScreen(movie: movieDetails));
+          //                         },
+          //                         index: index,
+          //                         genres: genres,
+          //                         movieModel: category,
+          //                       );
+          //                       //   },
+          //                       // ),
+          //                     },
+          //                   ),
+          //                   const SizedBox(height: 20),
+          //                   Row(
+          //                     mainAxisAlignment: MainAxisAlignment.center,
+          //                     children: [
+          //                       if (page > 1)
+          //                         TextButton(
+          //                             style: ButtonStyle(
+          //                                 backgroundColor:
+          //                                     MaterialStateProperty.all(
+          //                                         Colors.red.withOpacity(.8))),
+          //                             onPressed: () {
+          //                               ref.read(pageProvider.notifier).state--;
 
-                                      category.clear();
-                                    },
-                                    child: Text(
-                                      'Previous',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: white,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                              const SizedBox(width: 20),
-                              TextButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                      mainColor.withOpacity(.8),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    category.clear();
-                                    ref
-                                        .read(pageProvider.notifier)
-                                        .incrementPage();
-                                  },
-                                  child: Text(
-                                    'Next',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: white,
-                                        fontWeight: FontWeight.bold),
-                                  )),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                }),
-          )
-        ],
-      ),
+          //                               category.clear();
+          //                             },
+          //                             child: Text(
+          //                               'Previous',
+          //                               style: TextStyle(
+          //                                   fontSize: 16,
+          //                                   color: white,
+          //                                   fontWeight: FontWeight.bold),
+          //                             )),
+          //                       const SizedBox(width: 20),
+          //                       TextButton(
+          //                           style: ButtonStyle(
+          //                             backgroundColor: MaterialStateProperty.all(
+          //                               mainColor.withOpacity(.8),
+          //                             ),
+          //                           ),
+          //                           onPressed: () {
+          //                             category.clear();
+          //                             ref
+          //                                 .read(pageProvider.notifier)
+          //                                 .incrementPage();
+          //                           },
+          //                           child: Text(
+          //                             'Next',
+          //                             style: TextStyle(
+          //                                 fontSize: 16,
+          //                                 color: white,
+          //                                 fontWeight: FontWeight.bold),
+          //                           )),
+          //                     ],
+          //                   ),
+          //                   const SizedBox(height: 20),
+          //                 ],
+          //               ),
+          //             );
+          //           } else {
+          //             return const Center(child: CircularProgressIndicator());
+          //           }
+          //         }),
+          //   )
+          // ],
+          ),
     );
   }
 }

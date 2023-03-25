@@ -5,3 +5,4 @@ class ApiConstant {
 }
 
 const String kAppName = 'flexMovie';
+const kWatchList = 'watchList';
