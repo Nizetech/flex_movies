@@ -72,16 +72,9 @@ class HotMovie extends ConsumerStatefulWidget {
 class _HotMovieState extends ConsumerState<HotMovie> {
   @override
   Widget build(BuildContext context) {
-    // List watchlist = ref.watch(favoriteProvider.notifier).favorite;
+    final watchlist = ref.watch(favoriteProvider);
 
-    // bool isFavorite = watchlist
-    //     .where((element) =>
-    //         element['id'] == widget.movieModel[widget.index]['id'].toString())
-    //     .isNotEmpty;
-
-    // bool isWatchlist = ref.watch(favoriteProvider.notifier).isFavorite;
-    bool isWatchlist = ref.watch(watchlist);
-    print('>>>>> $isWatchlist');
+    log('>>>>> $watchlist');
 
     // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
@@ -124,12 +117,10 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                       Expanded(
                         child: Text(
                           // movieModel[index].title,
-
                           widget.movieModel[widget.index]['title'],
-
                           maxLines: 2,
                           textAlign: TextAlign.start,
-                          style: TextStyle(
+                          style: const TextStyle(
                             overflow: TextOverflow.ellipsis,
                             color: Colors.white,
                             fontSize: 20,
@@ -137,7 +128,7 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       GestureDetector(
                         onTap: () {
                           Map movie = {
@@ -151,41 +142,37 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                             'isFavorite': false,
                           };
                           if (widget.isWatchlist != true) {
-                            // isFavorite = !isFavorite;
-                            // isWatchlist = !isWatchlist;
-                            // ref
-                            //     .read(favoriteProvider.notifier)
-                            //     .toggleWatchlist();
-
-                            // ref
-                            //     .read(favoriteProvider.notifier)
-                            //     .toggleFavorite(movie);
-
-                            ref
-                                .read(watchlistProvider.notifier)
-                                .toggleWatchlist(
-                                  movie['id'].toString(),
-                                  movie['isFavorite'],
+                            final toggle = ref
+                                .read(favoriteProvider.notifier)
+                                .toggleFavorite(
+                                  movie,
+                                  // movie['isFavorite'],
                                 );
+                            // if (toggle == WatchListType.added) {
+                            //   showToast('Added ${movie['title']} to watchlist');
+                            // } else {
+                            //   showErrorToast(
+                            //       'Removed ${movie['title']} from watchlist');
+                            // }
 
-                            if (isWatchlist) {
-                              ref
-                                  .read(favoriteProvider.notifier)
-                                  .removeFavorite(movie);
-                              log('Added ==> ${movie['title']} to watchlist,=====> $movie');
-                              showErrorToast(
-                                  'Removed ${movie['title']} from watchlist');
-                            } else {
-                              ref
-                                  .read(favoriteProvider.notifier)
-                                  .addFavorite(movie);
-                              log('Added ==> ${movie['title']} to watchlist,=====> $movie');
-                              showToast('Added ${movie['title']} to watchlist');
-                            }
+                            // if (isWatchlist) {
+                            //   ref
+                            //       .read(favoriteProvider.notifier)
+                            //       .removeFavorite(movie);
+                            //   log('Added ==> ${movie['title']} to watchlist,=====> $movie');
+                            //   showErrorToast(
+                            //       'Removed ${movie['title']} from watchlist');
+                            // } else {
+                            //   ref
+                            //       .read(favoriteProvider.notifier)
+                            //       .addFavorite(movie);
+                            //   log('Added ==> ${movie['title']} to watchlist,=====> $movie');
+                            //   showToast('Added ${movie['title']} to watchlist');
+                            // }
 
                             // ref.read(favoriteProvider.notifier).isFavorite ==
                             //     true;
-                            print('===> $isWatchlist');
+                            // print('===> $isWatchlist');
                             // ref
                             //     .read(favoriteProvider.notifier)
                             //     .toggleWatchlist();
@@ -205,9 +192,7 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                             // log('Added ==> $movie to watchlist,=====> $movie');
                             // showToast('Added to watchlist');
                           } else {
-                            ref
-                                .read(favoriteProvider.notifier)
-                                .removeFavorite(movie);
+                            ref.read(favoriteProvider.notifier).clearFavorite();
                             showErrorToast('Removed from Watchlist');
                           }
                         },
@@ -215,10 +200,15 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                           widget.isWatchlist == true
                               ? Icons.delete_rounded
                               // : isFavorite
-                              : isWatchlist
+                              : watchlist.contains(widget
+                                      .movieModel[widget.index]['id']
+                                      .toString())
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                          color: widget.isWatchlist != true && isWatchlist
+                          color: widget.isWatchlist != true &&
+                                  watchlist.contains(widget
+                                      .movieModel[widget.index]['id']
+                                      .toString())
                               ? Colors.red
                               : mainColor,
                         ),
@@ -631,7 +621,7 @@ class _ActionTabsState extends State<ActionTabs> {
                       'rating': widget.movie['rating'],
                       'isFavorite': true,
                     };
-                    ref.read(favoriteProvider.notifier).addFavorite(movie);
+                    // ref.read(favoriteProvider.notifier).addFavorite(movie);
                     // watchlist.add(widget.movie);
                     // box.put('watchlist', watchlist);
                     log('Added ==> $movie to watchlist,=====> $movie');
