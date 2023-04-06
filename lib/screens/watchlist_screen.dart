@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/details_screen.dart';
@@ -30,11 +32,9 @@ class WatchList extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     //destructure the map
     // watchlist.entries.map((e) => movieModel.add(e.value)).toList();
-    int totalWatchlist = ref.watch(favoriteProvider.notifier).totalFavorite;
-    List watchlist = ref.watch(favoriteProvider.notifier).favorite;
-    print('Wachlist ==> ${totalWatchlist}');
-    // print('Movie ==> ${movie.length}');
-    // print('Movie ==> ${movie[0]['title']}');
+    final totalWatchlist = ref.watch(favoriteProvider.notifier).totalFavorite;
+    final watchlist = ref.watch(favoriteProvider.notifier).favorite;
+    log('Wachlist ==> ${totalWatchlist}');
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +59,7 @@ class WatchList extends ConsumerWidget {
           ),
         ],
       ),
-      body: totalWatchlist == 0
+      body: totalWatchlist == 0 || watchlist.isEmpty
           ? const Center(
               child: Text(
                 'No Movie in Watchlist',
@@ -84,7 +84,7 @@ class WatchList extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Remove All',
                       style: TextStyle(
                         fontSize: 14,
@@ -95,18 +95,6 @@ class WatchList extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // totalWatchlist == []
-                //     ? const Center(
-                //         child: Text(
-                //           'No Movie in Watchlist',
-                //           style: TextStyle(
-                //             fontSize: 20,
-                //             fontWeight: FontWeight.bold,
-                //             color: Colors.white,
-                //           ),
-                //         ),
-                //       )
-                //     :
                 Expanded(
                   child: ListView.separated(
                     scrollDirection: Axis.vertical,
@@ -114,15 +102,13 @@ class WatchList extends ConsumerWidget {
                     itemCount: totalWatchlist,
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
                     separatorBuilder: (BuildContext context, int index) =>
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                     itemBuilder: (BuildContext context, int index) {
                       // ignore: avoid_print
-                      print(
-                          'Wachlist genres ==> ${watchlist[index]['genres']}');
+                      // print(
+                      //     'Wachlist genres ==> ${watchlist[index]['genres']}');
 
-                      List genres = watchlist[index]['genres'] == null
-                          ? []
-                          : watchlist[index]['genres'];
+                      List genres = watchlist[index]['genres'] ?? [];
                       return HotMovie(
                         onTap: () {
                           print(

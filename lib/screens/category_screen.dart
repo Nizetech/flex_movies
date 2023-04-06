@@ -33,9 +33,6 @@ class CategoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     String genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
-    // int value = ref.watch(sliderProvider);
-    // final value = ref.watch(basicSlider.state).state;
-    // double value = ref.watch(sliderValue);
     final value = ref.watch(sliderProvider);
     // final value = ref.watch(sliderValue);
 

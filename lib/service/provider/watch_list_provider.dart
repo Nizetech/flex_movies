@@ -40,41 +40,37 @@ class FavoriteNotifier extends StateNotifier<List> {
 
   void clearFavorite() {
     state = [];
-    final key = [];
-    for (var movie in state) {
-      key.add(movie['id']);
-    }
-    // box.deleteAll(key);
+    box.put(kWatchList, state);
+    seed();
   }
 
-  // bool isFavorite(Map movie) {
-  //   return state.any((element) => element['id'] == movie['id']);
-  // }
+  void removeFavorite(Map movie) {
+    state.removeWhere((element) => element['id'] == movie['id']);
+    box.put(kWatchList, state);
+    seed();
+  }
 
   int get totalFavorite => state.length;
 
   List get favorite => state;
 
-  // bool _isFavorites = false;
-
-  // bool get isFavorites => _isFavorites;
-
   bool get isFavoriteEmpty => state.isEmpty;
   bool get isFavoriteNotEmpty => state.isNotEmpty;
 
   bool isPresent(Map movie) {
-    return state.contains(movie['id']);
+    return state.where((element) => element['id'] == movie['id']).isNotEmpty;
+    // return state.contains(movie);
   }
 
   Future<WatchListType> toggleFavorite(Map movie) {
     //? Start Here
     if (isPresent(movie)) {
-      state.remove(movie['id']);
+      state.removeWhere((element) => element['id'] == movie['id']);
       box.put(kWatchList, state);
       seed();
       return Future.value(WatchListType.removed);
     } else {
-      state.add(movie['id']);
+      state.add(movie);
       box.put(kWatchList, state);
       seed();
       return Future.value(WatchListType.added);
@@ -86,40 +82,7 @@ final favoriteProvider = StateNotifierProvider<FavoriteNotifier, List>((ref) {
   return FavoriteNotifier(ref);
 });
 
-// bool favorite = box.get('isFavorite', defaultValue: false);
-
-// class WatchlistNotifier extends StateNotifier<bool> {
-//   WatchlistNotifier() : super(favorite);
-
-//   void toggleWatchlist(
-//     String id,
-//     bool value,
-//   ) {
-//     // bool value =
-//     //     totalWatchlist.where((element) => element['id'] == id).isNotEmpty;
-//     // if (value) {
-//     //   state = false;
-//     // } else {
-//     //   state = true;
-//     // }
-//     state = !state;
-//     box.put('isFavorite', state);
-//   }
-
-//   bool get isWatchlist => state;
-// }
-
-// final watchlistProvider = StateNotifierProvider<WatchlistNotifier, bool>((ref) {
-//   return WatchlistNotifier();
-// });
-
-// final watchlist = Provider<bool>((ref) {
-//   return ref.watch(watchlistProvider);
-// });
-
 class ThemeNotifier extends StateNotifier<bool> {
-  // bool _isFavorite = false;
-  // bool get isFavorite => _isFavorite;
   ThemeNotifier() : super(false);
   bool get isDark => state;
   void toggleTheme() => state = !state;
@@ -164,10 +127,6 @@ final pageProvider = StateNotifierProvider<PageCounter, int>((ref) {
 
 /// <====== Slider Provider ======> ///
 
-final sliderProvider = StateProvider<double>((ref) => 3);
+final sliderProvider = StateProvider.autoDispose<double>((ref) => 3);
 
-// final sliderValue = Provider<double>((ref) {
-//   return ref.watch(sliderProvider);
-// });
-
-final basicSlider = StateProvider<double>((ref) => 3);
+final basicSlider = StateProvider.autoDispose<double>((ref) => 3);

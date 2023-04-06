@@ -75,6 +75,7 @@ class _HotMovieState extends ConsumerState<HotMovie> {
     final watchlist = ref.watch(favoriteProvider);
 
     log('>>>>> $watchlist');
+    bool isFav = false;
 
     // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
@@ -139,76 +140,53 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                             'large_cover_image': widget.movieModel[widget.index]
                                 ['large_cover_image'],
                             'rating': widget.movieModel[widget.index]['rating'],
-                            'isFavorite': false,
                           };
                           if (widget.isWatchlist != true) {
-                            final toggle = ref
-                                .read(favoriteProvider.notifier)
-                                .toggleFavorite(
+                            isFav = ref
+                                .watch(favoriteProvider)
+                                .where((element) =>
+                                    element['id'] ==
+                                    widget.movieModel[widget.index]['id']
+                                        .toString())
+                                .isNotEmpty;
+
+                            ref.read(favoriteProvider.notifier).toggleFavorite(
                                   movie,
-                                  // movie['isFavorite'],
                                 );
-                            // if (toggle == WatchListType.added) {
-                            //   showToast('Added ${movie['title']} to watchlist');
-                            // } else {
-                            //   showErrorToast(
-                            //       'Removed ${movie['title']} from watchlist');
-                            // }
-
-                            // if (isWatchlist) {
-                            //   ref
-                            //       .read(favoriteProvider.notifier)
-                            //       .removeFavorite(movie);
-                            //   log('Added ==> ${movie['title']} to watchlist,=====> $movie');
-                            //   showErrorToast(
-                            //       'Removed ${movie['title']} from watchlist');
-                            // } else {
-                            //   ref
-                            //       .read(favoriteProvider.notifier)
-                            //       .addFavorite(movie);
-                            //   log('Added ==> ${movie['title']} to watchlist,=====> $movie');
-                            //   showToast('Added ${movie['title']} to watchlist');
-                            // }
-
-                            // ref.read(favoriteProvider.notifier).isFavorite ==
-                            //     true;
-                            // print('===> $isWatchlist');
-                            // ref
-                            //     .read(favoriteProvider.notifier)
-                            //     .toggleWatchlist();
-                            // if (isFavorite) {
-                            //   ref
-                            //       .read(favoriteProvider.notifier)
-                            //       .addFavorite(movie);
-                            //   log('Added ==> $movie to watchlist,=====> $movie');
-                            //   showToast('Added to watchlist');
-                            // } else {
-                            //   ref
-                            //       .read(favoriteProvider.notifier)
-                            //       .removeFavorite(movie);
-                            //   showErrorToast('Removed from Watchlist');
-                            // }
-
-                            // log('Added ==> $movie to watchlist,=====> $movie');
-                            // showToast('Added to watchlist');
+                            // print('====>>>>> BOOLL $isFav');
+                            // ignore: unrelated_type_equality_checks
+                            if (!isFav) {
+                              showToast('Added ${movie['title']} to watchlist');
+                            } else {
+                              showErrorToast(
+                                  'Removed ${movie['title']} from watchlist');
+                            }
                           } else {
-                            ref.read(favoriteProvider.notifier).clearFavorite();
+                            ref
+                                .read(favoriteProvider.notifier)
+                                .removeFavorite(movie);
                             showErrorToast('Removed from Watchlist');
                           }
                         },
                         child: Icon(
                           widget.isWatchlist == true
                               ? Icons.delete_rounded
-                              // : isFavorite
-                              : watchlist.contains(widget
-                                      .movieModel[widget.index]['id']
-                                      .toString())
+                              : ref
+                                      .watch(favoriteProvider)
+                                      .where((element) =>
+                                          element['id'] ==
+                                          widget.movieModel[widget.index]['id']
+                                              .toString())
+                                      .isNotEmpty
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                          color: widget.isWatchlist != true &&
-                                  watchlist.contains(widget
-                                      .movieModel[widget.index]['id']
-                                      .toString())
+                          color: ref
+                                  .watch(favoriteProvider)
+                                  .where((element) =>
+                                      element['id'] ==
+                                      widget.movieModel[widget.index]['id']
+                                          .toString())
+                                  .isNotEmpty
                               ? Colors.red
                               : mainColor,
                         ),
@@ -497,7 +475,7 @@ dynamic showToast(String label) {
   return Get.snackbar(
     'Success',
     label,
-    duration: Duration(seconds: 3),
+    duration: Duration(seconds: 1),
     backgroundColor: Colors.green,
     colorText: white,
     snackPosition: SnackPosition.BOTTOM,
@@ -513,7 +491,7 @@ dynamic showErrorToast(String label) {
   return Get.snackbar(
     'Success',
     label,
-    duration: Duration(seconds: 3),
+    duration: Duration(seconds: 1),
     backgroundColor: Colors.red,
     colorText: white,
     snackPosition: SnackPosition.BOTTOM,
@@ -546,8 +524,8 @@ dynamic showErrorToast(String label) {
 //     );
 //   }
 
-// Widget successToast(String message) {
-//   return  Fluttertoast.showToast(
+// Future<bool?> successToast(String message) {
+//   return Fluttertoast.showToast(
 //     msg: message,
 //     toastLength: Toast.LENGTH_SHORT,
 //     gravity: ToastGravity.BOTTOM,
