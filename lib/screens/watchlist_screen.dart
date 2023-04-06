@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/details_screen.dart';
@@ -114,6 +116,7 @@ class WatchList extends ConsumerWidget {
                     separatorBuilder: (BuildContext context, int index) =>
                         SizedBox(height: 20),
                     itemBuilder: (BuildContext context, int index) {
+                      // ignore: avoid_print
                       print(
                           'Wachlist genres ==> ${watchlist[index]['genres']}');
 

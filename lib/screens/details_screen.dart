@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
@@ -13,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:http/http.dart' as http;
 import '../service/api_service.dart';
 import '../utils/utils.dart';
 
@@ -78,21 +79,37 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> downloadFile() async {
-      Dio dio = Dio();
+    // Future<
+    void downloadFile() async {
+      // Dio dio = Dio();
 
       try {
         var dir = await getApplicationDocumentsDirectory();
-        print("path ${dir.path}");
-        await dio.download(imgUrl, "${dir.path}/demo.mp4",
-            onReceiveProgress: (rec, total) {
-          print("Rec: $rec , Total: $total");
+        // print("path ${dir.path}");
+        // await dio.download(imgUrl, "${dir.path}/demo.mp4",
+        //     onReceiveProgress: (rec, total) {
+        //   print("Rec: $rec , Total: $total");
 
-          setState(() {
-            downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-          });
-        });
+        //   setState(() {
+        //     downloading = true;
+        //     progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+        //   });
+        // });
+        final directory = await getExternalStorageDirectory();
+        // String mainDir = directory.path
+        //     .replaceFirst('Android/data/com.julitech.jmovies/files', "");
+        // final myDir = await Directory("$mainDir" + "JMovies/Downloads")
+        //     .create(recursive: true);
+
+        // final response = await http.get(url).timeout(
+        //   Duration(seconds: 20),
+        //   onTimeout: () {
+        //     throw "Error";
+        //   },
+        // );
+
+        // File downloadedFile = await File(myDir.path + '/$title.torrent')
+        //     .writeAsBytes(response.bodyBytes);
       } catch (e) {
         print(e);
       }
@@ -583,7 +600,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         Padding(
                           padding: EdgeInsets.only(left: 20),
                           child: Text(
-                            'More Movies...',
+                            'Suggestions...',
                             style: TextStyle(
                               color: mainColor,
                               fontSize: 18,
@@ -619,7 +636,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         footer(),
                       ],
                     );

@@ -128,11 +128,7 @@ class _HomePageState extends State<HomePage> {
                     } else {
                       movieModel = snapshot.data[0];
                       topMovies = snapshot.data[1];
-
-                      // print('topMovies===> ${searchMovies}');
-
                       movieModel.removeWhere(
-                          // (element) => element.title == 'Mephistopheles');
                           (element) => element['title'] == 'Mephistopheles');
                       // movieModel.shuffle();
                       topMovies.shuffle();

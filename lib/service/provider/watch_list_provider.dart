@@ -62,61 +62,24 @@ class FavoriteNotifier extends StateNotifier<List> {
   bool get isFavoriteEmpty => state.isEmpty;
   bool get isFavoriteNotEmpty => state.isNotEmpty;
 
-  // void updateFavorite(List movie) {
-  //   state = movie;
-  //   box.put('watchlist', state);
-  // }
-
-  // void updateFavoriteById(Map movie) {
-  //   state = state.map((e) {
-  //     if (e['id'] == movie['id']) {
-  //       return movie;
-  //     } else {
-  //       return e;
-  //     }
-  //   }).toList();
-  //   box.put('watchlist', state);
-  // }
-
   bool isPresent(Map movie) {
-    return state.contains(movie);
+    return state.contains(movie['id']);
   }
 
   Future<WatchListType> toggleFavorite(Map movie) {
-    // state = state.map((e) {
-    //   if (e['id'] == movie['id']) {
-    //     // e['isFavorite'] = !e['isFavorite'];
-    //     // addFavorite(movie);
-    //     log('Added ==> $movie to watchlist,=====> $movie');
-    //     showToast('Added to watchlist');
-    //     return e;
-    //   } else {
-    //     // removeFavorite(movie);
-    //     print('Removed ==> $movie from watchlist,=====> $movie');
-    //     showErrorToast('Removed from watchlist');
-    //     return e;
-    //   }
-    // }).toList();
-    // // box.put('watchlist', state);
-    // return Future.value(WatchListType.added);
-
     //? Start Here
     if (isPresent(movie)) {
-      box.delete(movie['id']);
+      state.remove(movie['id']);
+      box.put(kWatchList, state);
       seed();
       return Future.value(WatchListType.removed);
     } else {
-      box.put(movie['id'], state);
+      state.add(movie['id']);
+      box.put(kWatchList, state);
       seed();
       return Future.value(WatchListType.added);
     }
   }
-
-  // void toggleFavorites() {
-  //   _isFavorites = !_isFavorites;
-  // }
-  // total favorite
-
 }
 
 final favoriteProvider = StateNotifierProvider<FavoriteNotifier, List>((ref) {
