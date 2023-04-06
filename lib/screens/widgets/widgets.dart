@@ -139,7 +139,8 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                               : watchListController.contains(movie)
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                          color: watchListController.contains(movie)
+                          color: watchListController.contains(movie) &&
+                                  widget.isWatchList == false
                               ? Colors.red
                               : mainColor,
                         ),

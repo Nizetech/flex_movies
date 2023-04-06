@@ -54,6 +54,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final allMovies = ref.watch(allMoviesFetcherControllerProvider);
     final topMovies = ref.watch(topMoviesFetcherControllerProvider);
+    int page = widget.index;
+    print('Page number: $page');
 
     return Scaffold(
       // extendBodyBehindAppBar: true,
@@ -250,7 +252,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       allMovies.when(
                         loading: () => Column(
                           children: const [
-                            Expanded(child: CircularProgressIndicator()),
+                            CircularProgressIndicator(),
                           ],
                         ),
                         error: (e, st) => Text('$e'),
@@ -326,11 +328,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                       onPressed: () {
                                         setState(() => page++);
+
+                                        // movieModel.clear();
+                                        ref.invalidate(
+                                            topMoviesFetcherControllerProvider);
+                                        // ref.invalidate(
+                                        //     allMoviesFetcherControllerProvider);
+                                        // print(page);
+
                                         // movieModel.clear();
                                         // topMovies.clear();
                                         // //? this clears the previously fetched top movies
-                                        // ref.invalidate(
-                                        //     topMoviesFetcherControllerProvider);
+                                        //   ref.invalidate(
+                                        //       topMoviesFetcherControllerProvider);
                                       },
                                       child: Text(
                                         'Next',
