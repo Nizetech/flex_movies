@@ -153,7 +153,7 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                             ref.read(favoriteProvider.notifier).toggleFavorite(
                                   movie,
                                 );
-                            // print('====>>>>> BOOLL $isFav');
+
                             // ignore: unrelated_type_equality_checks
                             if (!isFav) {
                               showToast('Added ${movie['title']} to watchlist');

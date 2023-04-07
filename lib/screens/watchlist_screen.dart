@@ -30,10 +30,7 @@ class WatchList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    //destructure the map
-    // watchlist.entries.map((e) => movieModel.add(e.value)).toList();
-    final totalWatchlist = ref.watch(favoriteProvider.notifier).totalFavorite;
-    final watchlist = ref.watch(favoriteProvider.notifier).favorite;
+    final watchlist = ref.watch(favoriteProvider);
     log('Wachlist ==> ${totalWatchlist}');
 
     return Scaffold(
@@ -59,7 +56,7 @@ class WatchList extends ConsumerWidget {
           ),
         ],
       ),
-      body: totalWatchlist == 0 || watchlist.isEmpty
+      body: watchlist.length == 0 || watchlist.isEmpty
           ? const Center(
               child: Text(
                 'No Movie in Watchlist',
@@ -94,12 +91,11 @@ class WatchList extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.separated(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    itemCount: totalWatchlist,
+                    itemCount: watchlist.length,
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 20),
@@ -129,7 +125,7 @@ class WatchList extends ConsumerWidget {
                       );
                     },
                   ),
-                ),
+                )
               ],
             ),
     );

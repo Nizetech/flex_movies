@@ -25,19 +25,6 @@ class FavoriteNotifier extends StateNotifier<List> {
     state = [...state];
   }
 
-  // void addFavorite(Map movie) {
-  //   state = [...state, movie];
-  //   // box.put('isFavorite', true);
-  //   box.put(movie['id'], state);
-  // }
-
-  // void removeFavorite(Map movie) {
-  //   state = state.where((element) => element['id'] != movie['id']).toList();
-  //   // box.put('isFavorite', true);
-
-  //   box.put(movie['id'], state);
-  // }
-
   void clearFavorite() {
     state = [];
     box.put(kWatchList, state);
@@ -48,6 +35,7 @@ class FavoriteNotifier extends StateNotifier<List> {
     state.removeWhere((element) => element['id'] == movie['id']);
     box.put(kWatchList, state);
     seed();
+    // state = state;
   }
 
   int get totalFavorite => state.length;

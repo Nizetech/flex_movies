@@ -179,9 +179,7 @@ class CategoryScreen extends ConsumerWidget {
                                   : category[index]['genres'];
                               return HotMovie(
                                 onTap: () {
-                                  // print(
-                                  //     'Movie ID ==> ${category[index]['id'].runtimeType}');
-
+                              
                                   Map movieDetails = {};
 
                                   movieDetails.addAll({
@@ -274,7 +272,7 @@ Widget genres({
                 onTap: () =>
                     ref.read(genreProvider.notifier).updateGenre(genre),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   margin: EdgeInsets.only(
                     right: genres.last == genre ? 20 : 10,
                     left: genres.first == genre ? 20 : 0,
