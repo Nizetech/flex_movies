@@ -1,44 +1,54 @@
 import 'dart:developer';
-
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/service/provider/watch_list_provider.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flex_movies/utils/data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
-class CategoryScreen extends ConsumerWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   CategoryScreen({Key? key}) : super(key: key);
 
-//   @override
-//   ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
-// }
+  @override
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
+}
 
-// class _CategoryScreenState extends ConsumerState<CategoryScreen> {
-  // int selected = 1;
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+  bool _isLoading = true;
+
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 30), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  @override
   List category = [];
 
-  DateTime date = DateTime.now();
-
-  // current year
-  int year = DateTime.now().year;
-// 1992 to current year
-  List years = List.generate(30, (index) => 1992 + index).reversed.toList();
-
-  // double value = 5.0;
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(
+    BuildContext context,
+  ) {
     String genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
-    final value = ref.watch(sliderProvider);
-    // final value = ref.watch(sliderValue);
-
-    // int vlaue = ref.watch(sliderProvider) as int;
-    // String selected;
-    log('Years ==> $years');
+    final rate = ref.watch(sliderProvider);
+    String rating = (rate * 2).toString();
+    // DateTime date = DateTime.now();
+    String year = ref.watch(yearProvider).toString();
+    // final value = ref.watch(sliderProvider);
+    final delay = Future.delayed(const Duration(seconds: 500), () {
+      Center(child: CircularProgressIndicator());
+    });
+    print('Year ==> $year');
 
     return Scaffold(
       appBar: AppBar(
@@ -87,60 +97,7 @@ class CategoryScreen extends ConsumerWidget {
                           topRight: Radius.circular(20),
                         )),
                         context: context,
-                        builder: (context) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 30),
-                          height: 200,
-                          child: Column(children: [
-                            Text(
-                              "Rating",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: Slider(
-                                  value: value,
-                                  min: 0,
-                                  max: 10.0,
-                                  label: value.toString(),
-                                  activeColor: mainColor,
-                                  onChanged: (val) {
-                                    // int value = val.round();
-                                    // ref
-                                    //     .watch(sliderProvider.notifier)
-                                    //     .updateSlider(val);
-
-                                    ref.read(sliderProvider.notifier).state =
-                                        val;
-
-                                    // value = val;
-                                    // ref.read(basicSlider.notifier).state = val;
-                                    log('my Value===> $val');
-                                  }),
-                            ),
-                            SizedBox(height: 20),
-                            TextButton(
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.red.withOpacity(.8))),
-                                onPressed: () {
-                                  Get.back();
-
-                                  // category.clear();
-                                },
-                                child: Text(
-                                  'Apply',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: white,
-                                      fontWeight: FontWeight.bold),
-                                )),
-                          ]),
-                        ),
+                        builder: ((context) => const _RatingSlider()),
                       );
                     },
                     radius: 10,
@@ -148,22 +105,22 @@ class CategoryScreen extends ConsumerWidget {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-                future: ApiService.getCategoryList(genre, page, 3),
+                future: ApiService.getCategoryList(genre, page, rating, year),
                 builder: (context, snapshot) {
                   if (snapshot.hasData &&
                       snapshot.data != null &&
                       snapshot.data!.isNotEmpty) {
                     category = snapshot.data!;
-                    print(snapshot.data);
+                    // print(snapshot.data);
                     return SingleChildScrollView(
                       child: Column(
                         children: [
                           ListView.separated(
                             scrollDirection: Axis.vertical,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: category.length,
                             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
@@ -179,7 +136,6 @@ class CategoryScreen extends ConsumerWidget {
                                   : category[index]['genres'];
                               return HotMovie(
                                 onTap: () {
-                              
                                   Map movieDetails = {};
 
                                   movieDetails.addAll({
@@ -245,7 +201,20 @@ class CategoryScreen extends ConsumerWidget {
                       ),
                     );
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return _isLoading == true
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : const Center(
+                            child: Text(
+                              'No Data Found',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
                   }
                 }),
           )
@@ -272,7 +241,8 @@ Widget genres({
                 onTap: () =>
                     ref.read(genreProvider.notifier).updateGenre(genre),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   margin: EdgeInsets.only(
                     right: genres.last == genre ? 20 : 10,
                     left: genres.first == genre ? 20 : 0,
@@ -299,4 +269,164 @@ Widget genres({
     }),
   );
   // });
+}
+
+class _RatingSlider extends ConsumerWidget {
+  const _RatingSlider();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(sliderProvider);
+    String label = value.toString();
+    // DateTime date = DateTime.now();
+    String year = ref.watch(yearProvider).toString();
+    log('Year++=+> $year');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      height: 300,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
+          "Rating",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Center(
+          child: RatingBar.builder(
+            initialRating: value,
+            minRating: 0,
+            glow: false,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemCount: 5,
+            itemSize: 40,
+            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+            itemBuilder: (context, _) => const Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            onRatingUpdate: (rating) {
+              ref.read(sliderProvider.notifier).state = rating;
+              label = rating.toString();
+              // print('My Label ===> ${(rating.floor()).toString()}');
+            },
+          ),
+        ),
+        Center(
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+          ),
+        ),
+        SizedBox(height: 10),
+        const Text(
+          "Year",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          children: [
+            Container(
+              height: 45,
+              width: 70,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: mainColor, width: 2),
+              ),
+              child: Text(
+                year,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: 20),
+            TextButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 13)),
+                  backgroundColor: MaterialStateProperty.all(
+                    Colors.black.withOpacity(.8),
+                  ),
+                ),
+                onPressed: () {
+                  Get.dialog(Dialog(
+                    child: Consumer(
+                      builder: ((context, ref, child) {
+                        final date = ref.watch(dateProvider);
+                        return Container(
+                          height: 300,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: YearPicker(
+                                  firstDate:
+                                      DateTime(DateTime.now().year - 100, 1),
+                                  lastDate:
+                                      DateTime(DateTime.now().year + 100, 1),
+                                  initialDate: date,
+                                  selectedDate: date,
+                                  onChanged: (DateTime value) {
+                                    print(value);
+                                    ref
+                                        .read(dateProvider.notifier)
+                                        .updateDate(value);
+                                    print('Current Date ===>$date');
+                                  },
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: Text("Apply"))
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ));
+
+                  ;
+                  // category.clear();
+                },
+                child: Text(
+                  'Change',
+                  style: TextStyle(
+                      fontSize: 16, color: white, fontWeight: FontWeight.bold),
+                )),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Center(
+          child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  Colors.red.withOpacity(.8),
+                ),
+              ),
+              onPressed: () {
+                Get.back();
+
+                // category.clear();
+              },
+              child: Text(
+                'Apply',
+                style: TextStyle(
+                    fontSize: 16, color: white, fontWeight: FontWeight.bold),
+              )),
+        ),
+      ]),
+    );
+  }
 }

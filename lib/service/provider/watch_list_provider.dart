@@ -117,4 +117,20 @@ final pageProvider = StateNotifierProvider<PageCounter, int>((ref) {
 
 final sliderProvider = StateProvider.autoDispose<double>((ref) => 3);
 
-final basicSlider = StateProvider.autoDispose<double>((ref) => 3);
+// final basicSlider = StateProvider.autoDispose<double>((ref) => 3);
+
+/// <====== DateTime Provider ======> ///
+class DateNotifier extends StateNotifier<DateTime> {
+  DateNotifier() : super(DateTime.now());
+  void updateDate(DateTime date) {
+    state = date;
+  }
+}
+
+final dateProvider = StateNotifierProvider<DateNotifier, DateTime>((ref) {
+  return DateNotifier();
+});
+
+final yearProvider = Provider<int>((ref) {
+  return ref.watch(dateProvider).year;
+});

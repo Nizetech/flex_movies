@@ -66,10 +66,10 @@ class ApiService {
   // 'movie_details.json?sort_by=year&movie_id=48521&with_images=true&with_cast=true&minimum_rating=3'
 
   static Future<List> getCategoryList(
-      String genre, int page, int rating) async {
+      String genre, int page, String rating, String year) async {
     try {
-      var uri = Uri.parse(ApiConstant.baseUrl +
-          '/api/v2/list_movies.json?sort_by=year&limit=20&genre=$genre&page=$page&minimum_rating=$rating');
+      var uri = Uri.parse(
+          '${ApiConstant.baseUrl}/api/v2/list_movies.json?sort_by=year&limit=20&genre=$genre&page=$page&minimum_rating=$rating&query_term=$year');
 
       final response = await http.get(
         uri,

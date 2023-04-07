@@ -209,18 +209,28 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                     direction: Axis.horizontal,
                   ),
                   Spacer(),
-                  Wrap(
+                  Row(
                     children: [
-                      for (var genre in widget.genres)
-                        Text(
-                          widget.genres.last == genre ? genre : genre + ' , ',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Expanded(
+                        child: Wrap(
+                          children: [
+                            for (var genre in widget.genres)
+                              Text(
+                                widget.genres.last == genre
+                                    ? genre
+                                    : genre + ' , ',
+                                maxLines: 2,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                          ],
                         ),
+                      ),
                     ],
                   )
                 ],
@@ -553,6 +563,7 @@ class _ActionTabsState extends State<ActionTabs> {
   // static Box box = Hive.box(kAppName);
   // List watchlist = box.get('watchlist', defaultValue: []);
   // List totalWatchlist = box.get('watchlist') ?? [];
+  bool isFav = false;
 
   final double _height = 100.0;
   void _animateToIndex(int index) {
@@ -599,11 +610,23 @@ class _ActionTabsState extends State<ActionTabs> {
                       'rating': widget.movie['rating'],
                       'isFavorite': true,
                     };
-                    // ref.read(favoriteProvider.notifier).addFavorite(movie);
-                    // watchlist.add(widget.movie);
-                    // box.put('watchlist', watchlist);
-                    log('Added ==> $movie to watchlist,=====> $movie');
-                    showToast('Added to watchlist');
+                    isFav = ref
+                        .watch(favoriteProvider)
+                        .where((element) =>
+                            element['id'] == widget.movie['id'].toString())
+                        .isNotEmpty;
+
+                    ref.read(favoriteProvider.notifier).toggleFavorite(
+                          movie,
+                        );
+
+                    // ignore: unrelated_type_equality_checks
+                    if (!isFav) {
+                      showToast('Added ${movie['title']} to watchlist');
+                    } else {
+                      showErrorToast(
+                          'Removed ${movie['title']} from watchlist');
+                    }
                   },
                   child: const CircleAvatar(
                     radius: 25,
