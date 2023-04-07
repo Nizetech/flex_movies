@@ -24,7 +24,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 30), () {
+    Future.delayed(const Duration(seconds: 10), () {
       setState(() {
         _isLoading = false;
       });
@@ -45,9 +45,6 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     // DateTime date = DateTime.now();
     String year = ref.watch(yearProvider).toString();
     // final value = ref.watch(sliderProvider);
-    final delay = Future.delayed(const Duration(seconds: 500), () {
-      Center(child: CircularProgressIndicator());
-    });
     print('Year ==> $year');
 
     return Scaffold(
@@ -372,8 +369,7 @@ class _RatingSlider extends ConsumerWidget {
                                 child: YearPicker(
                                   firstDate:
                                       DateTime(DateTime.now().year - 100, 1),
-                                  lastDate:
-                                      DateTime(DateTime.now().year + 100, 1),
+                                  lastDate: DateTime(DateTime.now().year, 1),
                                   initialDate: date,
                                   selectedDate: date,
                                   onChanged: (DateTime value) {
