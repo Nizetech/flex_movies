@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flex_movies/screens/category/widget.dart';
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
@@ -20,13 +21,10 @@ class CategoryScreen extends ConsumerStatefulWidget {
   ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends ConsumerState<CategoryScreen> {
+class _CategoryScreenState extends ConsumerState<CategoryScreen>
+   {
   bool _isLoading = true;
-
-  // void initState() {
-  //   super.initState();
-  // }
-
+ 
   @override
   List category = [];
 
@@ -34,6 +32,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   Widget build(
     BuildContext context,
   ) {
+   
     String genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
     final rate = ref.watch(sliderProvider);
@@ -130,20 +129,36 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                               //     'Wachlist genres ==> ${category[index]['genres']}');
 
                               List genres = category[index]['genres'] ?? [];
-                              return HotMovie(
-                                onTap: () {
-                                  Map movieDetails = {};
+                              return MyAnimatedList(
+                                  index: index,
+                                  category: category,
+                                  genre: genres,
+                                  id: category[index]['id']);
+                              // AnimatedBuilder(
+                              //   animation: animation,
+                              //   builder: (context, child) =>
+                              //       Transform.translate(
+                              //     offset: Offset(
+                              //       0,
+                              //       100 * (1 - animation.value),
+                              //     ),
+                              //     child: child,
+                              //   ),
+                              //   child: HotMovie(
+                              //     onTap: () {
+                              //       Map movieDetails = {};
 
-                                  movieDetails.addAll({
-                                    'id': category[index]['id'],
-                                  });
-                                  return Get.to(
-                                      DetailsScreen(movie: movieDetails));
-                                },
-                                index: index,
-                                genres: genres,
-                                movieModel: category,
-                              );
+                              //       movieDetails.addAll({
+                              //         'id': category[index]['id'],
+                              //       });
+                              //       return Get.to(
+                              //           DetailsScreen(movie: movieDetails));
+                              //     },
+                              //     index: index,
+                              //     genres: genres,
+                              //     movieModel: category,
+                              //   ),
+                              // );
                               //   },
                               // ),
                             },
@@ -197,10 +212,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       ),
                     );
                   } else {
-                    return
-                        // _isLoading == true
-                        //     ?
-                        Center(
+                    return Center(
                       child: loader(),
                     )
                         // : const Center(

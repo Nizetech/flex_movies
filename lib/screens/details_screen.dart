@@ -70,64 +70,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
   bool downloading = false;
   var progressString = "";
 
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   downloadFile();
-  // }
-
-  // FocusNode isMe = FocusNode();
   final ScrollController _controller = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    // Future<
-    void downloadFile() async {
-      // Dio dio = Dio();
-
-      try {
-        final directory = await getExternalStorageDirectory();
-        var dir = await getApplicationDocumentsDirectory();
-        // print("path ${dir.path}");
-        // await dio.download(imgUrl, "${dir.path}/demo.mp4",
-        //     onReceiveProgress: (rec, total) {
-        //   print("Rec: $rec , Total: $total");
-
-        //   setState(() {
-        //     downloading = true;
-        //     progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-        //   });
-        // });
-        // String mainDir = directory.path
-        //     .replaceFirst('Android/data/com.julitech.jmovies/files', "");
-        // final myDir = await Directory("$mainDir" + "JMovies/Downloads")
-        //     .create(recursive: true);
-
-        // final response = await http.get(url).timeout(
-        //   Duration(seconds: 20),
-        //   onTimeout: () {
-        //     throw "Error";
-        //   },
-        // );
-
-        // File downloadedFile = await File(myDir.path + '/$title.torrent')
-        //     .writeAsBytes(response.bodyBytes);
-      } catch (e) {
-        print(e);
-      }
-
-      setState(() {
-        downloading = false;
-        progressString = "Completed";
-      });
-      print("Download completed");
-    }
-
-    // String duration = getDuration(movieDetail['runtime']);
-
-    // log('my movie ==${widget.movie}');
-    // log('my movie ==${widget.cast}');
     return Scaffold(
       body: CustomScrollView(
         controller: _controller,
@@ -182,8 +128,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     } else {
                       cast = [];
                     }
-                    // print('My Cast length==> ${cast}');
-                    print('My Cast length==> ${(movieDetail['runtime'])}');
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -196,14 +141,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 bottom: Radius.circular(20),
                               ),
                               child: SizedBox(
-                                child: CachedNetworkImage(
-                                  imageUrl: movieDetail['large_cover_image'],
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 400,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) =>
-                                      Container(
-                                    color: Colors.black,
+                                child: Hero(
+                                  tag: movieDetail['title'],
+                                  child: CachedNetworkImage(
+                                    imageUrl: movieDetail['large_cover_image'],
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 400,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),

@@ -26,18 +26,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  //? Animation Starts Here
+  // late AnimationController controller;
+  // late Animation<double> animation;
+  // // late  Animation
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   controller = AnimationController(
+  //     duration: const Duration(seconds: 10),
+  //     vsync: this,
+  //   );
+  //   animation = Tween<double>(begin: 0, end: 1).animate(controller)
+  //     ..addListener(() {
+  //       setState(() {});
+  //     });
+  //   controller.forward();
+  // }
+
+  // @override
+  // void dispose() {
+  //   controller.dispose();
+  //   super.dispose();
+  // }
+  //? Animation Ends Here
   // @override
   // void didChangeDependencies() {
   //   // ApiService.getAllMovie();
-  //   // ApiService().searchMovie('thor');
-  //   // ApiService.getMovieDetails('10');
-  //   // ApiService.getAllMovieListModel();
-  //   // ApiService().getAllMovieListModel(1);
   //   // print('here');
   //   super.didChangeDependencies();
   // }
 
-  static Box box = Hive.box(kAppName);
+  // static Box box = Hive.box(kAppName);
 
   int page = 1;
 
@@ -52,17 +73,21 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _controller = ScrollController();
 
   bool isSearching = false;
-  // List<Map> watchlist = box.get('watchlist', defaultValue: {});
 
   @override
   Widget build(BuildContext context) {
+    // this.controller.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     controller.reverse();
+    //   } else if (status == AnimationStatus.dismissed) {
+    //     controller.forward();
+    //   }
+    // });
     Future<List> getAllMovies = ApiService.getAllMovieList(widget.index);
     Future<List> getTopMovies = ApiService.getTopMovies(widget.index);
 
     print('index ${widget.index}');
 
-    // print('watchlist ==> $watchlist');
-    // print('cast ${cast}');
     return Scaffold(
       // extendBodyBehindAppBar: true,
       // extendBody: true,
@@ -113,9 +138,6 @@ class _HomePageState extends State<HomePage> {
               hasScrollBody: true,
               child: FutureBuilder<dynamic>(
                   future: Future.wait([
-                    // ApiService().getAllMovieListModel(page),
-                    // ApiService.getAllMovieList(index),
-                    // ApiService.getTopMovies(index),
                     getAllMovies,
                     getTopMovies,
 
@@ -163,16 +185,19 @@ class _HomePageState extends State<HomePage> {
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  CachedNetworkImage(
-                                    imageUrl: topMovies[widget.index]
-                                        ['large_cover_image'],
-                                    errorWidget: (context, url, error) =>
-                                        Container(
-                                      color: Colors.black,
+                                  Hero(
+                                    tag: topMovies[widget.index]['title'],
+                                    child: CachedNetworkImage(
+                                      imageUrl: topMovies[widget.index]
+                                          ['large_cover_image'],
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                        color: Colors.black,
+                                      ),
+                                      height: 350,
+                                      width: double.infinity,
+                                      fit: BoxFit.fill,
                                     ),
-                                    height: 350,
-                                    width: double.infinity,
-                                    fit: BoxFit.fill,
                                   ),
                                   Positioned(
                                     child: Container(
@@ -287,6 +312,17 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 SizedBox(height: 20),
+                                // AnimatedBuilder(
+                                //   animation: controller,
+                                //   builder: (context, child) =>
+                                //       Transform.translate(
+                                //     offset: Offset(
+                                //       0,
+                                //       100 * (1 - animation.value),
+                                //     ),
+                                //     child: child,
+                                //   ),
+                                //   child:
                                 ListView.separated(
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
@@ -320,6 +356,7 @@ class _HomePageState extends State<HomePage> {
                                     );
                                   },
                                 ),
+                                // ),
                                 SizedBox(height: 20),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
