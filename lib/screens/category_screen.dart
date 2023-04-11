@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/service/provider/watch_list_provider.dart';
@@ -22,14 +23,9 @@ class CategoryScreen extends ConsumerStatefulWidget {
 class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   bool _isLoading = true;
 
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(seconds: 10), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
+  // void initState() {
+  //   super.initState();
+  // }
 
   @override
   List category = [];
@@ -44,6 +40,11 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     String rating = (rate * 2).toString();
     // DateTime date = DateTime.now();
     String year = ref.watch(yearProvider).toString();
+    Future.delayed(const Duration(seconds: 20), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
     // final value = ref.watch(sliderProvider);
     print('Year ==> $year');
 
@@ -128,9 +129,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                               // print(
                               //     'Wachlist genres ==> ${category[index]['genres']}');
 
-                              List genres = category[index]['genres'] == null
-                                  ? []
-                                  : category[index]['genres'];
+                              List genres = category[index]['genres'] ?? [];
                               return HotMovie(
                                 onTap: () {
                                   Map movieDetails = {};
@@ -198,20 +197,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       ),
                     );
                   } else {
-                    return _isLoading == true
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : const Center(
-                            child: Text(
-                              'No Data Found',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          );
+                    return
+                        // _isLoading == true
+                        //     ?
+                        Center(
+                      child: loader(),
+                    )
+                        // : const Center(
+                        //     child: Text(
+                        //       'No Data Found',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontSize: 24,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //   )
+                        ;
                   }
                 }),
           )

@@ -4,17 +4,20 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:dio/dio.dart';
-import 'package:flex_movies/model/movie.dart';
+// import 'package:flex_movies/model/movie.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
+import 'package:flex_movies/screens/widgets/download.dart';
+import 'package:flex_movies/screens/widgets/torrent.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+// import 'package:iconly/iconly.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
+// import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import '../service/api_service.dart';
 import '../utils/utils.dart';
 
@@ -84,6 +87,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       // Dio dio = Dio();
 
       try {
+        final directory = await getExternalStorageDirectory();
         var dir = await getApplicationDocumentsDirectory();
         // print("path ${dir.path}");
         // await dio.download(imgUrl, "${dir.path}/demo.mp4",
@@ -95,7 +99,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
         //     progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
         //   });
         // });
-        final directory = await getExternalStorageDirectory();
         // String mainDir = directory.path
         //     .replaceFirst('Android/data/com.julitech.jmovies/files', "");
         // final myDir = await Directory("$mainDir" + "JMovies/Downloads")
@@ -168,8 +171,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ]),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    return Center(
+                      child: loader(),
                     );
                   } else {
                     movieSuggestion = snapshot.data[0];
@@ -489,83 +492,108 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .5,
                             child: GestureDetector(
-                              onTap: () {
-                                downloadFile();
-                                Get.dialog(
-                                  Dialog(
-                                    backgroundColor: Colors.white,
-                                    insetPadding:
-                                        EdgeInsets.symmetric(horizontal: 40),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const SizedBox(
-                                              height: 30,
-                                              width: 30,
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                            Text(
-                                                'Downloading ... $progressString'),
-                                          ],
-                                        ),
-                                      );
-                                      // Container(
-                                      //   padding: const EdgeInsets.all(20),
-                                      //   decoration: BoxDecoration(
-                                      //       borderRadius:
-                                      //           BorderRadius.circular(20),
-                                      //       color: Colors.white,
-                                      //       border: Border.all(
-                                      //         color: mainColor,
-                                      //         width: 3,
-                                      //       )),
-                                      //   child: Column(
-                                      //     mainAxisSize: MainAxisSize.min,
-                                      //     children: [
-                                      //       Row(
-                                      //         children: [
-                                      //           Radio(
-                                      //               value: select,
-                                      //               groupValue: 0,
-                                      //               onChanged: (value) {
-                                      //                 setState(() {
-                                      //                   value = select;
-                                      //                 });
-                                      //               }),
-                                      //           Text('data'),
-                                      //         ],
-                                      //       ),
-                                      //       Row(
-                                      //         children: [
-                                      //           Radio(
-                                      //               value: select,
-                                      //               groupValue: 1,
-                                      //               onChanged: (value) {
-                                      //                 setState(() {
-                                      //                   value = select;
-                                      //                 });
-                                      //               }),
-                                      //           Text('data'),
-                                      //         ],
-                                      //       ),
-                                      //     ],
-                                      //   ),
-                                      // );
-                                    }),
-                                  ),
-                                );
+                              onTap: () async {
+                                Get.to(TorrentStreamerView(
+                                    url: movieDetail['url']));
+                                // ignore: use_build_context_synchronously
+                                // dialog(context);
+                                // print(
+                                //     "Download Button Pressed ${movieDetail['url']}");
+                                // final permission =
+                                //     await Permission.storage.request();
+                                // if (permission.isGranted) {
+                                //   // ignore: use_build_context_synchronously
+                                //   Navigator.of(context).pop();
+                                //   // ignore: use_build_context_synchronously
+                                //   MyDownload.downloadFile(
+                                //       title: movieDetail['title'],
+                                //       url: movieDetail['url'],
+                                //       context: context,
+                                //       onTap: () {
+                                //         // clear overlay dialog
+                                //         Navigator.of(context).pop();
+                                //       });
+                                // } else {
+                                //   showErrorToast(
+                                //       "Please Grant Permission to Download this movie");
+                                // }
+                                //? Here is the code for downloading the movie
+                                // downloadFile();
+                                // Get.dialog(
+                                //   Dialog(
+                                //     backgroundColor: Colors.white,
+                                //     insetPadding:
+                                //         EdgeInsets.symmetric(horizontal: 40),
+                                //     shape: RoundedRectangleBorder(
+                                //       borderRadius: BorderRadius.circular(20),
+                                //     ),
+                                //     child: StatefulBuilder(
+                                //         builder: (context, setState) {
+                                //       return Container(
+                                //         decoration: BoxDecoration(
+                                //           color: Colors.white,
+                                //           borderRadius:
+                                //               BorderRadius.circular(20),
+                                //         ),
+                                //         child: Column(
+                                //           mainAxisSize: MainAxisSize.min,
+                                //           children: [
+                                //             const SizedBox(
+                                //               height: 30,
+                                //               width: 30,
+                                //               child:
+                                //                   CircularProgressIndicator(),
+                                //             ),
+                                //             Text(
+                                //                 'Downloading ... $progressString'),
+                                //           ],
+                                //         ),
+                                //       );
+                                //       // Container(
+                                //       //   padding: const EdgeInsets.all(20),
+                                //       //   decoration: BoxDecoration(
+                                //       //       borderRadius:
+                                //       //           BorderRadius.circular(20),
+                                //       //       color: Colors.white,
+                                //       //       border: Border.all(
+                                //       //         color: mainColor,
+                                //       //         width: 3,
+                                //       //       )),
+                                //       //   child: Column(
+                                //       //     mainAxisSize: MainAxisSize.min,
+                                //       //     children: [
+                                //       //       Row(
+                                //       //         children: [
+                                //       //           Radio(
+                                //       //               value: select,
+                                //       //               groupValue: 0,
+                                //       //               onChanged: (value) {
+                                //       //                 setState(() {
+                                //       //                   value = select;
+                                //       //                 });
+                                //       //               }),
+                                //       //           Text('data'),
+                                //       //         ],
+                                //       //       ),
+                                //       //       Row(
+                                //       //         children: [
+                                //       //           Radio(
+                                //       //               value: select,
+                                //       //               groupValue: 1,
+                                //       //               onChanged: (value) {
+                                //       //                 setState(() {
+                                //       //                   value = select;
+                                //       //                 });
+                                //       //               }),
+                                //       //           Text('data'),
+                                //       //         ],
+                                //       //       ),
+                                //       //     ],
+                                //       //   ),
+                                //       // );
+                                //     }),
+                                //   ),
+                                // );
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

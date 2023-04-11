@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flex_movies/botton_nav.dart';
 import 'package:flex_movies/key/api_key.dart';
+import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ void main() async {
   );
   await Hive.initFlutter();
   await Hive.openBox(kAppName);
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Raleway',
           dividerColor: Colors.grey,
           scaffoldBackgroundColor: Colors.black,
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
             backgroundColor: Colors.transparent,
             elevation: 0,
             foregroundColor: Colors.white,
@@ -87,15 +88,14 @@ class MyApp extends StatelessWidget {
               );
             }
           } else {
-            return const Scaffold(
+            return Scaffold(
               body: Center(
-                child: CircularProgressIndicator(),
+                child: loader(),
               ),
             );
           }
         },
       ),
-
       // BottomNav(),
     );
   }

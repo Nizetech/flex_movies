@@ -76,6 +76,7 @@ class _HotMovieState extends ConsumerState<HotMovie> {
 
     log('>>>>> $watchlist');
     bool isFav = false;
+    final genreList = widget.genres.take(7).toList();
 
     // print(' my genre ==>${widget.movieModel[widget.index]['genre']}');
     return GestureDetector(
@@ -209,28 +210,20 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                     direction: Axis.horizontal,
                   ),
                   Spacer(),
-                  Row(
+                  Wrap(
                     children: [
-                      Expanded(
-                        child: Wrap(
-                          children: [
-                            for (var genre in widget.genres)
-                              Text(
-                                widget.genres.last == genre
-                                    ? genre
-                                    : genre + ' , ',
-                                maxLines: 2,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                          ],
+                      for (var genre in genreList)
+                        Text(
+                          widget.genres.last == genre ? genre : genre + ' , ',
+                          maxLines: 2,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Colors.white,
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
                     ],
                   )
                 ],

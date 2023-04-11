@@ -1,4 +1,4 @@
-package com.example.flex_movies
+package com.nizetech.flex_movies
 
 import io.flutter.embedding.android.FlutterActivity
 

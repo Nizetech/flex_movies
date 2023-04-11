@@ -6,6 +6,7 @@ import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:flex_movies/screens/details_screen.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
+import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/utils/colors.dart';
@@ -124,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                     if (!snapshot.hasData ||
                         snapshot.hasError ||
                         snapshot.data[1].length == 0) {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child: loader());
                     } else {
                       movieModel = snapshot.data[0];
                       topMovies = snapshot.data[1];
