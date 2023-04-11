@@ -32,9 +32,11 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   dio: ^5.0.2
   permission_handler: ^10.2.0
-  torrent_streamer: ^0.0.1
   loading_animation_widget: ^1.2.0+4
-  # dart_torrent: ^1.2.0
+  device_apps: ^2.2.0
+  path_provider: ^2.0.13
+  open_file: ^3.2.1
+
   # hooks_riverpod: ^2.0.0
 
   # infinite_scroll_pagination: ^3.2.0
@@ -43,8 +45,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-dependency_overrides:
-  path_provider: ^2.0.13
+# dependency_overrides:
 
 dev_dependencies:
   flutter_test:

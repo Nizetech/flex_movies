@@ -2,21 +2,21 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cached_video_player/cached_video_player.dart';
-import 'package:dio/dio.dart';
+// import 'package:cached_video_player/cached_video_player.dart';
+// import 'package:dio/dio.dart';
 // import 'package:flex_movies/model/movie.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
-import 'package:flex_movies/screens/widgets/torrent.dart';
+// import 'package:flex_movies/screens/widgets/torrent.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:iconly/iconly.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 // import 'package:video_player/video_player.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import '../service/api_service.dart';
 import '../utils/utils.dart';
@@ -123,6 +123,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   } else {
                     movieSuggestion = snapshot.data[0];
                     movieDetail = snapshot.data[1];
+                    log('torrent===> url ${movieDetail['torrents'][0]['url']}');
                     if (movieDetail['cast'] != null) {
                       cast = movieDetail['cast'];
                     } else {
@@ -441,30 +442,28 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             width: MediaQuery.of(context).size.width * .5,
                             child: GestureDetector(
                               onTap: () async {
-                                Get.to(TorrentStreamerView(
-                                    url: movieDetail['url']));
+                                // Get.to(TorrentStreamerView(
+                                //     url: movieDetail['url']));
                                 // ignore: use_build_context_synchronously
-                                // dialog(context);
+                                // log('torrent===> url ${movieDetail['torrents']}');
+                                dialog(context);
                                 // print(
                                 //     "Download Button Pressed ${movieDetail['url']}");
-                                // final permission =
-                                //     await Permission.storage.request();
-                                // if (permission.isGranted) {
-                                //   // ignore: use_build_context_synchronously
-                                //   Navigator.of(context).pop();
-                                //   // ignore: use_build_context_synchronously
-                                //   MyDownload.downloadFile(
-                                //       title: movieDetail['title'],
-                                //       url: movieDetail['url'],
-                                //       context: context,
-                                //       onTap: () {
-                                //         // clear overlay dialog
-                                //         Navigator.of(context).pop();
-                                //       });
-                                // } else {
-                                //   showErrorToast(
-                                //       "Please Grant Permission to Download this movie");
-                                // }
+                                final permission =
+                                    await Permission.storage.request();
+                                if (permission.isGranted) {
+                                  MyDownload.downloadFile(
+                                      title: movieDetail['title'],
+                                      url: movieDetail['torrents'][0]['url'],
+                                      context: context,
+                                      onTap: () {
+                                        // clear overlay dialog
+                                        Navigator.of(context).pop();
+                                      });
+                                } else {
+                                  showErrorToast(
+                                      "Please Grant Permission to Download this movie");
+                                }
                                 //? Here is the code for downloading the movie
                                 // downloadFile();
                                 // Get.dialog(

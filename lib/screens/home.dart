@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:flex_movies/screens/details_screen.dart';
@@ -71,6 +72,15 @@ class _HomePageState extends State<HomePage> {
   List searchMovies = [];
 
   final ScrollController _controller = ScrollController();
+
+  void isFluidInstalled() async {
+    bool isInstalled = await DeviceApps.isAppInstalled("com.delphicoder.flud");
+    if (isInstalled) {
+      print('===> Installed');
+    } else {
+      print('===> Not installed');
+    }
+  }
 
   bool isSearching = false;
 
@@ -155,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                           (element) => element['title'] == 'Mephistopheles');
                       // movieModel.shuffle();
                       topMovies.shuffle();
+                      isFluidInstalled();
                       // print('topMovies $movieModel');
                       return SingleChildScrollView(
                         child: Column(

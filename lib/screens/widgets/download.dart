@@ -1,9 +1,12 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,6 +33,16 @@ class MyDownload {
   //     print('Error while downloading file: $e');
   //   }
 
+  static void openFileChannel(String filePath) async {
+    try {
+      var platform = MethodChannel("opentorrent");
+      await platform.invokeMethod("openTorrentFile", {"path": filePath});
+    } on PlatformException catch (error) {
+      print(error);
+      showToast("An error occurred");
+    }
+  }
+
   static Future<bool> downloadFile({
     required String title,
     required String url,
@@ -41,8 +54,7 @@ class MyDownload {
       final directory = await getExternalStorageDirectory();
       String mainDir =
           // directory!.path.replaceFirst('Download/com.nizetech.flex_moviez', "");
-          directory!.path
-              .replaceFirst('Android/data/com.nizetech.flex_moviez', "");
+          directory!.path.replaceFirst('com.nizetech.flex_moviez', "");
 
       // saving file in Downloads folder  of external storage directory of device
       final myDir = await Directory("${mainDir}flex_moviez/Downloads")
@@ -61,6 +73,12 @@ class MyDownload {
       // if download is successful
       if (downloadedFile.existsSync()) {
         showToast('Download Successful');
+        log(myDir.toString());
+        log('Downloaded File Path ==>${downloadedFile.path}');
+        OpenFile.open(downloadedFile.path);
+        // open file use open_file package
+        // OpenFile.open(downloadedFile.path);
+
         onTap;
       }
 
@@ -144,21 +162,27 @@ Future<void> dialog(BuildContext context) {
     context: context,
     builder: (ctx) => Dialog(
       elevation: 10,
+      backgroundColor: Colors.black.withOpacity(.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.red, width: 2),
+        // side: BorderSide(color: Colors.red, width: 2),
       ),
       child: Container(
         padding: const EdgeInsets.all(20),
+        color: Colors.black.withOpacity(.2),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            loader(),
+            loader(color: Colors.green),
             SizedBox(height: 10),
             Text(
               "Downloading File...Please Wait",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.subtitle2,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             )
           ],
         ),
@@ -167,7 +191,7 @@ Future<void> dialog(BuildContext context) {
   );
 }
 
-Widget loader() => LoadingAnimationWidget.threeRotatingDots(
-      color: mainColor,
+Widget loader({Color? color}) => LoadingAnimationWidget.threeRotatingDots(
+      color: color ?? mainColor,
       size: 100,
     );
