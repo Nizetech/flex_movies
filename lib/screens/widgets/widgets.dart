@@ -92,21 +92,17 @@ class _HotMovieState extends ConsumerState<HotMovie> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Hero(
-              tag: widget.movieModel[widget.index]['title'],
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.black,
-                  ),
-                  // imageUrl: movieModel[index].largeCoverImage,
-                  imageUrl: widget.movieModel[widget.index]
-                      ['large_cover_image'],
-                  height: 130,
-                  width: 130,
-                  fit: BoxFit.fill,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.black,
                 ),
+                // imageUrl: movieModel[index].largeCoverImage,
+                imageUrl: widget.movieModel[widget.index]['large_cover_image'],
+                height: 130,
+                width: 130,
+                fit: BoxFit.fill,
               ),
             ),
             SizedBox(width: 10),

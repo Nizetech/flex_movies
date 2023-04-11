@@ -12,9 +12,11 @@ import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../model/movie_list.dart';
 
@@ -72,15 +74,6 @@ class _HomePageState extends State<HomePage> {
   List searchMovies = [];
 
   final ScrollController _controller = ScrollController();
-
-  void isFluidInstalled() async {
-    bool isInstalled = await DeviceApps.isAppInstalled("com.delphicoder.flud");
-    if (isInstalled) {
-      print('===> Installed');
-    } else {
-      print('===> Not installed');
-    }
-  }
 
   bool isSearching = false;
 
@@ -165,7 +158,6 @@ class _HomePageState extends State<HomePage> {
                           (element) => element['title'] == 'Mephistopheles');
                       // movieModel.shuffle();
                       topMovies.shuffle();
-                      isFluidInstalled();
                       // print('topMovies $movieModel');
                       return SingleChildScrollView(
                         child: Column(
@@ -196,19 +188,16 @@ class _HomePageState extends State<HomePage> {
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  Hero(
-                                    tag: topMovies[widget.index]['title'],
-                                    child: CachedNetworkImage(
-                                      imageUrl: topMovies[widget.index]
-                                          ['large_cover_image'],
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                        color: Colors.black,
-                                      ),
-                                      height: 350,
-                                      width: double.infinity,
-                                      fit: BoxFit.fill,
+                                  CachedNetworkImage(
+                                    imageUrl: topMovies[widget.index]
+                                        ['large_cover_image'],
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      color: Colors.black,
                                     ),
+                                    height: 350,
+                                    width: double.infinity,
+                                    fit: BoxFit.fill,
                                   ),
                                   Positioned(
                                     child: Container(

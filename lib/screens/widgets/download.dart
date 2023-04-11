@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:device_apps/device_apps.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -9,37 +10,47 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class MyDownload {
-  //   try {
-  //     // Get the temporary directory of the device.
-  //     final directory = await getTemporaryDirectory();
+  String flud = "com.delphicoder.flud";
 
-  //     // Create a new file in the temporary directory.
-  //     final file = File('${directory.path}/$fileName');
-
-  //     // Download the file from the URL using the HttpClient.
-  //     final client = HttpClient();
-  //     final request = await client.getUrl(Uri.parse(fileUrl));
-  //     final response = await request.close();
-
-  //     // Write the downloaded bytes to the file.
-  //     await response.pipe(file.openWrite());
-
-  //     // Move the file from the temporary directory to the internal storage.
-  //     final appDirectory = await getApplicationDocumentsDirectory();
-  //     await file.rename('${appDirectory.path}/$fileName');
-  //   } catch (e) {
-  //     print('Error while downloading file: $e');
-  //   }
-
-  static void openFileChannel(String filePath) async {
+  Future<bool> isFluidInstalled(
+      // {
+      // required String title,
+      // required String url,
+      // required BuildContext context,
+      // required VoidCallback onTap,
+      // }
+      ) async {
+    bool isInstalled = await DeviceApps.isAppInstalled(flud);
     try {
-      var platform = MethodChannel("opentorrent");
-      await platform.invokeMethod("openTorrentFile", {"path": filePath});
-    } on PlatformException catch (error) {
-      print(error);
-      showToast("An error occurred");
+      if (isInstalled) {
+        print('===> Installed');
+        // downloadFile(title: title, url: url, context: context, onTap: onTap);
+        return true;
+      } else {
+        print('===> Not installed');
+        final url = Uri.parse("market://details?id=$flud");
+        final url2 =
+            Uri.parse("https://play.google.com/store/apps/details?id=$flud");
+        launchUrl(
+          url2,
+          mode: LaunchMode.externalApplication,
+        );
+
+        return false;
+        // try {
+        // } on PlatformException catch (e) {
+        //   launchUrl(url2);
+        // }
+        //finally {
+        //   launch(
+        //       "https://play.google.com/store/apps/details?id=" + appPackageName);
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
     }
   }
 
@@ -53,8 +64,8 @@ class MyDownload {
       // get External StorageDirectory
       final directory = await getExternalStorageDirectory();
       String mainDir =
-          // directory!.path.replaceFirst('Download/com.nizetech.flex_moviez', "");
-          directory!.path.replaceFirst('com.nizetech.flex_moviez', "");
+          directory!.path.replaceFirst('com.nizetech.flex_moviez', " ");
+      // directory!.path.replaceFirst('Download/com.nizetech.flex_moviez', "");
 
       // saving file in Downloads folder  of external storage directory of device
       final myDir = await Directory("${mainDir}flex_moviez/Downloads")

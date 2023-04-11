@@ -142,17 +142,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 bottom: Radius.circular(20),
                               ),
                               child: SizedBox(
-                                child: Hero(
-                                  tag: movieDetail['title'],
-                                  child: CachedNetworkImage(
-                                    imageUrl: movieDetail['large_cover_image'],
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 400,
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, url, error) =>
-                                        Container(
-                                      color: Colors.black,
-                                    ),
+                                child: CachedNetworkImage(
+                                  imageUrl: movieDetail['large_cover_image'],
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 400,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -442,27 +439,31 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             width: MediaQuery.of(context).size.width * .5,
                             child: GestureDetector(
                               onTap: () async {
-                                // Get.to(TorrentStreamerView(
-                                //     url: movieDetail['url']));
-                                // ignore: use_build_context_synchronously
                                 // log('torrent===> url ${movieDetail['torrents']}');
                                 dialog(context);
-                                // print(
-                                //     "Download Button Pressed ${movieDetail['url']}");
-                                final permission =
-                                    await Permission.storage.request();
-                                if (permission.isGranted) {
-                                  MyDownload.downloadFile(
-                                      title: movieDetail['title'],
-                                      url: movieDetail['torrents'][0]['url'],
-                                      context: context,
-                                      onTap: () {
-                                        // clear overlay dialog
-                                        Navigator.of(context).pop();
-                                      });
+
+                                // Check if fluid is installed
+                                final isFluidInstalled =
+                                    await MyDownload().isFluidInstalled();
+                                if (isFluidInstalled) {
+                                  final permission =
+                                      await Permission.storage.request();
+                                  if (permission.isGranted) {
+                                    MyDownload.downloadFile(
+                                        title: movieDetail['title'],
+                                        url: movieDetail['torrents'][0]['url'],
+                                        context: context,
+                                        onTap: () {
+                                          // clear overlay dialog
+                                          Navigator.of(context).pop();
+                                        });
+                                  } else {
+                                    showErrorToast(
+                                        "Please Grant Permission to Download this movie");
+                                  }
                                 } else {
                                   showErrorToast(
-                                      "Please Grant Permission to Download this movie");
+                                      "Please Install Fluid Streamer to Download this movie");
                                 }
                                 //? Here is the code for downloading the movie
                                 // downloadFile();
