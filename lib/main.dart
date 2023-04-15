@@ -23,6 +23,7 @@ void main() async {
       statusBarColor: Colors.blueAccent,
     ),
   );
+  SystemChrome.setPreferredOrientations(DeviceOrientation.values);
   await Hive.initFlutter();
   await Hive.openBox(kAppName);
   await Firebase.initializeApp(

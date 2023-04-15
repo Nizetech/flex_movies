@@ -191,6 +191,8 @@ class _HomePageState extends State<HomePage> {
                     // cast,
                   ]),
                   builder: (context, snapshot) {
+                    // check internet
+                    // checkInternet()
                     if (!snapshot.hasData ||
                         snapshot.hasError ||
                         snapshot.data[1].length == 0) {

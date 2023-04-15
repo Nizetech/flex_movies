@@ -565,32 +565,32 @@ class ActionTabs extends StatefulWidget {
 
 class _ActionTabsState extends State<ActionTabs> {
   Map<String, dynamic> movieDetails = {};
-  // Future<Uri> createMovieLink({required int movieId}) async {
-  //                 DynamicLinkParameters params = DynamicLinkParameters(
-  //                     uriPrefix: "https://flexmoviez.page.link?movie",
-  //                     link: Uri.parse(
-  //                         "https://flexmoviez.page.link?movieid=$movieId"),
-  //                     androidParameters: AndroidParameters(
-  //                       packageName: "com.flexmovies.app",
-  //                       // fallbackUrl: Uri.parse(MyValues.playStoreURL),
-  //                     ),
-  //                     socialMetaTagParameters: SocialMetaTagParameters(
-  //                         imageUrl: Uri.parse( widget.movie['title']),
-  //                         title: "Download ${ widget.movie  ['large_cover_image']} from FlexMovies",
-  //                         description:  widget.movie["description_full"]));
 
-  //                 // final link = await params.buildShortLink();
-  //                 ShortDynamicLink shortLink =  await dynamicLinks.buildShortLink(params);
-  //                 return link.shortUrl;
-  //               }
+  Future<Uri> createMovieLink({required String movieId}) async {
+    DynamicLinkParameters params = DynamicLinkParameters(
+        uriPrefix: "https://flexmoviez.page.link?movie",
+        link: Uri.parse("https://flexmoviez.page.link?movieid=$movieId"),
+        androidParameters: AndroidParameters(
+          packageName: "com.flexmovies.app",
+          // fallbackUrl: Uri.parse(MyValues.playStoreURL),
+        ),
+        socialMetaTagParameters: SocialMetaTagParameters(
+            imageUrl: Uri.parse(widget.movie['large_cover_image']),
+            title: "Download ${widget.movie['title']} from FlexMovies",
+            description: widget.movie["description_full"]));
 
-  //               Uri movieLink =
-  //                   await createMovieLink(movieId:  widget.movie['id']);
-  //               // Share.share(movieLink.toString());
+    // final link = await params.buildShortLink();
+    // ShortDynamicLink shortLink =  await dynamicLinks.buildShortLink(params);
+    final dynamicLink =
+        await FirebaseDynamicLinks.instance.buildShortLink(params);
+    Uri shortUrl = dynamicLink.shortUrl;
+    return shortUrl;
+  }
+
   bool isFav = false;
 
   final double _height = 100.0;
-  
+
   void _animateToIndex(int index) {
     if (widget.isHome == true) {
       Get.dialog(Dialog(
@@ -713,8 +713,13 @@ class _ActionTabsState extends State<ActionTabs> {
           Column(
             children: [
               GestureDetector(
-                onTap: () {
-                  Share.share(widget.imageUrl, subject: widget.movieTitle);
+                onTap: () async {
+                  final movieLink =
+                      await createMovieLink(movieId: widget.movie['id']);
+
+                  Share.share(movieLink.toString());
+                  print(movieLink.toString());
+                  Share.share(movieLink.toString(), subject: widget.movieTitle);
                 },
                 child: CircleAvatar(
                   radius: 25,

@@ -82,16 +82,32 @@ class _TrailerWidgetState extends State<TrailerWidget> {
     super.dispose();
   }
 
+  bool isFullScreen = false;
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
+      onEnterFullScreen: () {
+        // isFullScreen = false;
+        // SystemChrome.setPreferredOrientations([
+        //   DeviceOrientation.landscapeLeft,
+        //   DeviceOrientation.landscapeRight,
+        // ]);
+      },
       onExitFullScreen: () {
         /// The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
-        // SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+        // isFullScreen = true;
+        // SystemChrome.setPreferredOrientations([
+        //   DeviceOrientation.landscapeLeft,
+        //   DeviceOrientation.landscapeRight,
+        // ]);
+        SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       },
       player: YoutubePlayer(
         controller: _controller,
-        aspectRatio: widget.height ?? 16 / 9,
+        aspectRatio:
+            // isFullScreen == true ? 10 / 9 : 16 / 9,
+            // :
+            widget.height ?? 16 / 9,
         showVideoProgressIndicator: true,
         progressColors: ProgressBarColors(
           playedColor: mainColor,

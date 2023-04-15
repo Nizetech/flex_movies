@@ -87,8 +87,9 @@ class MyDownload {
         showToast('Download Successful');
         log(mainDir.toString());
         log('Downloaded File Path ==> ${downloadedFile.path}');
+
         //?
-        // OpenFile.open(downloadedFile.path);
+        OpenFile.open(downloadedFile.path);
 
         onTap;
       }

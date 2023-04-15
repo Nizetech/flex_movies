@@ -13,6 +13,7 @@ import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 // import 'package:iconly/iconly.dart';
 // import 'package:path_provider/path_provider.dart';
@@ -20,6 +21,7 @@ import 'package:get/get.dart';
 // import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import '../../service/api_service.dart';
+import '../../service/provider/watch_list_provider.dart';
 import '../../utils/utils.dart';
 
 class DetailsScreen extends StatefulWidget {
@@ -62,6 +64,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   List cast = [];
   List movieSuggestion = [];
   List torrent = [];
+  List torrentUrls = [];
   String torrentUrl = '';
   Map movieId = {};
   int select = 0;
@@ -439,6 +442,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             height: 200,
                             child: TrailerWidget(
                               trailerCode: movieDetail['yt_trailer_code'],
+                              // height: 10/9,
                             )),
                         SizedBox(height: 40),
                         Center(
@@ -465,67 +469,74 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       children: [
                                         ...torrent.map((e) {
                                           int index = torrent.indexOf(e);
-                                          // torrentUrl = e[index]['url'];
-                                          setState(() {
-                                            torrentUrl = e['url'];
-                                          });
-                                          log('torrentUrl ==> $torrentUrl');
+                                          torrentUrls = torrent
+                                              .map((item) => item['url'])
+                                              .toList();
+
                                           return torrentList(
                                             index: index,
                                             size: e['size'],
                                           );
                                         }).toList(),
                                         SizedBox(height: 10),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            // log('torrent===> url ${movieDetail['torrents']}');
-                                            dialog(context);
+                                        Consumer(builder: (context, ref, _) {
+                                          final index =
+                                              ref.watch(torrentSizeProvider);
+                                          torrentUrl = torrentUrls[index];
+                                          log('torrentUrl ==> ${torrentUrl}');
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              // log('torrent===> url ${movieDetail['torrents']}');
+                                              Get.back();
+                                              dialog(context);
 
-                                            // Check if fluid is installed
-                                            final isFluidInstalled =
-                                                await MyDownload()
-                                                    .isFluidInstalled();
-                                            if (isFluidInstalled) {
-                                              final permission =
-                                                  await Permission.storage
-                                                      .request();
-                                              if (permission.isGranted) {
-                                                MyDownload.downloadFile(
-                                                    title: movieDetail['title'],
-                                                    url: movieDetail['torrents']
-                                                        [0]['url'],
-                                                    context: context,
-                                                    onTap: () {
-                                                      // clear overlay dialog
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    });
+                                              // Check if fluid is installed
+                                              final isFluidInstalled =
+                                                  await MyDownload()
+                                                      .isFluidInstalled();
+                                              if (isFluidInstalled) {
+                                                final permission =
+                                                    await Permission.storage
+                                                        .request();
+                                                if (permission.isGranted) {
+                                                  MyDownload.downloadFile(
+                                                      title:
+                                                          movieDetail['title'],
+                                                      url: torrentUrl,
+                                                      context: context,
+                                                      onTap: () {
+                                                        // clear overlay dialog
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      });
+                                                } else {
+                                                  showErrorToast(
+                                                      "Please Grant Permission to Download this movie");
+                                                }
                                               } else {
                                                 showErrorToast(
-                                                    "Please Grant Permission to Download this movie");
+                                                    "Please Install Fluid Streamer to Download this movie");
                                               }
-                                            } else {
-                                              showErrorToast(
-                                                  "Please Install Fluid Streamer to Download this movie");
-                                            }
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: mainColor.withOpacity(.8),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 20, vertical: 10),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    mainColor.withOpacity(.8),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                'Download',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: white),
+                                              ),
                                             ),
-                                            child: Text(
-                                              'Download',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  color: white),
-                                            ),
-                                          ),
-                                        ),
+                                          );
+                                        }),
                                         SizedBox(height: 10),
                                       ],
                                     ),
