@@ -117,6 +117,10 @@ final pageProvider = StateNotifierProvider<PageCounter, int>((ref) {
 
 final sliderProvider = StateProvider.autoDispose<double>((ref) => 3);
 
+/// <====== torrentSize Provider ======> ///
+
+final torrentSizeProvider = StateProvider.autoDispose<int>((ref) => 0);
+
 // final basicSlider = StateProvider.autoDispose<double>((ref) => 3);
 
 /// <====== DateTime Provider ======> ///

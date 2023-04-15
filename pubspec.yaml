@@ -22,13 +22,13 @@ dependencies:
   http: ^0.13.5
   cached_network_image: ^3.2.0
   iconly: ^1.0.1
-  # google_sign_in: ^5.1.0
+  firebase_dynamic_links: ^5.1.0
+  firebase_core: ^2.9.0
   get: ^4.6.1
   iconsax: ^0.0.8
   youtube_player_flutter: ^8.1.2
   # cached_video_player: ^2.0.3
   # video_player: ^2.4.7
-  # shimmer: ^2.0.0
   flutter_rating_bar: ^4.0.1
   dio: ^5.0.2
   permission_handler: ^10.2.0

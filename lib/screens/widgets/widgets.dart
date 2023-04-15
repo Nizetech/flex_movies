@@ -1,17 +1,20 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../service/provider/watch_list_provider.dart';
 import '../../utils/colors.dart';
+import '../youtube_test.dart';
 
 Widget castWidget({required List cast, required int index}) {
   return Column(
@@ -543,8 +546,17 @@ class ActionTabs extends StatefulWidget {
   final Map movie;
   final ScrollController? controller;
   bool isHome;
+  String? trailerCode;
+  final String imageUrl;
+  final String movieTitle;
   ActionTabs(
-      {Key? key, required this.movie, this.controller, this.isHome = false})
+      {Key? key,
+      required this.movie,
+      this.controller,
+      this.isHome = false,
+      required this.imageUrl,
+      required this.movieTitle,
+      this.trailerCode})
       : super(key: key);
 
   @override
@@ -553,27 +565,59 @@ class ActionTabs extends StatefulWidget {
 
 class _ActionTabsState extends State<ActionTabs> {
   Map<String, dynamic> movieDetails = {};
-  // static Box box = Hive.box(kAppName);
-  // List watchlist = box.get('watchlist', defaultValue: []);
-  // List totalWatchlist = box.get('watchlist') ?? [];
+  // Future<Uri> createMovieLink({required int movieId}) async {
+  //                 DynamicLinkParameters params = DynamicLinkParameters(
+  //                     uriPrefix: "https://flexmoviez.page.link?movie",
+  //                     link: Uri.parse(
+  //                         "https://flexmoviez.page.link?movieid=$movieId"),
+  //                     androidParameters: AndroidParameters(
+  //                       packageName: "com.flexmovies.app",
+  //                       // fallbackUrl: Uri.parse(MyValues.playStoreURL),
+  //                     ),
+  //                     socialMetaTagParameters: SocialMetaTagParameters(
+  //                         imageUrl: Uri.parse( widget.movie['title']),
+  //                         title: "Download ${ widget.movie  ['large_cover_image']} from FlexMovies",
+  //                         description:  widget.movie["description_full"]));
+
+  //                 // final link = await params.buildShortLink();
+  //                 ShortDynamicLink shortLink =  await dynamicLinks.buildShortLink(params);
+  //                 return link.shortUrl;
+  //               }
+
+  //               Uri movieLink =
+  //                   await createMovieLink(movieId:  widget.movie['id']);
+  //               // Share.share(movieLink.toString());
   bool isFav = false;
 
   final double _height = 100.0;
+  
   void _animateToIndex(int index) {
     if (widget.isHome == true) {
-      movieDetails.addAll({
-        'id': widget.movie[index]['id'],
-      });
-      Get.to(DetailsScreen(
-        movie: movieDetails,
+      Get.dialog(Dialog(
+        backgroundColor: Colors.black.withOpacity(.9),
+        insetPadding: EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: mainColor),
+              ),
+              child: TrailerWidget(
+                trailerCode: widget.trailerCode ?? '',
+                isHome: true,
+                height: 10 / 7,
+              ),
+            ),
+          ],
+        ),
       ));
-      // ?.then((value) {
+
       widget.controller!.animateTo(
         index * _height,
         duration: Duration(seconds: 2),
         curve: Curves.fastOutSlowIn,
       );
-      // });
     } else {
       widget.controller!.animateTo(
         index * _height,
@@ -667,14 +711,19 @@ class _ActionTabsState extends State<ActionTabs> {
             ),
           ),
           Column(
-            children: const [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Color(0xff212029),
-                child: Icon(
-                  Icons.share,
-                  size: 30,
-                  color: Colors.white,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Share.share(widget.imageUrl, subject: widget.movieTitle);
+                },
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Color(0xff212029),
+                  child: Icon(
+                    Icons.share,
+                    size: 30,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               SizedBox(height: 10),

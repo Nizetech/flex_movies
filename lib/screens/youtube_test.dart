@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flex_movies/screens/home.dart';
+import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,14 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 /// Homepage
 class TrailerWidget extends StatefulWidget {
   final String trailerCode;
-  const TrailerWidget({Key? key, required this.trailerCode}) : super(key: key);
+  final bool isHome;
+  final double? height;
+  const TrailerWidget({
+    Key? key,
+    required this.trailerCode,
+    this.isHome = false,
+    this.height,
+  }) : super(key: key);
   @override
   _TrailerWidgetState createState() => _TrailerWidgetState();
 }
@@ -18,7 +26,7 @@ class _TrailerWidgetState extends State<TrailerWidget> {
   late YoutubePlayerController _controller;
   late PlayerState _playerState;
   late YoutubeMetaData _videoMetaData;
-  double _volume = 100;
+  // double _volume = 100;
   bool _muted = false;
   bool _isPlayerReady = false;
 
@@ -27,9 +35,9 @@ class _TrailerWidgetState extends State<TrailerWidget> {
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: widget.trailerCode,
-      flags: const YoutubePlayerFlags(
+      flags: YoutubePlayerFlags(
         mute: false,
-        autoPlay: false,
+        autoPlay: widget.isHome ? true : false,
         disableDragSeek: false,
         loop: false,
         isLive: false,
@@ -44,11 +52,20 @@ class _TrailerWidgetState extends State<TrailerWidget> {
   }
 
   void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {
-        _playerState = _controller.value.playerState;
-        _videoMetaData = _controller.metadata;
-      });
+    if (widget.isHome) {
+      if (!_isPlayerReady && !mounted && !_controller.value.isFullScreen) {
+        setState(() {
+          _playerState = _controller.value.playerState;
+          _videoMetaData = _controller.metadata;
+        });
+      }
+    } else {
+      if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
+        setState(() {
+          _playerState = _controller.value.playerState;
+          _videoMetaData = _controller.metadata;
+        });
+      }
     }
   }
 
@@ -74,8 +91,13 @@ class _TrailerWidgetState extends State<TrailerWidget> {
       },
       player: YoutubePlayer(
         controller: _controller,
+        aspectRatio: widget.height ?? 16 / 9,
         showVideoProgressIndicator: true,
-        progressIndicatorColor: Colors.blueAccent,
+        progressColors: ProgressBarColors(
+          playedColor: mainColor,
+          handleColor: Colors.grey,
+        ),
+        progressIndicatorColor: mainColor,
         topActions: <Widget>[
           const SizedBox(width: 8.0),
           Expanded(

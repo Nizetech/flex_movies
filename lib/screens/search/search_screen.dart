@@ -1,4 +1,4 @@
-import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flex_movies/screens/search/result_page.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';

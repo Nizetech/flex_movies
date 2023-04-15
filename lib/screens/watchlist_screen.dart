@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';

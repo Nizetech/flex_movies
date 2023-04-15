@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../details_screen.dart';
+import '../movie_details/details_screen.dart';
 import '../widgets/widgets.dart';
 
 class MyAnimatedList extends StatefulWidget {

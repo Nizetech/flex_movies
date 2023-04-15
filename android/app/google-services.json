@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "1038404999035",
+    "project_id": "flex-movies-2ce4b",
+    "storage_bucket": "flex-movies-2ce4b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038404999035:android:f3f91a08f27f523e754fde",
+        "android_client_info": {
+          "package_name": "com.flex_movies.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038404999035-ecg1hst4l7f6d3rqukqdascc45i5l9fc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCTU3hTz_61fgB-3J3n_5lf1cfIr8bU4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038404999035-ecg1hst4l7f6d3rqukqdascc45i5l9fc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038404999035-7dvlh9hqfrktea5vu240u8il717u47ec.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flexMovies"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038404999035:android:7cd8617ba52d7c12754fde",
+        "android_client_info": {
+          "package_name": "comflex_movies.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038404999035-ecg1hst4l7f6d3rqukqdascc45i5l9fc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCTU3hTz_61fgB-3J3n_5lf1cfIr8bU4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038404999035-ecg1hst4l7f6d3rqukqdascc45i5l9fc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038404999035-7dvlh9hqfrktea5vu240u8il717u47ec.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flexMovies"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

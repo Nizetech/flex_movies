@@ -3,9 +3,10 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
-import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flex_movies/screens/search/search_screen.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
@@ -61,7 +62,50 @@ class _HomePageState extends State<HomePage> {
   //   super.didChangeDependencies();
   // }
 
-  // static Box box = Hive.box(kAppName);
+  @override
+  void initState() {
+    initDynamicLinks();
+    super.initState();
+  }
+
+  void initDynamicLinks() async {
+    // Get any initial links
+    final PendingDynamicLinkData? data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+    Uri movieLink = data!.link;
+
+    if (movieLink != null) {
+      var movieId = movieLink.queryParameters['movieid'];
+      if (movieId != null) {
+        Get.to(DetailsScreen(
+          movie: movieData,
+          // cast: cast[0],
+        ));
+      }
+    } else {
+      print("No Link Received");
+    }
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      Navigator.pushNamed(context, dynamicLinkData.link.path);
+      onDone:
+      (PendingDynamicLinkData data) {
+        Uri deepLink = data.link;
+        if (deepLink != null) {
+          var movieId = deepLink.queryParameters['movieid'];
+          if (movieId != null) {
+            Get.to(DetailsScreen(
+              movie: movieData,
+            ));
+          }
+        } else {
+          print("On Link No Link Received");
+        }
+      };
+    }).onError((error) {
+      // Handle errors
+      print(error.toString());
+    });
+  }
 
   int page = 1;
 
@@ -249,7 +293,12 @@ class _HomePageState extends State<HomePage> {
                                 'isFavorite': true,
                               },
                               controller: _controller,
+                              imageUrl: topMovies[widget.index]
+                                  ['large_cover_image'],
+                              movieTitle: topMovies[widget.index]['title'],
                               isHome: true,
+                              trailerCode: topMovies[widget.index]
+                                  ['yt_trailer_code'],
                               // movie: {},
                             ),
                             SizedBox(height: 30),

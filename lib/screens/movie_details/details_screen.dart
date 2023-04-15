@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flex_movies/screens/movie_details/widget.dart';
 // import 'package:cached_video_player/cached_video_player.dart';
 // import 'package:dio/dio.dart';
 // import 'package:flex_movies/model/movie.dart';
@@ -18,8 +19,8 @@ import 'package:get/get.dart';
 // import 'package:video_player/video_player.dart';
 // import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import '../service/api_service.dart';
-import '../utils/utils.dart';
+import '../../service/api_service.dart';
+import '../../utils/utils.dart';
 
 class DetailsScreen extends StatefulWidget {
   final Map movie;
@@ -60,6 +61,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Map movieDetail = {};
   List cast = [];
   List movieSuggestion = [];
+  List torrent = [];
+  String torrentUrl = '';
   Map movieId = {};
   int select = 0;
 
@@ -123,7 +126,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   } else {
                     movieSuggestion = snapshot.data[0];
                     movieDetail = snapshot.data[1];
-                    log('torrent===> url ${movieDetail['torrents'][0]['url']}');
+
+                    torrent = movieDetail['torrents'];
+                    print(torrent);
                     if (movieDetail['cast'] != null) {
                       cast = movieDetail['cast'];
                     } else {
@@ -198,6 +203,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             'genres': movieDetail['genres'],
                           },
                           controller: _controller,
+                          movieTitle: movieDetail['title'],
+                          imageUrl: movieDetail['large_cover_image'],
                           // movie: {},
                         ),
                         SizedBox(height: 30),
@@ -305,7 +312,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               RichText(
                                 text: TextSpan(
                                   text: 'Subtitle: ',
@@ -325,7 +332,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                               GestureDetector(
                                 onTap: () {
                                   FocusScope.of(context).requestFocus();
@@ -439,109 +446,91 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             width: MediaQuery.of(context).size.width * .5,
                             child: GestureDetector(
                               onTap: () async {
-                                // log('torrent===> url ${movieDetail['torrents']}');
-                                dialog(context);
-
-                                // Check if fluid is installed
-                                final isFluidInstalled =
-                                    await MyDownload().isFluidInstalled();
-                                if (isFluidInstalled) {
-                                  final permission =
-                                      await Permission.storage.request();
-                                  if (permission.isGranted) {
-                                    MyDownload.downloadFile(
-                                        title: movieDetail['title'],
-                                        url: movieDetail['torrents'][0]['url'],
-                                        context: context,
-                                        onTap: () {
-                                          // clear overlay dialog
-                                          Navigator.of(context).pop();
-                                        });
-                                  } else {
-                                    showErrorToast(
-                                        "Please Grant Permission to Download this movie");
-                                  }
-                                } else {
-                                  showErrorToast(
-                                      "Please Install Fluid Streamer to Download this movie");
-                                }
                                 //? Here is the code for downloading the movie
-                                // downloadFile();
-                                // Get.dialog(
-                                //   Dialog(
-                                //     backgroundColor: Colors.white,
-                                //     insetPadding:
-                                //         EdgeInsets.symmetric(horizontal: 40),
-                                //     shape: RoundedRectangleBorder(
-                                //       borderRadius: BorderRadius.circular(20),
-                                //     ),
-                                //     child: StatefulBuilder(
-                                //         builder: (context, setState) {
-                                //       return Container(
-                                //         decoration: BoxDecoration(
-                                //           color: Colors.white,
-                                //           borderRadius:
-                                //               BorderRadius.circular(20),
-                                //         ),
-                                //         child: Column(
-                                //           mainAxisSize: MainAxisSize.min,
-                                //           children: [
-                                //             const SizedBox(
-                                //               height: 30,
-                                //               width: 30,
-                                //               child:
-                                //                   CircularProgressIndicator(),
-                                //             ),
-                                //             Text(
-                                //                 'Downloading ... $progressString'),
-                                //           ],
-                                //         ),
-                                //       );
-                                //       // Container(
-                                //       //   padding: const EdgeInsets.all(20),
-                                //       //   decoration: BoxDecoration(
-                                //       //       borderRadius:
-                                //       //           BorderRadius.circular(20),
-                                //       //       color: Colors.white,
-                                //       //       border: Border.all(
-                                //       //         color: mainColor,
-                                //       //         width: 3,
-                                //       //       )),
-                                //       //   child: Column(
-                                //       //     mainAxisSize: MainAxisSize.min,
-                                //       //     children: [
-                                //       //       Row(
-                                //       //         children: [
-                                //       //           Radio(
-                                //       //               value: select,
-                                //       //               groupValue: 0,
-                                //       //               onChanged: (value) {
-                                //       //                 setState(() {
-                                //       //                   value = select;
-                                //       //                 });
-                                //       //               }),
-                                //       //           Text('data'),
-                                //       //         ],
-                                //       //       ),
-                                //       //       Row(
-                                //       //         children: [
-                                //       //           Radio(
-                                //       //               value: select,
-                                //       //               groupValue: 1,
-                                //       //               onChanged: (value) {
-                                //       //                 setState(() {
-                                //       //                   value = select;
-                                //       //                 });
-                                //       //               }),
-                                //       //           Text('data'),
-                                //       //         ],
-                                //       //       ),
-                                //       //     ],
-                                //       //   ),
-                                //       // );
-                                //     }),
-                                //   ),
-                                // );
+
+                                Get.dialog(Dialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Color(0xff212029),
+                                        border: Border.all(
+                                          color: mainColor,
+                                          width: 2,
+                                        )),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ...torrent.map((e) {
+                                          int index = torrent.indexOf(e);
+                                          // torrentUrl = e[index]['url'];
+                                          setState(() {
+                                            torrentUrl = e['url'];
+                                          });
+                                          log('torrentUrl ==> $torrentUrl');
+                                          return torrentList(
+                                            index: index,
+                                            size: e['size'],
+                                          );
+                                        }).toList(),
+                                        SizedBox(height: 10),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            // log('torrent===> url ${movieDetail['torrents']}');
+                                            dialog(context);
+
+                                            // Check if fluid is installed
+                                            final isFluidInstalled =
+                                                await MyDownload()
+                                                    .isFluidInstalled();
+                                            if (isFluidInstalled) {
+                                              final permission =
+                                                  await Permission.storage
+                                                      .request();
+                                              if (permission.isGranted) {
+                                                MyDownload.downloadFile(
+                                                    title: movieDetail['title'],
+                                                    url: movieDetail['torrents']
+                                                        [0]['url'],
+                                                    context: context,
+                                                    onTap: () {
+                                                      // clear overlay dialog
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    });
+                                              } else {
+                                                showErrorToast(
+                                                    "Please Grant Permission to Download this movie");
+                                              }
+                                            } else {
+                                              showErrorToast(
+                                                  "Please Install Fluid Streamer to Download this movie");
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: mainColor.withOpacity(.8),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              'Download',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: white),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                      ],
+                                    ),
+                                  ),
+                                ));
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

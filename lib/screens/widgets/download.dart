@@ -64,10 +64,11 @@ class MyDownload {
       // get External StorageDirectory
       final directory = await getExternalStorageDirectory();
       String mainDir =
-          directory!.path.replaceFirst('com.nizetech.flex_moviez', " ");
+          directory!.path.replaceFirst('/Android/data/com.nizetech.app', " ");
       // directory!.path.replaceFirst('Download/com.nizetech.flex_moviez', "");
 
       // saving file in Downloads folder  of external storage directory of device
+      // final myDir = await Directory("/storage/emulated/0/flex_moviez/Downloads")
       final myDir = await Directory("${mainDir}flex_moviez/Downloads")
           .create(recursive: true);
 
@@ -84,10 +85,9 @@ class MyDownload {
       // if download is successful
       if (downloadedFile.existsSync()) {
         showToast('Download Successful');
-        log(myDir.toString());
-        log('Downloaded File Path ==>${downloadedFile.path}');
-        OpenFile.open(downloadedFile.path);
-        // open file use open_file package
+        log(mainDir.toString());
+        log('Downloaded File Path ==> ${downloadedFile.path}');
+        //?
         // OpenFile.open(downloadedFile.path);
 
         onTap;

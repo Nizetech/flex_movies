@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flex_movies/botton_nav.dart';
+import 'package:flex_movies/firebase_options.dart';
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
@@ -22,7 +25,11 @@ void main() async {
   );
   await Hive.initFlutter();
   await Hive.openBox(kAppName);
-  runApp(const ProviderScope(child: MyApp()));
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -56,6 +63,9 @@ class MyApp extends StatelessWidget {
       title: 'Flex Show',
       theme: ThemeData(
           primarySwatch: Colors.blue,
+          radioTheme: RadioThemeData(
+            overlayColor: MaterialStateProperty.all(Colors.white),
+          ),
           fontFamily: 'Raleway',
           dividerColor: Colors.grey,
           scaffoldBackgroundColor: Colors.black,

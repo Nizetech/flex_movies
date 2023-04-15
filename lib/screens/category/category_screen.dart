@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:flex_movies/screens/category/widget.dart';
-import 'package:flex_movies/screens/details_screen.dart';
+import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
@@ -21,10 +21,9 @@ class CategoryScreen extends ConsumerStatefulWidget {
   ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends ConsumerState<CategoryScreen>
-   {
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   bool _isLoading = true;
- 
+
   @override
   List category = [];
 
@@ -32,7 +31,6 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen>
   Widget build(
     BuildContext context,
   ) {
-   
     String genre = ref.watch(genreSelected);
     int page = ref.watch(pageProvider);
     final rate = ref.watch(sliderProvider);
