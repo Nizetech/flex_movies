@@ -101,7 +101,6 @@ class _HotMovieState extends ConsumerState<HotMovie> {
                 errorWidget: (context, url, error) => Container(
                   color: Colors.black,
                 ),
-                // imageUrl: movieModel[index].largeCoverImage,
                 imageUrl: widget.movieModel[widget.index]['large_cover_image'],
                 height: 130,
                 width: 130,
@@ -370,6 +369,9 @@ class _TopMovieState extends State<TopMovie> {
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
             child: CachedNetworkImage(
+              errorWidget: (context, url, error) => Container(
+                color: Colors.black,
+              ),
               imageUrl: widget.movieSuggestion[widget.index]
                   ['large_cover_image'],
               fit: BoxFit.fill,
@@ -572,17 +574,19 @@ class _ActionTabsState extends State<ActionTabs> {
     final url2 =
         Uri.parse("https://play.google.com/store/apps/details?id=$flud");
     DynamicLinkParameters params = DynamicLinkParameters(
-        uriPrefix: "https://flexmoviez.page.link",
-        // uriPrefix: "https://flexmoviez.page.link?movie",
-        link: Uri.parse("https://flexmoviez.page.link?movieid=$movieId"),
-        androidParameters: AndroidParameters(
-          packageName: "com.flex_movies.app",
-          fallbackUrl: url2,
-        ),
-        socialMetaTagParameters: SocialMetaTagParameters(
-            imageUrl: Uri.parse(widget.movie['large_cover_image']),
-            title: "Download ${widget.movie['title']} from FlexMovies",
-            description: widget.movie["description_full"],),);
+      uriPrefix: "https://flexmoviez.page.link",
+      // uriPrefix: "https://flexmoviez.page.link?movie",
+      link: Uri.parse("https://flexmoviez.page.link?movieid=$movieId"),
+      androidParameters: AndroidParameters(
+        packageName: "com.flex_movies.app",
+        fallbackUrl: url2,
+      ),
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: Uri.parse(widget.movie['large_cover_image']),
+        title: "Download ${widget.movie['title']} from FlexMovies",
+        description: widget.movie["description_full"],
+      ),
+    );
 
     // final link = await params.buildShortLink();
     // ShortDynamicLink shortLink =  await dynamicLinks.buildShortLink(params);

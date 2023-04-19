@@ -152,7 +152,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     builder: (context, snapshot) {
                       if (!snapshot.hasData ||
                           snapshot.hasError ||
-                          isConnected == true ||
+                          // isConnected == true ||
                           snapshot.data[1].length == 0) {
                         return Center(child: loader());
                       } else {
@@ -418,40 +418,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
 
                                   SizedBox(height: 20),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.symmetric(
-                                  //       horizontal: 20),
-                                  //   child: Wrap(
-                                  //     runSpacing: 10,
-                                  //     spacing: 20,
-                                  //     children: [
-                                  //       for (var i = 1; i < 50; i++)
-                                  //         GestureDetector(
-                                  //           onTap: () {
-                                  //             page + i;
-                                  //             setState(() {});
-                                  //             print('page No ===> $page');
-                                  //           },
-                                  //           child: Text(
-                                  //             i.toString() + '  ',
-                                  //             style: TextStyle(
-                                  //               decoration: page == i
-                                  //                   ? TextDecoration.underline
-                                  //                   : TextDecoration.none,
-                                  //               decorationThickness: 3,
-                                  //               decorationColor:
-                                  //                   page == i ? mainColor : white,
-                                  //               decorationStyle:
-                                  //                   TextDecorationStyle.solid,
-                                  //               fontSize: 14,
-                                  //               color: white,
-                                  //               fontWeight: FontWeight.bold,
-                                  //             ),
-                                  //           ),
-                                  //         ),
-                                  //     ],
-                                  //   ),
-                                  // ),
 
                                   SizedBox(height: 30),
                                 ],

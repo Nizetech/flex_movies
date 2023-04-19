@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:flex_movies/key/api_key.dart';
 import 'package:flex_movies/model/movie.dart' as movieDetails;
+import 'package:flex_movies/screens/common/widget.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flex_movies/model/movie_list.dart';
 
@@ -34,6 +36,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -87,6 +92,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -114,6 +122,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -145,6 +156,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -171,6 +185,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -195,6 +212,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return [];
     }
   }
@@ -226,6 +246,9 @@ class ApiService {
       }
     } catch (e) {
       print(e.toString());
+      if (e.toString() == "Failed host lookup: 'yts.mx'") {
+        Get.to(InternetError());
+      }
       return {};
     }
   }

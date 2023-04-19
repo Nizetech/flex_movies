@@ -5,6 +5,7 @@ import '../movie_details/details_screen.dart';
 import '../widgets/widgets.dart';
 
 class MyAnimatedList extends StatefulWidget {
+  // final bool? is
   final int id;
   final int index;
   final List genre;
