@@ -74,8 +74,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   int page = 1;
-
-  // List movie = [];
   Map<String, dynamic> movieData = {};
   Map<String, dynamic> movieDetails = {};
   Map movieId = {};
@@ -96,9 +94,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     print('index ${widget.index}');
 
     return Scaffold(
-      // extendBodyBehindAppBar: true,
-      // extendBody: true,
-
       backgroundColor: Colors.black,
       body: CustomScrollView(
         slivers: [
@@ -428,7 +423,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         );
                       }
                     })
-                : noInternet(onTap: () => setState(() {})),
+                : noInternet(),
           )
         ],
       ),

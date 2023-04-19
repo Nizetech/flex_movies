@@ -203,7 +203,9 @@ Future<void> dialog(BuildContext context) {
   );
 }
 
-Widget loader({Color? color}) => LoadingAnimationWidget.threeRotatingDots(
-      color: color ?? mainColor,
-      size: 100,
+Widget loader({Color? color}) => Center(
+      child: LoadingAnimationWidget.threeRotatingDots(
+        color: color ?? mainColor,
+        size: 100,
+      ),
     );

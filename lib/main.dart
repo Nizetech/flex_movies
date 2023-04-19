@@ -75,7 +75,9 @@ class MyApp extends StatelessWidget {
             } else {
               return Scaffold(
                 body: RefreshIndicator(
-                    onRefresh: refresh, child: noInternet(onTap: refresh)),
+                  onRefresh: refresh,
+                  child: noInternet(),
+                ),
               );
             }
           } else {

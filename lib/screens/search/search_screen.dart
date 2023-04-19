@@ -1,10 +1,13 @@
 import 'package:flex_movies/screens/movie_details/details_screen.dart';
-import 'package:flex_movies/screens/search/result_page.dart';
+import 'package:flex_movies/screens/search/widget.dart';
+import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/widgets/widgets.dart';
 import 'package:flex_movies/service/api_service.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../category/widget.dart';
 
 class SearchScreen extends StatefulWidget {
   // final List movie;
@@ -39,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           TextField(
             controller: search,
-            autofocus: true,
+            autofocus: false,
             cursorColor: Colors.white,
             style: TextStyle(
               color: Colors.white,
@@ -78,15 +81,13 @@ class _SearchScreenState extends State<SearchScreen> {
           FutureBuilder(
               future: ApiService().searchMovie(searchQuery),
               builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Expanded(child: loader());
+                }
                 if (!snapshot.hasData ||
                     snapshot.hasError ||
                     snapshot.data.length == 0) {
-                  return Center(
-                      child: Text(
-                    'Ooops!! \nNo Movie Found',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, color: white),
-                  ));
+                  return searchError();
                 }
                 movieModel = snapshot.data;
                 print('Search Result: ${movieModel[0]['title']}');
@@ -102,17 +103,11 @@ class _SearchScreenState extends State<SearchScreen> {
                       List genres = movieModel[index]['genres'] == null
                           ? []
                           : movieModel[index]['genres'];
-                      return HotMovie(
-                        onTap: () {
-                          movieDetails.addAll({
-                            'id': movieModel[index]['id'],
-                          });
-                          return Get.to(DetailsScreen(movie: movieDetails));
-                        },
-                        index: index,
-                        genres: genres,
-                        movieModel: movieModel,
-                      );
+                      return MyAnimatedList(
+                          index: index,
+                          category: movieModel,
+                          genre: genres,
+                          id: movieModel[index]['id']);
                     },
                   ),
                 );
