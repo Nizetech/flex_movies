@@ -40,13 +40,25 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Flex Moviez',
-          style: TextStyle(
-              fontStyle: FontStyle.italic,
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
+        // leadingWidth: 10,
+        leading: Transform.scale(
+          scale: .7,
+          child: Image.asset(
+            'assets/logo.png',
+            height: 20,
+            width: 20,
+          ),
+        ),
+        title: Transform.translate(
+          offset: Offset(-10, 0),
+          child: Text(
+            'Flex Moviez',
+            style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          ),
         ),
       ),
       body: Column(

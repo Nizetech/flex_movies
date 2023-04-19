@@ -35,13 +35,24 @@ class WatchList extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Flex Moviez',
-          style: TextStyle(
-              fontStyle: FontStyle.italic,
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
+        leading: Transform.scale(
+          scale: .7,
+          child: Image.asset(
+            'assets/logo.png',
+            height: 20,
+            width: 20,
+          ),
+        ),
+        title: Transform.translate(
+          offset: Offset(-10, 0),
+          child: Text(
+            'Flex Moviez',
+            style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          ),
         ),
         actions: [
           Padding(
@@ -57,15 +68,21 @@ class WatchList extends ConsumerWidget {
         ],
       ),
       body: watchlist.length == 0 || watchlist.isEmpty
-          ? const Center(
-              child: Text(
-                'No Movie in Watchlist',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(child: Image.asset('assets/no_watchlist.png')),
+                SizedBox(height: 20),
+                Text(
+                  'No Movie in Watchlist!!!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
+              ],
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.end,
