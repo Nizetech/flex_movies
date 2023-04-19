@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flex_movies/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -137,4 +138,23 @@ final dateProvider = StateNotifierProvider<DateNotifier, DateTime>((ref) {
 
 final yearProvider = Provider<int>((ref) {
   return ref.watch(dateProvider).year;
+});
+
+/// <====== Connection Provider ======> ///
+
+class ConnectionNotifier extends StateNotifier<bool> {
+  ConnectionNotifier() : super(false);
+
+  void isConnected() async {
+    state = await checkInternet();
+  }
+}
+
+final connectionProvider =
+    StateNotifierProvider<ConnectionNotifier, bool>((ref) {
+  return ConnectionNotifier();
+});
+
+final internetProvider = Provider<bool>((ref) {
+  return ref.watch(connectionProvider);
 });

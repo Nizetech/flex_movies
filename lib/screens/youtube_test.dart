@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:flex_movies/screens/home.dart';
+import 'package:flex_movies/screens/home/home.dart';
 import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

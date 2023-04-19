@@ -567,17 +567,22 @@ class _ActionTabsState extends State<ActionTabs> {
   Map<String, dynamic> movieDetails = {};
 
   Future<Uri> createMovieLink({required String movieId}) async {
+    String flud = "com.delphicoder.flud";
+
+    final url2 =
+        Uri.parse("https://play.google.com/store/apps/details?id=$flud");
     DynamicLinkParameters params = DynamicLinkParameters(
-        uriPrefix: "https://flexmoviez.page.link?movie",
+        uriPrefix: "https://flexmoviez.page.link",
+        // uriPrefix: "https://flexmoviez.page.link?movie",
         link: Uri.parse("https://flexmoviez.page.link?movieid=$movieId"),
         androidParameters: AndroidParameters(
-          packageName: "com.flexmovies.app",
-          // fallbackUrl: Uri.parse(MyValues.playStoreURL),
+          packageName: "com.flex_movies.app",
+          fallbackUrl: url2,
         ),
         socialMetaTagParameters: SocialMetaTagParameters(
             imageUrl: Uri.parse(widget.movie['large_cover_image']),
             title: "Download ${widget.movie['title']} from FlexMovies",
-            description: widget.movie["description_full"]));
+            description: widget.movie["description_full"],),);
 
     // final link = await params.buildShortLink();
     // ShortDynamicLink shortLink =  await dynamicLinks.buildShortLink(params);

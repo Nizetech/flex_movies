@@ -45,7 +45,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1038404999035:android:7cd8617ba52d7c12754fde",
         "android_client_info": {
-          "package_name": "comflex_movies.app"
+          "package_name": "com.flex_movies.app"
         }
       },
       "oauth_client": [

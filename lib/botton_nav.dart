@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flex_movies/screens/category/category_screen.dart';
-import 'package:flex_movies/screens/home.dart';
+import 'package:flex_movies/screens/home/home.dart';
 import 'package:flex_movies/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

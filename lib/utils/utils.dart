@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class MyLogic {
   //Convert minutes to h:min
   static String getTimeString(int mins) {
@@ -11,4 +13,17 @@ class MyLogic {
     final int minutes = value % 60;
     return '${hour.toString().padLeft(2, "0")}hr : ${minutes.toString().padLeft(2, "0")}mins';
   }
+}
+
+// Check internet connection
+Future<bool> checkInternet() async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      return true;
+    }
+  } on SocketException catch (_) {
+    return false;
+  }
+  return false;
 }

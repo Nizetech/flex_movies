@@ -5,9 +5,11 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flex_movies/botton_nav.dart';
 import 'package:flex_movies/firebase_options.dart';
 import 'package:flex_movies/key/api_key.dart';
+import 'package:flex_movies/screens/common/widget.dart';
 import 'package:flex_movies/screens/widgets/download.dart';
 import 'package:flex_movies/screens/youtube_test.dart';
 import 'package:flex_movies/utils/colors.dart';
+import 'package:flex_movies/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // initDynamicLinks();
 
   runApp(ProviderScope(child: MyApp()));
 }
@@ -37,19 +40,6 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
-
-  // Check internet connection
-  Future<bool> checkInternet() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-    } on SocketException catch (_) {
-      return false;
-    }
-    return false;
-  }
 
   // pull to refresh page
   Future<void> refresh() async {
@@ -85,17 +75,7 @@ class MyApp extends StatelessWidget {
             } else {
               return Scaffold(
                 body: RefreshIndicator(
-                  onRefresh: refresh,
-                  child: const Center(
-                    child: Text(
-                      'No internet connection',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                    onRefresh: refresh, child: noInternet(onTap: refresh)),
               );
             }
           } else {

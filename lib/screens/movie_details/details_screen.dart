@@ -26,11 +26,10 @@ import '../../utils/utils.dart';
 
 class DetailsScreen extends StatefulWidget {
   final Map movie;
-  // final List cast;
+
   const DetailsScreen({
     Key? key,
     required this.movie,
-    // required this.cast,
   }) : super(key: key);
 
   @override
