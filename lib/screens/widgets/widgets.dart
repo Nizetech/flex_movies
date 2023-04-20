@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
+// import 'package:flex_movies/key/api_key.dart';
+// import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

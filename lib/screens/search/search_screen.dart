@@ -1,13 +1,11 @@
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
-import 'package:flex_movies/screens/search/widget.dart';
-import 'package:flex_movies/screens/widgets/download.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/api_service.dart';
-import 'package:flex_movies/utils/colors.dart';
+import 'package:flex_moviez/screens/search/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../service/api_service.dart';
+import '../../utils/colors.dart';
 import '../category/widget.dart';
+import '../widgets/download.dart';
 
 class SearchScreen extends StatefulWidget {
   // final List movie;

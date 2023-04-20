@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/model/movie.dart' as movieDetails;
-import 'package:flex_movies/screens/common/widget.dart';
+// import 'package:flex_movies/model/movie.dart' as movieDetails;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:flex_movies/model/movie_list.dart';
+
+import '../key/api_key.dart';
+import '../model/movie_list.dart';
+import '../screens/common/widget.dart';
 
 class ApiService {
   static Future<List> getAllMovieList(int page) async {

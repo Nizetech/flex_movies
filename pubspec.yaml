@@ -1,4 +1,4 @@
-name: flex_movies
+name: flex_moviez
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -36,6 +36,7 @@ dependencies:
   open_file: ^3.2.1
   url_launcher: ^6.1.10
   flutter_launcher_icons: ^0.11.0
+  flutter_native_splash:
 
   # hooks_riverpod: ^2.0.0
 
@@ -56,6 +57,12 @@ flutter_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/icon.png"
+
+
+flutter_native_splash:  
+  background_image: "assets/splash.png"
+  android: true
+  ios: true
 
   flutter_lints: ^2.0.0
 

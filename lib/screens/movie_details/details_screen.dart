@@ -2,26 +2,19 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flex_movies/screens/movie_details/widget.dart';
-// import 'package:cached_video_player/cached_video_player.dart';
-// import 'package:dio/dio.dart';
-// import 'package:flex_movies/model/movie.dart';
-import 'package:flex_movies/screens/search/search_screen.dart';
-import 'package:flex_movies/screens/widgets/download.dart';
-// import 'package:flex_movies/screens/widgets/torrent.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/screens/youtube_test.dart';
-import 'package:flex_movies/utils/colors.dart';
+import 'package:flex_moviez/screens/movie_details/widget.dart';
+import 'package:flex_moviez/screens/search/search_screen.dart';
+import 'package:flex_moviez/screens/widgets/download.dart';
+import 'package:flex_moviez/screens/widgets/widgets.dart';
+import 'package:flex_moviez/screens/youtube_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-// import 'package:iconly/iconly.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:video_player/video_player.dart';
-// import 'package:http/http.dart' as http;
+
 import 'package:permission_handler/permission_handler.dart';
 import '../../service/api_service.dart';
 import '../../service/provider/watch_list_provider.dart';
+import '../../utils/colors.dart';
 import '../../utils/utils.dart';
 
 class DetailsScreen extends StatefulWidget {

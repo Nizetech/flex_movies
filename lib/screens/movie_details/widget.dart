@@ -1,7 +1,7 @@
-import 'package:flex_movies/service/provider/watch_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../service/provider/watch_list_provider.dart';
 import '../../utils/colors.dart';
 
 Widget torrentList({required String size, required int index}) {

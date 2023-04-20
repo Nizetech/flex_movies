@@ -1,18 +1,17 @@
 import 'dart:developer';
-import 'package:flex_movies/screens/category/widget.dart';
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
-import 'package:flex_movies/screens/widgets/download.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/api_service.dart';
-import 'package:flex_movies/service/provider/watch_list_provider.dart';
-import 'package:flex_movies/utils/colors.dart';
-import 'package:flex_movies/utils/data.dart';
+import 'package:flex_moviez/screens/category/widget.dart';
+import 'package:flex_moviez/screens/widgets/download.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+
+import '../../service/api_service.dart';
+import '../../service/provider/watch_list_provider.dart';
+import '../../utils/colors.dart';
+import '../../utils/data.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
   CategoryScreen({Key? key}) : super(key: key);

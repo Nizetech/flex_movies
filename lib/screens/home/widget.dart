@@ -1,7 +1,8 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../movie_details/details_screen.dart';
 
 Future<void> initDynamicLinks({required BuildContext context}) async {
   FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {

@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:math';
-
-import 'package:flex_movies/screens/category/category_screen.dart';
-import 'package:flex_movies/screens/home/home.dart';
-import 'package:flex_movies/screens/watchlist_screen.dart';
+import 'package:flex_moviez/screens/category/category_screen.dart';
+import 'package:flex_moviez/screens/home/home.dart';
+import 'package:flex_moviez/screens/more/more_screen.dart';
+import 'package:flex_moviez/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -28,7 +28,7 @@ class _BottomNavState extends ConsumerState<BottomNav> {
     HomePage(index: indexRand),
     CategoryScreen(),
     WatchList(),
-    Container(),
+    MoreScreen(),
   ];
   // final fcm = FirebaseMessaging();
 

@@ -4,15 +4,10 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/model/movie.dart' as movieDetails;
-import 'package:flex_movies/screens/home/widget.dart';
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
-import 'package:flex_movies/screens/search/search_screen.dart';
-import 'package:flex_movies/screens/widgets/download.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/api_service.dart';
-import 'package:flex_movies/utils/colors.dart';
+// import 'package:flex_movies/model/movie.dart' as movieDetails;
+import 'package:flex_moviez/screens/home/widget.dart';
+import 'package:flex_moviez/screens/search/search_screen.dart';
+import 'package:flex_moviez/service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -23,8 +18,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../model/movie_list.dart';
 import '../../service/provider/watch_list_provider.dart';
+import '../../utils/colors.dart';
 import '../../utils/utils.dart';
 import '../common/widget.dart';
+import '../movie_details/details_screen.dart';
+import '../widgets/download.dart';
+import '../widgets/widgets.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final int index;
@@ -35,38 +34,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  //? Animation Starts Here
-  // late AnimationController controller;
-  // late Animation<double> animation;
-  // // late  Animation
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   controller = AnimationController(
-  //     duration: const Duration(seconds: 10),
-  //     vsync: this,
-  //   );
-  //   animation = Tween<double>(begin: 0, end: 1).animate(controller)
-  //     ..addListener(() {
-  //       setState(() {});
-  //     });
-  //   controller.forward();
-  // }
-
-  // @override
-  // void dispose() {
-  //   controller.dispose();
-  //   super.dispose();
-  // }
-  //? Animation Ends Here
-  // @override
-  // void didChangeDependencies() {
-  //   // ApiService.getAllMovie();
-  //   // print('here');
-  //   super.didChangeDependencies();
-  // }
-
   @override
   void initState() {
     initDynamicLinks(context: context);

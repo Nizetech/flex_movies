@@ -1,11 +1,10 @@
 import 'dart:developer';
-
-import 'package:flex_movies/screens/home/home.dart';
-import 'package:flex_movies/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../utils/colors.dart';
 
 /// Homepage
 class TrailerWidget extends StatefulWidget {

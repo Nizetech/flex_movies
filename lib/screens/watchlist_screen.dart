@@ -3,19 +3,17 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/movie_details/details_screen.dart';
-import 'package:flex_movies/screens/search/search_screen.dart';
-import 'package:flex_movies/screens/widgets/widgets.dart';
-import 'package:flex_movies/service/api_service.dart';
-import 'package:flex_movies/utils/colors.dart';
+import 'package:flex_moviez/screens/search/search_screen.dart';
+import 'package:flex_moviez/screens/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../key/api_key.dart';
 import '../service/provider/watch_list_provider.dart';
+import 'movie_details/details_screen.dart';
 
 class WatchList extends ConsumerWidget {
   WatchList({Key? key}) : super(key: key);

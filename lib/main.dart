@@ -2,19 +2,18 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flex_movies/botton_nav.dart';
-import 'package:flex_movies/firebase_options.dart';
-import 'package:flex_movies/key/api_key.dart';
-import 'package:flex_movies/screens/common/widget.dart';
-import 'package:flex_movies/screens/widgets/download.dart';
-import 'package:flex_movies/screens/youtube_test.dart';
-import 'package:flex_movies/utils/colors.dart';
-import 'package:flex_movies/utils/utils.dart';
+import 'package:flex_moviez/botton_nav.dart';
+import 'package:flex_moviez/key/api_key.dart';
+import 'package:flex_moviez/screens/common/widget.dart';
+import 'package:flex_moviez/screens/widgets/download.dart';
+import 'package:flex_moviez/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flex Show',
+      title: 'Flex Moviez',
       theme: ThemeData(
           primarySwatch: Colors.blue,
           radioTheme: RadioThemeData(

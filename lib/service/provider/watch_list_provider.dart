@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:flex_movies/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../key/api_key.dart';
 import '../../screens/widgets/widgets.dart';
+import '../../utils/utils.dart';
 
 Box box = Hive.box(kAppName);
 final totalWatchlist = box.get(kWatchList, defaultValue: []);
