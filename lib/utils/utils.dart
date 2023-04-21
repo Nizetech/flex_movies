@@ -1,7 +1,14 @@
 import 'dart:io';
 
+String flud = "com.delphicoder.flud";
+
 class MyLogic {
   //Convert minutes to h:min
+
+  static String appUrl =
+      //  'https://play.google.com/store/apps/details?id=$flud';
+      // static String jmoviesUrl =
+      "https://play.google.com/store/apps/details?id=com.julitech.jmovies";
   static String getTimeString(int mins) {
     double hour = mins / 60;
     int minutes = mins % 60;

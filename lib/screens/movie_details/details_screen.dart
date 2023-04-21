@@ -479,36 +479,91 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                           return GestureDetector(
                                             onTap: () async {
                                               // log('torrent===> url ${movieDetail['torrents']}');
-                                              Get.back();
-                                              dialog(context);
+                                              //? Alert Dialog
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: Text(
+                                                        'Complete Download',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      content: Text(
+                                                        'Download will be completed shortly using Torrent Downloader App (Fluid)',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Get.back();
+                                                            Get.back();
+                                                          },
+                                                          child: Text(
+                                                            'Cancel',
+                                                            style: TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () async {
+                                                            Get.back();
+                                                            Get.back();
+                                                            dialog(context);
 
-                                              // Check if fluid is installed
-                                              final isFluidInstalled =
-                                                  await MyDownload()
-                                                      .isFluidInstalled();
-                                              if (isFluidInstalled) {
-                                                final permission =
-                                                    await Permission.storage
-                                                        .request();
-                                                if (permission.isGranted) {
-                                                  MyDownload.downloadFile(
-                                                      title:
-                                                          movieDetail['title'],
-                                                      url: torrentUrl,
-                                                      context: context,
-                                                      onTap: () {
-                                                        // clear overlay dialog
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      });
-                                                } else {
-                                                  showErrorToast(
-                                                      "Please Grant Permission to Download this movie");
-                                                }
-                                              } else {
-                                                showErrorToast(
-                                                    "Please Install Fluid Streamer to Download this movie");
-                                              }
+                                                            // Check if fluid is installed
+                                                            final isFluidInstalled =
+                                                                await MyDownload()
+                                                                    .isFluidInstalled();
+                                                            if (isFluidInstalled) {
+                                                              final permission =
+                                                                  await Permission
+                                                                      .storage
+                                                                      .request();
+                                                              if (permission
+                                                                  .isGranted) {
+                                                                MyDownload
+                                                                    .downloadFile(
+                                                                        title: movieDetail[
+                                                                            'title'],
+                                                                        url:
+                                                                            torrentUrl,
+                                                                        context:
+                                                                            context,
+                                                                        onTap:
+                                                                            () {
+                                                                          // clear overlay dialog
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        });
+                                                              } else {
+                                                                showErrorToast(
+                                                                    "Please Grant Permission to Download this movie");
+                                                              }
+                                                            } else {
+                                                              showErrorToast(
+                                                                  "Please Install Fluid Streamer to Download this movie");
+                                                            }
+                                                          },
+                                                          child: Text(
+                                                            'Proceed',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    );
+                                                  });
                                             },
                                             child: Container(
                                               padding: EdgeInsets.symmetric(

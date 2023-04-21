@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flex_moviez/utils/utils.dart';
 // import 'package:flex_movies/key/api_key.dart';
 // import 'package:flex_movies/screens/movie_details/details_screen.dart';
 import 'package:flutter/material.dart';
@@ -571,8 +572,9 @@ class _ActionTabsState extends State<ActionTabs> {
   Future<Uri> createMovieLink({required String movieId}) async {
     String flud = "com.delphicoder.flud";
 
-    final url2 =
-        Uri.parse("https://play.google.com/store/apps/details?id=$flud");
+    final url2 = Uri.parse(
+        "https://play.google.com/store/apps/details?id=com.julitech.jmovies");
+    // Uri.parse("https://play.google.com/store/apps/details?id=$flud");
     DynamicLinkParameters params = DynamicLinkParameters(
       uriPrefix: "https://flexmoviez.page.link",
       // uriPrefix: "https://flexmoviez.page.link?movie",
@@ -726,8 +728,8 @@ class _ActionTabsState extends State<ActionTabs> {
                   final movieLink =
                       await createMovieLink(movieId: widget.movie['id']);
 
-                  Share.share(movieLink.toString());
-                  print(movieLink.toString());
+                  // Share.share(movieLink.toString());
+                  // print(movieLink.toString());
                   Share.share(movieLink.toString(), subject: widget.movieTitle);
                 },
                 child: CircleAvatar(
