@@ -62,6 +62,11 @@ class MyDownload {
     required VoidCallback onTap,
   }) async {
     try {
+      //?
+      // final mainDir = (await getExternalStorageDirectories(
+      //         type: StorageDirectory.downloads))!
+      //     .first;
+      
       // get External StorageDirectory
       final directory = await getExternalStorageDirectory();
       String mainDir =
@@ -97,70 +102,7 @@ class MyDownload {
 
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
-      // showDialog(
-      //     context: context,
-      //     builder: (ctx) => Dialog(
-      //           elevation: 10,
-      //           shape: RoundedRectangleBorder(
-      //             borderRadius: BorderRadius.circular(10),
-      //             side: BorderSide(color: Colors.red, width: 2),
-      //           ),
-      //           child: Container(
-      //             padding: const EdgeInsets.all(20),
-      //             child: Column(
-      //               mainAxisSize: MainAxisSize.min,
-      //               children: <Widget>[
-      //                 Text(
-      //                   "How To Complete Download",
-      //                   style: Theme.of(context).textTheme.headline5,
-      //                 ),
-      //                 SizedBox(height: 20),
-      //                 Text(
-      //                     "1. Proceed to Install Flud Torrent Downloader and Open it"),
-      //                 SizedBox(height: 10),
-      //                 Text(
-      //                     "2. Click on + icon and locate Internal Storage/JMovies/Downloads"),
-      //                 SizedBox(height: 10),
-      //                 Text(
-      //                     "3. Select the Movie File and Click + icon to start Download"),
-      //                 SizedBox(height: 10),
-      //                 Center(
-      //                   child: RaisedButton(
-      //                     color: Colors.red.withOpacity(.2),
-      //                     elevation: 0,
-      //                     child: Text(
-      //                       "Continue Download",
-      //                       style: TextStyle(
-      //                           color: Colors.black,
-      //                           fontWeight: FontWeight.bold),
-      //                     ),
-      //                     shape: RoundedRectangleBorder(
-      //                       borderRadius: BorderRadius.circular(10),
-      //                       side: BorderSide(width: 2, color: Colors.red),
-      //                     ),
-      //                     onPressed: () async {
-      //                       bool isFludInstalled =
-      //                           await DeviceApps.isAppInstalled(
-      //                               "com.delphicoder.flud");
-      //                       if (isFludInstalled) {
-      //                         MyLogic.openFileChannel(
-      //                           filePath: downloadedFile.path,
-      //                         );
-      //                       } else {
-      //                         AndroidIntent intent = AndroidIntent(
-      //                           action: "action_view",
-      //                           data: Uri.encodeFull(
-      //                               "market://details?id=com.delphicoder.flud"),
-      //                         );
-      //                         intent.launch();
-      //                       }
-      //                     },
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           ),
-      //         ));
+
       return true;
     } catch (e) {
       Navigator.pop(context);

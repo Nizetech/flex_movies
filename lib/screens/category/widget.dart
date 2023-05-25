@@ -37,7 +37,7 @@ class _MyAnimatedListState extends State<MyAnimatedList>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 5),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     animation = Tween<double>(begin: 0, end: 1).animate(_controller)

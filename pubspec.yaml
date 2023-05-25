@@ -15,7 +15,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fluttertoast: ^8.0.9
   hive_flutter: ^1.1.0
   flutter_riverpod: ^1.0.4
   share_plus: ^4.4.0
@@ -25,10 +24,8 @@ dependencies:
   firebase_dynamic_links: ^5.1.0
   firebase_core: ^2.9.0
   get: ^4.6.1
-  iconsax: ^0.0.8
   youtube_player_flutter: ^8.1.2
   flutter_rating_bar: ^4.0.1
-  dio: ^5.0.2
   permission_handler: ^10.2.0
   loading_animation_widget: ^1.2.0+4
   device_apps: ^2.2.0
@@ -37,9 +34,12 @@ dependencies:
   url_launcher: ^6.1.10
   flutter_launcher_icons: ^0.11.0
   flutter_native_splash:
+  iconsax: ^0.0.8
 
+  # fluttertoast: ^8.0.9
   # hooks_riverpod: ^2.0.0
 
+  # dio: ^5.0.2
   # infinite_scroll_pagination: ^3.2.0
 
 
